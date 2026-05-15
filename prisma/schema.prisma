@@ -1,0 +1,131 @@
+// =============================================================================
+// Club de Triatlón Thia — Prisma Schema
+// =============================================================================
+// Este archivo define los modelos de la base de datos PostgreSQL.
+// Actualmente incluye: User y ContactMessage.
+// En la Fase 2, se agregarán modelos para suscripciones y pagos (e-commerce).
+//
+// Para ejecutar migraciones:
+//   npx prisma migrate dev --name init
+//
+// Para generar el cliente:
+//   npx prisma generate
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Modelo: User
+// Representa a los miembros, entrenadores y administradores del club.
+// Preparado para relaciones futuras con suscripciones y pagos.
+// ---------------------------------------------------------------------------
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  role      Role     @default(MEMBER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // === FASE 2: Relaciones E-commerce ===
+  // subscriptions Subscription[]
+  // payments      Payment[]
+}
+
+// ---------------------------------------------------------------------------
+// Modelo: ContactMessage
+// Almacena los mensajes enviados desde el formulario de contacto.
+// ---------------------------------------------------------------------------
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Enum: Role
+// Define los roles posibles para los usuarios del club.
+// ---------------------------------------------------------------------------
+enum Role {
+  ADMIN   // Administradores del club
+  COACH   // Entrenadores / Cuerpo técnico
+  MEMBER  // Miembros regulares del club
+}
+
+// =============================================================================
+// FASE 2: Modelos E-commerce (Suscripciones y Pagos)
+// =============================================================================
+// Descomenta estos modelos cuando integres la pasarela de pagos.
+//
+// model Plan {
+//   id          String         @id @default(cuid())
+//   name        String         // Ej: "Plan Mensual", "Plan Anual"
+//   description String?
+//   price       Decimal        @db.Decimal(10, 2)
+//   currency    String         @default("CLP")
+//   interval    PlanInterval   @default(MONTHLY)
+//   isActive    Boolean        @default(true)
+//   createdAt   DateTime       @default(now())
+//   updatedAt   DateTime       @updatedAt
+//   subscriptions Subscription[]
+// }
+//
+// model Subscription {
+//   id        String             @id @default(cuid())
+//   userId    String
+//   user      User               @relation(fields: [userId], references: [id])
+//   planId    String
+//   plan      Plan               @relation(fields: [planId], references: [id])
+//   status    SubscriptionStatus @default(ACTIVE)
+//   startDate DateTime           @default(now())
+//   endDate   DateTime?
+//   createdAt DateTime           @default(now())
+//   updatedAt DateTime           @updatedAt
+//   payments  Payment[]
+// }
+//
+// model Payment {
+//   id              String        @id @default(cuid())
+//   userId          String
+//   user            User          @relation(fields: [userId], references: [id])
+//   subscriptionId  String?
+//   subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+//   amount          Decimal       @db.Decimal(10, 2)
+//   currency        String        @default("CLP")
+//   status          PaymentStatus @default(PENDING)
+//   provider        String?       // "webpay" | "stripe"
+//   providerRef     String?       // ID de transacción del proveedor
+//   createdAt       DateTime      @default(now())
+// }
+//
+// enum PlanInterval {
+//   MONTHLY
+//   QUARTERLY
+//   YEARLY
+// }
+//
+// enum SubscriptionStatus {
+//   ACTIVE
+//   PAUSED
+//   CANCELLED
+//   EXPIRED
+// }
+//
+// enum PaymentStatus {
+//   PENDING
+//   COMPLETED
+//   FAILED
+//   REFUNDED
+// }
