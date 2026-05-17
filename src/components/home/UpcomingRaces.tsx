@@ -3,7 +3,6 @@
 // =============================================================================
 
 import { RACES } from '@/lib/constants';
-import SectionTitle from '@/components/ui/SectionTitle';
 import Button from '@/components/ui/Button';
 import type { RaceStatus } from '@/types';
 

@@ -99,7 +99,7 @@ export interface NavLink {
  * Usado en el Footer para mostrar íconos de redes sociales.
  */
 export interface SocialLink {
-  platform: 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'strava';
+  platform: 'instagram' | 'whatsapp';
   url: string;
   label: string;
 }

@@ -32,7 +32,7 @@ export default function CompetenciasPage() {
       </section>
 
       {openRaces.length > 0 && (
-        <section className="section-padding bg-white relative">
+        <section className="section-padding bg-gradient-to-br from-bg-warm via-white to-run-light/50 relative">
           {/* Fondo sutil con patrón */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(14,165,233,0.04),transparent_50%),radial-gradient(circle_at_80%_20%,rgba(16,185,129,0.04),transparent_50%)]" />
           <div className="w-full px-6 sm:px-8 lg:px-12 max-w-5xl mx-auto relative">
@@ -43,7 +43,7 @@ export default function CompetenciasPage() {
       )}
 
       {upcomingRaces.length > 0 && (
-        <section className="section-padding bg-bg-section relative">
+        <section className="section-padding bg-gradient-to-br from-brand-blue-pale via-bg-section to-white relative">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(46,125,209,0.05),transparent_50%)]" />
           <div className="w-full px-6 sm:px-8 lg:px-12 max-w-5xl mx-auto relative">
             <SectionTitle title="Próximas Competencias" subtitle="Eventos que se acercan en el calendario" align="left" />
@@ -53,7 +53,7 @@ export default function CompetenciasPage() {
       )}
 
       {finishedRaces.length > 0 && (
-        <section className="section-padding bg-white relative">
+        <section className="section-padding bg-gradient-to-br from-white via-bg-warm to-brand-blue-pale/60 relative">
           <div className="w-full px-6 sm:px-8 lg:px-12 max-w-5xl mx-auto relative">
             <SectionTitle title="Competencias Finalizadas" subtitle="Resultados de la temporada" align="left" />
             <div className="space-y-6">{finishedRaces.map((r) => <EventCard key={r.id} race={r} />)}</div>

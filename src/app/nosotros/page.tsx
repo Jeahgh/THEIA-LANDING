@@ -29,7 +29,7 @@ export default function NosotrosPage() {
       </section>
 
       {/* History */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-gradient-to-br from-bg-warm via-white to-brand-blue-pale/70">
         <div className="w-full px-6 sm:px-8 lg:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-xl shadow-brand-blue/10">
@@ -50,7 +50,7 @@ export default function NosotrosPage() {
       </section>
 
       {/* Mission & Vision — on blue background */}
-      <section className="section-padding bg-brand-blue">
+      <section className="section-padding bg-gradient-to-br from-brand-navy via-brand-blue to-brand-blue-vivid">
         <div className="w-full px-6 sm:px-8 lg:px-12">
           <SectionTitle title="Misión y Visión" subtitle="Los pilares que guían nuestro trabajo diario" dark />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
@@ -69,9 +69,9 @@ export default function NosotrosPage() {
       </section>
 
       {/* Coaches */}
-      <section className="section-padding bg-bg-section">
+      <section className="section-padding bg-gradient-to-b from-brand-blue-pale via-bg-section to-white">
         <div className="w-full px-6 sm:px-8 lg:px-12">
-          <SectionTitle title="Cuerpo Técnico" subtitle="Profesionales dedicados a tu desarrollo deportivo" gradient />
+          <SectionTitle title="Equipo Theia" subtitle="Entrenadores que te acompañan en cada disciplina, desde la base hasta la competencia" gradient />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {COACHES.map((coach) => (
               <Card key={coach.id} hover className="text-center">

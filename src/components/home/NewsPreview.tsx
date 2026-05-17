@@ -5,11 +5,17 @@
 // título, fecha y extracto. Cada noticia es editable desde constants.ts.
 // =============================================================================
 
-import { NEWS_ARTICLES } from '@/lib/constants';
+import Image from 'next/image';
+import { NEWS_ARTICLES, SOCIAL_LINKS } from '@/lib/constants';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
-import ImagePlaceholder from '@/components/ui/ImagePlaceholder';
-import Button from '@/components/ui/Button';
+
+const NEWS_IMAGES: Record<string, string> = {
+  '1': '/images/equipo-running.jpg',
+  '2': '/images/atletas-collage.jpg',
+  '3': '/images/equipo-jersey.png',
+  '4': '/images/equipo-running.jpg',
+};
 
 /**
  * Formatea fecha ISO a formato legible en español.
@@ -39,24 +45,27 @@ export default function NewsPreview() {
   // La primera noticia es la destacada
   const featured = latestNews[0];
   const rest = latestNews.slice(1);
+  const instagramUrl = SOCIAL_LINKS.find((s) => s.platform === 'instagram')?.url ?? 'https://www.instagram.com/teamtheia/';
 
   return (
-    <section id="noticias" className="section-padding bg-white">
+    <section id="noticias" className="section-padding bg-bg-warm">
       <div className="w-full px-6 sm:px-8 lg:px-12">
         <SectionTitle
-          title="Noticias del Club"
-          subtitle="Resultados, entrenamientos y novedades de nuestra comunidad"
+          title="Momentos Theia"
+          subtitle="Entrenamientos, carreras y vida de equipo"
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Noticia destacada (grande) */}
           <Card hover className="group overflow-hidden p-0">
             {/* Imagen */}
-            <div className="overflow-hidden">
-              <ImagePlaceholder
-                text={featured.imagePlaceholder || 'Sube la imagen de la noticia aquí'}
-                aspectRatio="aspect-[16/10]"
-                className="rounded-none rounded-t-2xl group-hover:scale-[1.02] transition-transform duration-500"
+            <div className="relative aspect-[16/10] overflow-hidden">
+              <Image
+                src={NEWS_IMAGES[featured.id]}
+                alt={featured.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
             {/* Content */}
@@ -82,11 +91,13 @@ export default function NewsPreview() {
               <Card key={article.id} hover className="group p-0 overflow-hidden">
                 <div className="flex flex-col sm:flex-row">
                   {/* Imagen lateral */}
-                  <div className="sm:w-40 sm:min-w-[160px] overflow-hidden">
-                    <ImagePlaceholder
-                      text={article.imagePlaceholder || 'Imagen'}
-                      aspectRatio="aspect-video sm:aspect-square"
-                      className="rounded-none rounded-t-2xl sm:rounded-t-none sm:rounded-l-2xl h-full group-hover:scale-[1.02] transition-transform duration-500"
+                  <div className="relative aspect-video overflow-hidden sm:w-40 sm:min-w-[160px] sm:aspect-square">
+                    <Image
+                      src={NEWS_IMAGES[article.id]}
+                      alt={article.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      sizes="(max-width: 640px) 100vw, 160px"
                     />
                   </div>
                   {/* Content */}
@@ -108,9 +119,14 @@ export default function NewsPreview() {
         </div>
 
         <div className="text-center mt-12">
-          <Button variant="outline" href="#">
-            Ver todas las noticias
-          </Button>
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-xl border-2 border-brand-blue px-6 py-3 text-base font-semibold text-brand-blue transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-blue hover:text-white"
+          >
+            Ver más en Instagram
+          </a>
         </div>
       </div>
     </section>

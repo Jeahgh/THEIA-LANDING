@@ -62,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${montserrat.variable} ${nunito.variable}`}>
+    <html lang="es" data-scroll-behavior="smooth" className={`${montserrat.variable} ${nunito.variable}`}>
       <body className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-grow">{children}</main>

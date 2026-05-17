@@ -18,8 +18,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
-
   return (
     <nav
       id="main-navbar"
@@ -93,12 +91,12 @@ export default function Navbar() {
       <div className={`lg:hidden transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="bg-brand-blue border-t border-white/10 px-6 py-4 space-y-1 shadow-lg">
           {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href}
+            <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)}
               className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                 pathname === link.href ? 'text-white bg-white/20' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}>{link.label}</Link>
           ))}
-          <div className="pt-2"><Button variant="white" size="md" href="/contacto" className="w-full">Únete al club</Button></div>
+          <div className="pt-2" onClick={() => setIsMobileMenuOpen(false)}><Button variant="white" size="md" href="/contacto" className="w-full">Únete al club</Button></div>
         </div>
       </div>
     </nav>

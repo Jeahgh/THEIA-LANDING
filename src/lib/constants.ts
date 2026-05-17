@@ -18,10 +18,8 @@ export const NAV_LINKS: NavLink[] = [
 // Redes Sociales
 // ---------------------------------------------------------------------------
 export const SOCIAL_LINKS: SocialLink[] = [
-  { platform: 'instagram', url: 'https://instagram.com/theia.tri', label: 'Instagram' },
-  { platform: 'facebook', url: 'https://facebook.com/theiatri', label: 'Facebook' },
-  { platform: 'youtube', url: 'https://youtube.com/@theiatri', label: 'YouTube' },
-  { platform: 'strava', url: 'https://strava.com/clubs/theia', label: 'Strava' },
+  { platform: 'instagram', url: 'https://www.instagram.com/teamtheia/', label: 'Instagram' },
+  { platform: 'whatsapp', url: 'https://wa.me/56982147660?text=Hola%21%20me%20gustaria%20inscribirme%2C', label: 'WhatsApp' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -261,7 +259,7 @@ export const CLUB_INFO = {
   name: 'Theia Triathlon Performance',
   shortName: 'Theia',
   email: 'contacto@theiatri.cl',
-  phone: '+56 9 1234 5678',
+  phone: '+56 9 8214 7660',
   address: 'Santiago, Chile',
   foundedYear: 2020,
   motto: 'Supera tus límites',

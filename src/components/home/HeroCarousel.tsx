@@ -159,7 +159,7 @@ export default function HeroCarousel() {
                     alt={s.title}
                     fill
                     className="object-cover"
-                    priority={index === 0}
+                    loading={index === 0 ? 'eager' : 'lazy'}
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     quality={90}
                   />
