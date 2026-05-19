@@ -11,6 +11,7 @@ import { Montserrat, Nunito } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import AuthProvider from '@/components/auth/AuthProvider';
 
 // ---------------------------------------------------------------------------
 // Fuentes — elegidas para transmitir calidez y energía deportiva
@@ -64,9 +65,11 @@ export default function RootLayout({
   return (
     <html lang="es" data-scroll-behavior="smooth" className={`${montserrat.variable} ${nunito.variable}`}>
       <body className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

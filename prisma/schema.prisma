@@ -1,15 +1,12 @@
 // =============================================================================
-// Club de Triatlón Thia — Prisma Schema
+// THEIA Triathlon Performance - Prisma Schema
 // =============================================================================
-// Este archivo define los modelos de la base de datos PostgreSQL.
-// Actualmente incluye: User y ContactMessage.
-// En la Fase 2, se agregarán modelos para suscripciones y pagos (e-commerce).
-//
-// Para ejecutar migraciones:
-//   npx prisma migrate dev --name init
-//
-// Para generar el cliente:
-//   npx prisma generate
+// PostgreSQL + Prisma. Este esquema prepara:
+// - Autenticacion con Auth.js (Google + credenciales)
+// - Roles de usuario
+// - Planes editables
+// - Noticias editables
+// - Mensajes de contacto
 // =============================================================================
 
 generator client {
@@ -18,33 +15,66 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// ---------------------------------------------------------------------------
-// Modelo: User
-// Representa a los miembros, entrenadores y administradores del club.
-// Preparado para relaciones futuras con suscripciones y pagos.
-// ---------------------------------------------------------------------------
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  phone     String?
-  role      Role     @default(MEMBER)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  phone         String?
+  role          Role      @default(MEMBER)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  // === FASE 2: Relaciones E-commerce ===
+  accounts Account[]
+  sessions Session[]
+
+  // Fase pagos/suscripciones:
   // subscriptions Subscription[]
   // payments      Payment[]
 }
 
-// ---------------------------------------------------------------------------
-// Modelo: ContactMessage
-// Almacena los mensajes enviados desde el formulario de contacto.
-// ---------------------------------------------------------------------------
+// Modelos requeridos por Auth.js para login con proveedores OAuth como Google.
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model ContactMessage {
   id        String   @id @default(cuid())
   name      String
@@ -54,34 +84,68 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
-// ---------------------------------------------------------------------------
-// Enum: Role
-// Define los roles posibles para los usuarios del club.
-// ---------------------------------------------------------------------------
+model Plan {
+  id        String       @id @default(cuid())
+  slug      String       @unique
+  category  PlanCategory
+  name      String
+  modality  String
+  excerpt   String       @db.Text
+  price     Int
+  currency  String       @default("CLP")
+  imageUrl  String
+  imageAlt  String
+  isActive  Boolean      @default(true)
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  features PlanFeature[]
+}
+
+model PlanFeature {
+  id        String @id @default(cuid())
+  planId    String
+  text      String
+  sortOrder Int    @default(0)
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+}
+
+model NewsPost {
+  id        String       @id @default(cuid())
+  title     String
+  excerpt   String       @db.Text
+  date      DateTime
+  category  NewsCategory
+  imageUrl  String?
+  published Boolean      @default(true)
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
 enum Role {
-  ADMIN   // Administradores del club
-  COACH   // Entrenadores / Cuerpo técnico
-  MEMBER  // Miembros regulares del club
+  ADMIN
+  COACH
+  MEMBER
+}
+
+enum PlanCategory {
+  RUNNING
+  TRIATLON
+}
+
+enum NewsCategory {
+  RESULTADOS
+  NOTICIAS
+  ENTRENAMIENTO
+  COMUNIDAD
 }
 
 // =============================================================================
-// FASE 2: Modelos E-commerce (Suscripciones y Pagos)
+// FASE 2: Suscripciones y pagos
 // =============================================================================
-// Descomenta estos modelos cuando integres la pasarela de pagos.
-//
-// model Plan {
-//   id          String         @id @default(cuid())
-//   name        String         // Ej: "Plan Mensual", "Plan Anual"
-//   description String?
-//   price       Decimal        @db.Decimal(10, 2)
-//   currency    String         @default("CLP")
-//   interval    PlanInterval   @default(MONTHLY)
-//   isActive    Boolean        @default(true)
-//   createdAt   DateTime       @default(now())
-//   updatedAt   DateTime       @updatedAt
-//   subscriptions Subscription[]
-// }
-//
 // model Subscription {
 //   id        String             @id @default(cuid())
 //   userId    String
@@ -97,23 +161,17 @@ enum Role {
 // }
 //
 // model Payment {
-//   id              String        @id @default(cuid())
-//   userId          String
-//   user            User          @relation(fields: [userId], references: [id])
-//   subscriptionId  String?
-//   subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
-//   amount          Decimal       @db.Decimal(10, 2)
-//   currency        String        @default("CLP")
-//   status          PaymentStatus @default(PENDING)
-//   provider        String?       // "webpay" | "stripe"
-//   providerRef     String?       // ID de transacción del proveedor
-//   createdAt       DateTime      @default(now())
-// }
-//
-// enum PlanInterval {
-//   MONTHLY
-//   QUARTERLY
-//   YEARLY
+//   id             String        @id @default(cuid())
+//   userId         String
+//   user           User          @relation(fields: [userId], references: [id])
+//   subscriptionId String?
+//   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+//   amount         Int
+//   currency       String        @default("CLP")
+//   status         PaymentStatus @default(PENDING)
+//   provider       String?
+//   providerRef    String?
+//   createdAt      DateTime      @default(now())
 // }
 //
 // enum SubscriptionStatus {

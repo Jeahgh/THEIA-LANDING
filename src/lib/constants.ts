@@ -2,7 +2,7 @@
 // THEIA Triathlon Performance — Datos Estáticos y Constantes
 // =============================================================================
 
-import type { Race, Testimonial, CoachProfile, NavLink, SocialLink, NewsArticle } from '@/types';
+import type { Race, Testimonial, CoachProfile, NavLink, SocialLink, NewsArticle, TrainingPlan } from '@/types';
 
 // ---------------------------------------------------------------------------
 // Navegación
@@ -10,6 +10,7 @@ import type { Race, Testimonial, CoachProfile, NavLink, SocialLink, NewsArticle 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Inicio', href: '/' },
   { label: 'Nosotros', href: '/nosotros' },
+  { label: 'Planes', href: '/planes' },
   { label: 'Competencias', href: '/competencias' },
   { label: 'Contacto', href: '/contacto' },
 ];
@@ -161,6 +162,142 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     date: '2026-04-20',
     category: 'comunidad',
     imagePlaceholder: 'Sube foto de la jornada de integración aquí',
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Planes de Entrenamiento
+// ---------------------------------------------------------------------------
+export const TRAINING_PLANS: TrainingPlan[] = [
+  {
+    id: 'running-distancia',
+    category: 'running',
+    name: 'Plan Running a distancia',
+    price: '$55.000',
+    modality: 'Online',
+    excerpt: 'Planificacion mensual con objetivos A, B y C, pensada para deportistas que entrenan con autonomia y seguimiento remoto.',
+    features: [
+      'Macro, meso y microciclos personalizados',
+      'Carreras objetivo individualizadas',
+      'Seguimiento semanal por canales digitales',
+      'Ajustes segun carga, sensaciones y disponibilidad',
+    ],
+    imageUrl: '/images/atletas-collage.jpg',
+    imageAlt: 'Atletas Theia entrenando y compitiendo',
+  },
+  {
+    id: 'running-presencial',
+    category: 'running',
+    name: 'Plan Running presencial',
+    price: '$75.000',
+    modality: 'Presencial',
+    excerpt: 'Entrenamiento de running con planificacion mensual y sesiones presenciales para mejorar tecnica, ritmo y confianza.',
+    features: [
+      'Planificacion mensual estructurada',
+      'Sesiones grupales guiadas por entrenador',
+      'Trabajo de tecnica, series y fondos',
+      'Feedback presencial en entrenamientos clave',
+    ],
+    imageUrl: '/images/equipo-running.jpg',
+    imageAlt: 'Equipo Theia reunido despues de una carrera',
+  },
+  {
+    id: 'running-plus',
+    category: 'running',
+    name: 'Plan Running PLUS',
+    price: '$105.000',
+    modality: 'Mixto',
+    excerpt: 'Acompanamiento mas cercano para runners que preparan carreras exigentes y necesitan control fino de sus semanas.',
+    features: [
+      'Planificacion personalizada con revision semanal',
+      'Sesiones presenciales y pauta remota',
+      'Estrategia de carrera y ritmos objetivo',
+      'Control de carga y recuperacion',
+    ],
+    imageUrl: '/images/equipo-jersey.png',
+    imageAlt: 'Jersey oficial Theia para entrenamientos y competencias',
+    highlighted: true,
+  },
+  {
+    id: 'running-pro',
+    category: 'running',
+    name: 'Plan Running Pro',
+    price: '$145.000',
+    modality: 'Alto rendimiento',
+    excerpt: 'Plan avanzado para deportistas que buscan rendimiento competitivo con seguimiento detallado del proceso.',
+    features: [
+      'Periodizacion avanzada por objetivos',
+      'Analisis de metricas y zonas de entrenamiento',
+      'Ajustes frecuentes segun rendimiento',
+      'Preparacion integral para competencia',
+    ],
+    imageUrl: '/images/atletas-collage.jpg',
+    imageAlt: 'Atletas Theia en accion durante entrenamientos y competencias',
+  },
+  {
+    id: 'triatlon-distancia',
+    category: 'triatlon',
+    name: 'Plan Triatlon a distancia',
+    price: '$70.000',
+    modality: 'Online',
+    excerpt: 'Planificacion remota de natacion, ciclismo y running para objetivos Sprint, Olimpico o media distancia.',
+    features: [
+      'Macro, meso y microciclos por disciplina',
+      'Distribucion semanal de cargas',
+      'Carreras objetivo A, B y C',
+      'Seguimiento remoto del cumplimiento',
+    ],
+    imageUrl: '/images/equipo-jersey.png',
+    imageAlt: 'Jersey oficial Theia para entrenamiento de triatlon',
+  },
+  {
+    id: 'triatlon-presencial',
+    category: 'triatlon',
+    name: 'Plan Triatlon presencial',
+    price: '$100.000',
+    modality: 'Presencial',
+    excerpt: 'Entrenamiento presencial con planificacion de las tres disciplinas y acompanamiento tecnico en sesiones clave.',
+    features: [
+      'Plan mensual enfocado en objetivos A, B y C',
+      'Sesiones presenciales por disciplina',
+      'Correccion tecnica y trabajo grupal',
+      'Preparacion especifica para competencia',
+    ],
+    imageUrl: '/images/equipo-running.jpg',
+    imageAlt: 'Equipo Theia participando en una jornada deportiva',
+  },
+  {
+    id: 'triatlon-plus',
+    category: 'triatlon',
+    name: 'Plan Triatlon PLUS',
+    price: '$140.000',
+    modality: 'Mixto',
+    excerpt: 'Plan completo para triatletas que necesitan mas seguimiento, mejor coordinacion semanal y foco competitivo.',
+    features: [
+      'Planificacion integrada de tres disciplinas',
+      'Revision semanal de sesiones y cargas',
+      'Estrategia de transiciones y carrera',
+      'Soporte para calendario competitivo',
+    ],
+    imageUrl: '/images/equipo-jersey.png',
+    imageAlt: 'Jersey oficial Theia para entrenamientos de triatlon',
+    highlighted: true,
+  },
+  {
+    id: 'triatlon-pro',
+    category: 'triatlon',
+    name: 'Plan Triatlon Pro',
+    price: '$175.000',
+    modality: 'Alto rendimiento',
+    excerpt: 'Acompanamiento avanzado para triatletas con metas exigentes, volumen alto y competencias prioritarias.',
+    features: [
+      'Periodizacion avanzada de temporada',
+      'Analisis de rendimiento por disciplina',
+      'Ajustes recurrentes segun fatiga y progreso',
+      'Plan de competencia y puesta a punto',
+    ],
+    imageUrl: '/images/atletas-collage.jpg',
+    imageAlt: 'Collage de atletas Theia en diferentes disciplinas',
   },
 ];
 

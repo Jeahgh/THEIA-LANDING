@@ -23,7 +23,7 @@ export default function Footer() {
             <div>
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-9 h-9 relative">
-                  <Image src="/images/logo-theia.png" alt="Theia" fill className="object-contain brightness-0 invert" sizes="36px" />
+                  <Image src="/images/logo-theia-blanco.png" alt="Theia" fill className="object-contain" sizes="36px" />
                 </div>
                 <div>
                   <p className="text-white font-bold text-lg tracking-[0.25em]">THEIA</p>

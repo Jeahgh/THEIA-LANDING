@@ -66,6 +66,23 @@ export interface NewsArticle {
 }
 
 /**
+ * Plan de entrenamiento ofrecido por el club.
+ * Se usa en la pagina "Planes" para mostrar precios, modalidad y beneficios.
+ */
+export interface TrainingPlan {
+  id: string;
+  category: 'running' | 'triatlon';
+  name: string;
+  price: string;
+  modality: string;
+  excerpt: string;
+  features: string[];
+  imageUrl: string;
+  imageAlt: string;
+  highlighted?: boolean;
+}
+
+/**
  * Datos del formulario de contacto.
  * Corresponde a los campos enviados al API Route /api/contact.
  */
