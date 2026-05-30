@@ -2,7 +2,7 @@
 // UpcomingRaces — Fondo azul oscuro con texto de alto contraste
 // =============================================================================
 
-import { RACES } from '@/lib/constants';
+import { getActiveRaces } from '@/lib/races';
 import Button from '@/components/ui/Button';
 import type { RaceStatus } from '@/types';
 
@@ -22,38 +22,39 @@ function getStatusBadge(status: RaceStatus) {
   return badges[status];
 }
 
-export default function UpcomingRaces() {
-  const upcomingRaces = RACES.slice(0, 3);
+export default async function UpcomingRaces() {
+  const upcomingRaces = (await getActiveRaces()).slice(0, 3);
 
   return (
     <section id="upcoming-races" className="section-padding bg-gradient-to-br from-brand-navy via-brand-blue-vivid to-brand-navy">
-      <div className="w-full px-6 sm:px-8 lg:px-12">
+      <div className="content-shell">
 
         {/* Encabezado con contraste máximo */}
-        <div className="flex flex-col items-center gap-3 mb-12 text-center">
+        <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-12">
           {/* Línea decorativa blanca */}
           <div className="w-16 h-1 bg-gradient-to-r from-brand-blue-soft via-white to-accent-warm rounded-full" />
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Próximas Competencias
           </h2>
-          <p className="text-brand-blue-soft text-lg sm:text-xl max-w-2xl">
+          <p className="max-w-2xl text-base leading-relaxed text-brand-blue-soft sm:text-xl">
             Prepárate para los desafíos de la temporada 2026
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {upcomingRaces.map((race) => {
+        {upcomingRaces.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {upcomingRaces.map((race) => {
             const { day, month } = formatDate(race.date);
             const badge = getStatusBadge(race.status);
 
             return (
               <div
                 key={race.id}
-                className="group bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-6 shadow-md transition-all duration-300 hover:bg-white/[0.15] hover:border-white/35 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
+                className="group rounded-lg border border-white/20 bg-white/10 p-4 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-white/35 hover:bg-white/[0.15] hover:shadow-xl hover:shadow-black/20 sm:rounded-2xl sm:p-6 lg:hover:-translate-y-1"
               >
                 <div className="flex gap-4">
                   {/* Bloque de fecha — blanco con acento */}
-                  <div className="flex flex-col items-center justify-center bg-white/20 rounded-xl px-3 py-2 min-w-[64px] group-hover:bg-white/30 transition-colors duration-300 border border-white/25">
+                  <div className="flex min-w-[58px] flex-col items-center justify-center rounded-xl border border-white/25 bg-white/20 px-3 py-2 transition-colors duration-300 group-hover:bg-white/30 sm:min-w-[64px]">
                     <span className="text-white text-2xl font-bold leading-none">{day}</span>
                     <span className="text-brand-blue-soft text-xs font-bold tracking-widest">{month}</span>
                   </div>
@@ -64,7 +65,7 @@ export default function UpcomingRaces() {
                       {badge.text}
                     </span>
                     {/* Nombre de la carrera — blanco nítido */}
-                    <h3 className="text-white font-bold text-lg leading-tight mb-1 group-hover:text-brand-blue-soft transition-colors truncate">
+                    <h3 className="mb-1 text-lg font-bold leading-tight text-white transition-colors group-hover:text-brand-blue-soft sm:truncate">
                       {race.name}
                     </h3>
                     {/* Ubicación */}
@@ -79,10 +80,15 @@ export default function UpcomingRaces() {
                 </div>
               </div>
             );
-          })}
-        </div>
+            })}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-white/15 bg-white/10 p-6 text-center text-white/80 sm:rounded-2xl sm:p-10">
+            No hay competencias activas por ahora.
+          </div>
+        )}
 
-        <div className="text-center mt-12">
+        <div className="mt-10 text-center sm:mt-12">
           <Button variant="white" href="/competencias">
             Ver todas las competencias
           </Button>

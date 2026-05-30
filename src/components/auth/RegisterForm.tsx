@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Button from '@/components/ui/Button';
+import GoogleLogo from '@/components/auth/GoogleLogo';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -18,73 +19,102 @@ export default function RegisterForm() {
   });
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
+  const isSubmitting = Boolean(loadingMessage);
 
   const updateField = (field: keyof typeof formData, value: string) => {
     setFormData((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleGoogleRegister = async () => {
+    setMessage('');
+    setIsError(false);
+    setLoadingMessage('Conectando con Google...');
+
+    try {
+      await signIn('google', { callbackUrl });
+    } catch {
+      setIsError(true);
+      setMessage('No se pudo continuar con Google. Intentalo nuevamente.');
+      setLoadingMessage('');
+    }
   };
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage('');
     setIsError(false);
-    setIsSubmitting(true);
+    setLoadingMessage('Creando tu cuenta...');
 
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
 
-    if (!response.ok) {
-      setIsSubmitting(false);
+      if (!response.ok) {
+        setIsError(true);
+        setMessage(data.message ?? 'No pudimos crear la cuenta.');
+        setLoadingMessage('');
+        return;
+      }
+
+      setLoadingMessage('Iniciando sesion...');
+      const signInResponse = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (signInResponse?.error) {
+        setIsError(false);
+        setMessage('Cuenta creada. Ahora inicia sesion con tus datos.');
+        router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+        return;
+      }
+
+      setLoadingMessage('Preparando tu cuenta...');
+      router.replace(callbackUrl);
+    } catch {
       setIsError(true);
-      setMessage(data.message ?? 'No pudimos crear la cuenta.');
-      return;
+      setMessage('No pudimos crear la cuenta. Intentalo nuevamente.');
+      setLoadingMessage('');
     }
-
-    const signInResponse = await signIn('credentials', {
-      email: formData.email,
-      password: formData.password,
-      redirect: false,
-      callbackUrl,
-    });
-
-    setIsSubmitting(false);
-
-    if (signInResponse?.error) {
-      setIsError(false);
-      setMessage('Cuenta creada. Ahora inicia sesion con tus datos.');
-      router.push('/login');
-      return;
-    }
-
-    router.push(callbackUrl);
-    router.refresh();
   };
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-border-subtle bg-white p-6 shadow-xl shadow-brand-blue/10 sm:p-8">
-      <div className="mb-8 text-center">
+    <div className="w-full max-w-md rounded-lg border border-border-subtle bg-white p-4 shadow-xl shadow-brand-blue/10 sm:rounded-2xl sm:p-8">
+      <div className="mb-6 text-center sm:mb-8">
         <div className="accent-line mx-auto mb-5" />
-        <h1 className="text-3xl font-bold text-text-primary">Crear cuenta</h1>
+        <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">Crear cuenta</h1>
         <p className="mt-2 text-text-secondary">Registrate para ver precios y contratar planes.</p>
       </div>
 
       <button
         type="button"
-        onClick={() => signIn('google', { callbackUrl })}
-        className="mb-6 inline-flex w-full items-center justify-center rounded-xl border-2 border-border-subtle bg-white px-5 py-3 text-base font-semibold text-text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-blue hover:text-brand-blue"
+        onClick={handleGoogleRegister}
+        disabled={isSubmitting}
+        className="mb-6 inline-flex w-full items-center justify-center gap-3 rounded-lg border-2 border-border-subtle bg-white px-5 py-3 text-base font-semibold text-text-primary transition-all duration-200 hover:border-brand-blue hover:text-brand-blue disabled:cursor-not-allowed disabled:opacity-60 sm:rounded-xl sm:hover:-translate-y-0.5"
       >
-        Registrarme con Google
+        <GoogleLogo />
+        {loadingMessage === 'Conectando con Google...' ? 'Conectando...' : 'Continuar con Google'}
       </button>
 
       <div className="mb-6 flex items-center gap-3 text-xs text-text-muted">
         <span className="h-px flex-1 bg-border-subtle" />
-        <span>o con email y contraseña</span>
+        <span>o crea tu cuenta con email</span>
         <span className="h-px flex-1 bg-border-subtle" />
       </div>
+
+      {loadingMessage && (
+        <div className="mb-5 flex items-center gap-3 rounded-xl border border-brand-blue/10 bg-brand-blue-pale/60 px-4 py-3 text-sm font-semibold text-brand-navy">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-blue/20 border-t-brand-blue" />
+          {loadingMessage}
+        </div>
+      )}
 
       <form onSubmit={handleRegister} className="space-y-4">
         <div>
@@ -93,8 +123,9 @@ export default function RegisterForm() {
             id="name"
             value={formData.name}
             onChange={(event) => updateField('name', event.target.value)}
-            className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15"
+            className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
             autoComplete="name"
+            disabled={isSubmitting}
             required
           />
         </div>
@@ -106,35 +137,38 @@ export default function RegisterForm() {
             type="email"
             value={formData.email}
             onChange={(event) => updateField('email', event.target.value)}
-            className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15"
+            className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
             autoComplete="email"
+            disabled={isSubmitting}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-semibold text-text-primary">Contraseña</label>
+          <label htmlFor="password" className="mb-1 block text-sm font-semibold text-text-primary">Contrasena</label>
           <input
             id="password"
             type="password"
             value={formData.password}
             onChange={(event) => updateField('password', event.target.value)}
-            className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15"
+            className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
             autoComplete="new-password"
+            disabled={isSubmitting}
             minLength={8}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="mb-1 block text-sm font-semibold text-text-primary">Confirmar contraseña</label>
+          <label htmlFor="confirmPassword" className="mb-1 block text-sm font-semibold text-text-primary">Confirmar contrasena</label>
           <input
             id="confirmPassword"
             type="password"
             value={formData.confirmPassword}
             onChange={(event) => updateField('confirmPassword', event.target.value)}
-            className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15"
+            className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
             autoComplete="new-password"
+            disabled={isSubmitting}
             minLength={8}
             required
           />
@@ -147,7 +181,7 @@ export default function RegisterForm() {
         )}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? 'Creando...' : 'Crear cuenta'}
+          {isSubmitting ? loadingMessage : 'Crear cuenta'}
         </Button>
       </form>
 

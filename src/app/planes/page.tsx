@@ -34,62 +34,75 @@ const getWhatsAppHref = (planName: string) => {
   return `${baseUrl}?text=${message}`;
 };
 
+const getPriceLabel = (price: string) => {
+  if (price.toUpperCase().startsWith('CLP')) return price;
+  return price.replace(/^\$\s*/, 'CLP ');
+};
+
 function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: boolean }) {
   return (
     <article
       className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-subtle bg-white shadow-lg shadow-brand-blue/8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-blue/14"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-brand-blue-pale">
-        <Image
-          src={plan.imageUrl}
-          alt={plan.imageAlt}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/50 via-transparent to-transparent" />
+        {plan.imageUrl ? (
+          <>
+            <Image
+              src={plan.imageUrl}
+              alt={plan.imageAlt}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/50 via-transparent to-transparent" />
+          </>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-blue-pale via-bg-section to-white px-6 text-center">
+            <span className="text-sm font-bold uppercase tracking-[0.16em] text-brand-blue/70">
+              {plan.category === 'running' ? 'Running' : 'Triatlon'}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="min-w-0 text-xl font-bold leading-tight text-text-primary">{plan.name}</h3>
+          {canViewPrice && (
+            <span className="shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight text-slate-700">
+              {getPriceLabel(plan.price)}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-3 mb-4 flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-brand-blue-pale px-3 py-1 text-xs font-semibold text-brand-blue">
             {plan.modality}
           </span>
-          <p className="text-right text-2xl font-bold text-text-primary">
-            {canViewPrice ? plan.price : 'Precio privado'}
-          </p>
         </div>
 
-        <h3 className="mb-3 text-xl font-bold leading-tight text-text-primary">{plan.name}</h3>
-        <p className="mb-5 text-sm leading-relaxed text-text-secondary">{plan.excerpt}</p>
+        <p className="mb-6 text-sm leading-relaxed text-text-secondary">{plan.excerpt}</p>
 
-        <ul className="mb-6 space-y-3">
-          {plan.features.map((feature) => (
-            <li key={feature} className="flex gap-3 text-sm leading-relaxed text-text-secondary">
-              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-run" />
-              <span>{feature}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-auto flex flex-col gap-3 sm:flex-row">
+        <div className="mt-auto flex justify-center">
           {canViewPrice ? (
             <a
               href={getWhatsAppHref(plan.name)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-blue px-4 py-3 text-sm font-semibold text-white shadow-md shadow-brand-blue/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-blue-vivid hover:shadow-lg hover:shadow-brand-blue/30"
+              className="inline-flex w-full max-w-56 items-center justify-center rounded-xl bg-brand-blue px-5 py-3 text-sm font-semibold text-white shadow-md shadow-brand-blue/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-blue-vivid hover:shadow-lg hover:shadow-brand-blue/30"
             >
               Consultar plan
             </a>
           ) : (
-            <Button variant="primary" size="sm" href={`/login?callbackUrl=${encodeURIComponent('/planes')}`} className="flex-1">
-              Ver precio
+            <Button
+              variant="primary"
+              size="sm"
+              href={`/login?callbackUrl=${encodeURIComponent('/planes')}`}
+              className="w-full max-w-64 py-3"
+            >
+              Iniciar sesion o crear cuenta
             </Button>
           )}
-          <Button variant="outline" size="sm" href="/contacto" className="flex-1">
-            Leer mas
-          </Button>
         </div>
       </div>
     </article>
@@ -133,11 +146,17 @@ export default async function PlanesPage() {
             <div className="relative w-full px-6 sm:px-8 lg:px-12">
               <SectionTitle title={category.title} gradient />
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                {plans.map((plan) => (
-                  <PlanCard key={plan.id} plan={plan} canViewPrice={canViewPrice} />
-                ))}
-              </div>
+              {plans.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                  {plans.map((plan) => (
+                    <PlanCard key={plan.id} plan={plan} canViewPrice={canViewPrice} />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-border-subtle bg-white p-10 text-center text-text-secondary shadow-lg shadow-brand-blue/8">
+                  No hay planes publicados en esta categoria.
+                </div>
+              )}
 
               {index === 0 && (
                 <div className="mt-12 rounded-2xl bg-brand-navy px-6 py-8 text-white shadow-xl shadow-brand-blue/20 sm:px-8 lg:px-10">

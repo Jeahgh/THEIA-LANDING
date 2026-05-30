@@ -125,6 +125,79 @@ model NewsPost {
   updatedAt DateTime     @updatedAt
 }
 
+model Race {
+  id              String     @id @default(cuid())
+  name            String
+  date            DateTime
+  location        String
+  type            RaceType
+  distance        String?
+  description     String?    @db.Text
+  registrationUrl String?
+  status          RaceStatus @default(UPCOMING)
+  isActive        Boolean    @default(true)
+  sortOrder       Int        @default(0)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  quote     String   @db.Text
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coach {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  bio         String   @db.Text
+  imageUrl    String?
+  specialties String[]
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HomeSetting {
+  id             String   @id @default(cuid())
+  key            String   @unique
+  title          String?
+  subtitle       String?  @db.Text
+  imageUrl       String?
+  ctaText        String?
+  ctaHref        String?
+  primaryStat    String?
+  primaryLabel   String?
+  secondaryStat  String?
+  secondaryLabel String?
+  isActive       Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model HeroSlide {
+  id            String   @id @default(cuid())
+  title         String
+  subtitle      String   @db.Text
+  imageUrl      String?
+  ctaText       String?
+  ctaHref       String?
+  buttonVariant String   @default("primary")
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 enum Role {
   ADMIN
   COACH
@@ -141,6 +214,22 @@ enum NewsCategory {
   NOTICIAS
   ENTRENAMIENTO
   COMUNIDAD
+}
+
+enum RaceType {
+  TRIATLON
+  DUATLON
+  ACUATLON
+  RUNNING
+  CICLISMO
+  NATACION
+}
+
+enum RaceStatus {
+  UPCOMING
+  REGISTRATION_OPEN
+  REGISTRATION_CLOSED
+  FINISHED
 }
 
 // =============================================================================

@@ -1,11 +1,3 @@
-// =============================================================================
-// Root Layout — THEIA Triathlon Performance
-// =============================================================================
-// Tipografía:
-// - Montserrat: headings — deportiva, geométrica, con personalidad y fuerza
-// - Nunito: body text — redondeada, cálida, amigable y legible
-// =============================================================================
-
 import type { Metadata } from 'next';
 import { Montserrat, Nunito } from 'next/font/google';
 import './globals.css';
@@ -13,50 +5,50 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
 
-// ---------------------------------------------------------------------------
-// Fuentes — elegidas para transmitir calidez y energía deportiva
-// ---------------------------------------------------------------------------
-
-/** Montserrat: Para headings. Geométrica, deportiva, con carácter fuerte. */
 const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-montserrat',
   display: 'swap',
 });
 
-/** Nunito: Para body text. Redondeada, cálida, transmite cercanía. */
 const nunito = Nunito({
   subsets: ['latin'],
   variable: '--font-nunito',
   display: 'swap',
 });
 
-// ---------------------------------------------------------------------------
-// Metadata SEO global
-// ---------------------------------------------------------------------------
 export const metadata: Metadata = {
   title: {
-    default: 'Theia Triathlon Performance | Supera tus límites',
-    template: '%s | Theia Triathlon Performance',
+    default: 'Inicio | Theia',
+    template: '%s | Theia',
   },
   description:
-    'Theia Triathlon Performance: entrenamiento profesional de natación, ciclismo y running para todos los niveles. Únete a nuestra comunidad deportiva en Chile.',
+    'Theia Triathlon Performance: entrenamiento profesional de natacion, ciclismo y running para todos los niveles.',
   keywords: [
-    'triatlón', 'club de triatlón', 'theia', 'triathlon performance',
-    'natación', 'ciclismo', 'running', 'entrenamiento', 'competencias',
-    'ironman', 'sprint', 'chile',
+    'triatlon',
+    'club de triatlon',
+    'theia',
+    'triathlon performance',
+    'natacion',
+    'ciclismo',
+    'running',
+    'entrenamiento',
+    'competencias',
+    'chile',
   ],
   openGraph: {
     title: 'Theia Triathlon Performance',
-    description: 'Supera tus límites. Nada. Pedalea. Corre.',
+    description: 'Nada. Pedalea. Corre.',
     type: 'website',
     locale: 'es_CL',
   },
+  icons: {
+    icon: '/images/logo-theia-blanco.png',
+    shortcut: '/images/logo-theia-blanco.png',
+    apple: '/images/logo-theia-blanco.png',
+  },
 };
 
-// ---------------------------------------------------------------------------
-// Root Layout Component
-// ---------------------------------------------------------------------------
 export default function RootLayout({
   children,
 }: {

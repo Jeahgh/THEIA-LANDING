@@ -12,14 +12,15 @@ const SocialIcon = ({ platform }: { platform: string }) => {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+
   return (
     <footer>
       {/* Gradient strip */}
       <div className="h-1.5 w-full bg-gradient-to-r from-swim via-brand-blue via-50% to-run" />
 
       <div className="bg-gray-900 text-white">
-        <div className="w-full px-6 sm:px-8 lg:px-12 py-14 lg:py-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-16">
+        <div className="w-full px-4 py-10 sm:px-6 sm:py-14 lg:px-12 lg:py-20">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-16">
             <div>
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-9 h-9 relative">
@@ -66,7 +67,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10">
-          <div className="w-full px-6 sm:px-8 lg:px-12 py-5 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <div className="flex w-full flex-col items-center justify-between gap-2 px-4 py-5 text-center sm:flex-row sm:px-6 lg:px-12">
             <p className="text-white/40 text-xs">© {currentYear} {CLUB_INFO.name}. Todos los derechos reservados.</p>
             <p className="text-white/40 text-xs">Nada · Pedalea · Corre</p>
           </div>

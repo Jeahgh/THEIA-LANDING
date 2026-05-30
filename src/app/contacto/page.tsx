@@ -21,29 +21,28 @@ export default function ContactoPage() {
   return (
     <>
       {/* Hero — mismo estilo que Nosotros */}
-      <section className="relative pt-20 overflow-hidden">
-        <div className="relative h-[350px] sm:h-[400px]">
+      <section className="relative overflow-hidden pt-16 lg:pt-20">
+        <div className="relative h-[300px] sm:h-[400px]">
           <Image src="/images/atletas-collage.jpg" alt="Atletas Theia" fill className="object-cover" priority />
           <div className="absolute inset-0 bg-gradient-to-b from-brand-blue/70 via-brand-blue/50 to-bg-warm" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="accent-line mx-auto mb-6" />
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Contacto</h1>
-              <p className="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto">¿Quieres unirte al club o tienes alguna pregunta? Escríbenos.</p>
+              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Contacto</h1>
+              <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">¿Quieres unirte al club o tienes alguna pregunta? Escríbenos.</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className="section-padding bg-gradient-to-br from-bg-warm via-white to-brand-blue-pale/80">
-        <div className="w-full px-6 sm:px-8 lg:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+        <div className="content-shell">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
             <div>
               <SectionTitle title="Envíanos un mensaje" subtitle="Te contactaremos pronto" align="left" />
               <Card><ContactForm /></Card>
             </div>
-            <div>
-              <SectionTitle title="Conversemos" subtitle="Elige el canal que te acomode" align="left" />
+            <div className="lg:pt-20">
               <div className="space-y-5 mb-8">
                 {[
                   { label: 'Email', value: CLUB_INFO.email, href: `mailto:${CLUB_INFO.email}` },
@@ -69,7 +68,7 @@ export default function ContactoPage() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-brand-blue px-5 py-3 text-sm font-semibold text-white shadow-md shadow-brand-blue/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-blue-vivid hover:shadow-lg hover:shadow-brand-blue/30"
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-brand-blue px-5 py-3 text-sm font-semibold text-white shadow-md shadow-brand-blue/20 transition-all duration-200 hover:bg-brand-blue-vivid hover:shadow-lg hover:shadow-brand-blue/30 sm:w-auto sm:hover:-translate-y-0.5"
                 >
                   Escribir por WhatsApp
                 </a>

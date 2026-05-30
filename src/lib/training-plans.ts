@@ -1,5 +1,4 @@
 import type { TrainingPlan } from '@/types';
-import { TRAINING_PLANS } from '@/lib/constants';
 import { prisma } from '@/lib/prisma';
 
 const formatPrice = (amount: number, currency: string) => {
@@ -13,11 +12,9 @@ const formatPrice = (amount: number, currency: string) => {
   }).format(amount);
 };
 
-export async function getTrainingPlans(): Promise<TrainingPlan[]> {
-  if (!process.env.DATABASE_URL) {
-    return TRAINING_PLANS;
-  }
+const oldDefaultPlanImage = '/images/atletas-collage.jpg';
 
+export async function getTrainingPlans(): Promise<TrainingPlan[]> {
   try {
     const plans = await prisma.plan.findMany({
       where: { isActive: true },
@@ -29,10 +26,6 @@ export async function getTrainingPlans(): Promise<TrainingPlan[]> {
       },
     });
 
-    if (plans.length === 0) {
-      return TRAINING_PLANS;
-    }
-
     return plans.map((plan) => ({
       id: plan.slug,
       category: plan.category === 'RUNNING' ? 'running' : 'triatlon',
@@ -41,11 +34,10 @@ export async function getTrainingPlans(): Promise<TrainingPlan[]> {
       modality: plan.modality,
       excerpt: plan.excerpt,
       features: plan.features.map((feature) => feature.text),
-      imageUrl: plan.imageUrl,
-      imageAlt: plan.imageAlt,
+      imageUrl: plan.imageUrl === oldDefaultPlanImage ? '' : plan.imageUrl || '',
+      imageAlt: plan.imageAlt || `Imagen de ${plan.name}`,
     }));
-  } catch (error) {
-    console.warn('Using static plans fallback:', error);
-    return TRAINING_PLANS;
+  } catch {
+    return [];
   }
 }

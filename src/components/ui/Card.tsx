@@ -18,7 +18,7 @@ export default function Card({
   return (
     <div
       className={`
-        bg-bg-card rounded-2xl border border-border-subtle p-6
+        rounded-lg border border-border-subtle bg-bg-card p-4 sm:rounded-2xl sm:p-6
         shadow-sm transition-all duration-300
         ${hover ? 'hover:bg-bg-card-hover hover:border-brand-blue-soft hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-blue/5' : ''}
         ${glow ? 'animate-pulse-glow' : ''}

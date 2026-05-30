@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <section className="min-h-screen bg-gradient-to-br from-bg-warm via-white to-run-light/60 px-6 pb-16 pt-32 sm:px-8 lg:px-12">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between">
+    <section className="min-h-screen bg-gradient-to-br from-bg-warm via-white to-run-light/60 px-4 pb-12 pt-24 sm:px-8 sm:pb-16 sm:pt-32 lg:px-12">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         <div className="max-w-xl text-center lg:text-left">
           <div className="accent-line mx-auto mb-6 lg:mx-0" />
-          <h2 className="text-4xl font-bold text-text-primary sm:text-5xl">Unete al club</h2>
-          <p className="mt-5 text-lg leading-relaxed text-text-secondary">
+          <h2 className="text-3xl font-bold text-text-primary sm:text-5xl">Unete al club</h2>
+          <p className="mt-4 text-base leading-relaxed text-text-secondary sm:mt-5 sm:text-lg">
             Crea tu perfil para acceder a precios, contratar planes y recibir informacion personalizada de entrenamiento.
           </p>
         </div>

@@ -30,10 +30,10 @@ export default function EventCard({ race }: { race: Race }) {
 
   return (
     <Card hover className="group">
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         {/* Date */}
-        <div className="flex sm:flex-col items-center justify-center bg-brand-blue-pale rounded-xl px-4 py-3 sm:min-w-[80px] group-hover:bg-brand-blue transition-colors duration-300">
-          <span className="text-brand-blue group-hover:text-white text-3xl font-bold leading-none mr-2 sm:mr-0 transition-colors">{date.getDate()}</span>
+        <div className="flex items-center justify-center rounded-xl bg-brand-blue-pale px-4 py-3 transition-colors duration-300 group-hover:bg-brand-blue sm:min-w-[80px] sm:flex-col">
+          <span className="mr-2 text-3xl font-bold leading-none text-brand-blue transition-colors group-hover:text-white sm:mr-0">{date.getDate()}</span>
           <div className="flex flex-col items-center">
             <span className="text-brand-blue/60 group-hover:text-white/70 text-xs font-semibold tracking-wider uppercase transition-colors">{months[date.getMonth()].slice(0, 3)}</span>
             <span className="text-text-muted group-hover:text-white/50 text-xs transition-colors">{date.getFullYear()}</span>
@@ -45,7 +45,7 @@ export default function EventCard({ race }: { race: Race }) {
             <span className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full ${badge.className}`}>{badge.text}</span>
             <span className="text-xs text-text-muted bg-gray-50 px-2 py-0.5 rounded-full">{getRaceTypeLabel(race.type)}</span>
           </div>
-          <h3 className="text-text-primary font-bold text-xl mb-2 group-hover:text-brand-blue transition-colors">{race.name}</h3>
+          <h3 className="mb-2 text-lg font-bold leading-tight text-text-primary transition-colors group-hover:text-brand-blue sm:text-xl">{race.name}</h3>
           <p className="text-text-muted text-sm mb-2">{race.location}</p>
           {race.distance && <span className="inline-block text-xs text-brand-blue bg-brand-blue-pale px-2 py-0.5 rounded mb-3">{race.distance}</span>}
           {race.description && <p className="text-text-secondary text-sm leading-relaxed">{race.description}</p>}

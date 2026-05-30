@@ -1,0 +1,143 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 3203 >>
+stream
+BT /F2 22.0 Tf 52.00 789.89 Td (Resumen técnico del proyecto Theia) Tj ET
+BT /F1 10.5 Tf 52.00 751.89 Td (Documento informativo sencillo para presentar el estado técnico general del sitio web y) Tj ET
+BT /F1 10.5 Tf 52.00 736.89 Td (su panel de administración.) Tj ET
+BT /F2 14.0 Tf 52.00 704.89 Td (1. Objetivo del proyecto) Tj ET
+BT /F1 10.5 Tf 52.00 679.89 Td (Theia es una plataforma web para presentar información del club, planes, noticias,) Tj ET
+BT /F1 10.5 Tf 52.00 664.89 Td (competencias y contenido principal del sitio. Además, incluye un panel de administración) Tj ET
+BT /F1 10.5 Tf 52.00 649.89 Td (para que usuarios autorizados puedan gestionar contenido sin modificar directamente el) Tj ET
+BT /F1 10.5 Tf 52.00 634.89 Td (código.) Tj ET
+BT /F2 14.0 Tf 52.00 602.89 Td (2. Stack principal) Tj ET
+BT /F1 10.5 Tf 64.00 577.89 Td (- Frontend: Next.js, React y Tailwind CSS.) Tj ET
+BT /F1 10.5 Tf 64.00 562.89 Td (- Backend: Next.js con funciones del servidor y rutas API.) Tj ET
+BT /F1 10.5 Tf 64.00 547.89 Td (- Base de datos: PostgreSQL administrado mediante Prisma.) Tj ET
+BT /F1 10.5 Tf 64.00 532.89 Td (- Autenticación: NextAuth con inicio de sesión por Google y credenciales.) Tj ET
+BT /F1 10.5 Tf 64.00 517.89 Td (- Lenguaje principal: TypeScript.) Tj ET
+BT /F1 10.5 Tf 64.00 502.89 Td (- Gestión de estilos: Tailwind CSS.) Tj ET
+BT /F2 14.0 Tf 52.00 470.89 Td (3. Base de datos y contenido dinámico) Tj ET
+BT /F1 10.5 Tf 52.00 445.89 Td (El proyecto utiliza una base de datos PostgreSQL. Prisma se encarga de conectar la) Tj ET
+BT /F1 10.5 Tf 52.00 430.89 Td (aplicación con la base de datos y definir los modelos principales.) Tj ET
+BT /F1 10.5 Tf 52.00 410.89 Td (Actualmente el contenido administrable incluye:) Tj ET
+BT /F1 10.5 Tf 64.00 390.89 Td (- Slides principales del inicio.) Tj ET
+BT /F1 10.5 Tf 64.00 375.89 Td (- Planes de entrenamiento.) Tj ET
+BT /F1 10.5 Tf 64.00 360.89 Td (- Noticias.) Tj ET
+BT /F1 10.5 Tf 64.00 345.89 Td (- Competencias.) Tj ET
+BT /F1 10.5 Tf 64.00 330.89 Td (- Usuarios y roles.) Tj ET
+BT /F1 10.5 Tf 64.00 315.89 Td (- Mensajes de contacto.) Tj ET
+BT /F1 10.5 Tf 52.00 295.89 Td (Cuando un administrador crea, edita o elimina contenido desde el panel, el cambio queda) Tj ET
+BT /F1 10.5 Tf 52.00 280.89 Td (guardado en la base de datos y puede verse de forma global en el sitio. No es necesario) Tj ET
+BT /F1 10.5 Tf 52.00 265.89 Td (hacer un nuevo despliegue para cambios de contenido.) Tj ET
+BT /F2 14.0 Tf 52.00 233.89 Td (4. Panel de administración) Tj ET
+BT /F1 10.5 Tf 52.00 208.89 Td (El panel de administración permite gestionar secciones del sitio desde una interfaz) Tj ET
+BT /F1 10.5 Tf 52.00 193.89 Td (privada. La idea es que tareas como agregar una noticia, editar un plan o actualizar un) Tj ET
+BT /F1 10.5 Tf 52.00 178.89 Td (slide puedan realizarse directamente desde el navegador.) Tj ET
+BT /F1 10.5 Tf 52.00 158.89 Td (Esto es una práctica viable y común en sitios modernos, siempre que existan permisos,) Tj ET
+BT /F1 10.5 Tf 52.00 143.89 Td (validaciones y control de acceso adecuados.) Tj ET
+BT /F2 14.0 Tf 52.00 111.89 Td (5. Seguridad) Tj ET
+BT /F1 8.5 Tf 52.00 34.00 Td (Theia - Resumen tecnico | Pagina 1 de 3) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 3443 >>
+stream
+BT /F1 10.5 Tf 52.00 789.89 Td (El proyecto cuenta con autenticación de usuarios y control por roles. El rol de) Tj ET
+BT /F1 10.5 Tf 52.00 774.89 Td (administrador permite acceder al panel privado.) Tj ET
+BT /F1 10.5 Tf 52.00 754.89 Td (Medidas consideradas:) Tj ET
+BT /F1 10.5 Tf 64.00 734.89 Td (- Inicio de sesión mediante NextAuth.) Tj ET
+BT /F1 10.5 Tf 64.00 719.89 Td (- Contraseñas validadas con hash seguro.) Tj ET
+BT /F1 10.5 Tf 64.00 704.89 Td (- Separación de usuarios por roles.) Tj ET
+BT /F1 10.5 Tf 64.00 689.89 Td (- Rutas de administración protegidas.) Tj ET
+BT /F1 10.5 Tf 64.00 674.89 Td (- Variables sensibles guardadas en archivos de entorno.) Tj ET
+BT /F1 10.5 Tf 52.00 654.89 Td (Antes de producción, se recomienda reforzar validaciones en todas las acciones críticas) Tj ET
+BT /F1 10.5 Tf 52.00 639.89 Td (del administrador y revisar permisos en cada operación de creación, edición y) Tj ET
+BT /F1 10.5 Tf 52.00 624.89 Td (eliminación.) Tj ET
+BT /F2 14.0 Tf 52.00 592.89 Td (6. Infraestructura recomendada) Tj ET
+BT /F1 10.5 Tf 52.00 567.89 Td (Para publicar el proyecto se recomienda usar:) Tj ET
+BT /F1 10.5 Tf 64.00 547.89 Td (- Hosting para Next.js, por ejemplo Vercel, Railway, Render u otro proveedor) Tj ET
+BT /F1 10.5 Tf 64.00 532.89 Td (compatible.) Tj ET
+BT /F1 10.5 Tf 64.00 517.89 Td (- Base de datos PostgreSQL en Supabase u otro servicio administrado.) Tj ET
+BT /F1 10.5 Tf 64.00 502.89 Td (- Almacenamiento de imágenes en un servicio externo, como Supabase Storage, para evitar) Tj ET
+BT /F1 10.5 Tf 64.00 487.89 Td (depender de archivos locales del servidor.) Tj ET
+BT /F1 10.5 Tf 64.00 472.89 Td (- Variables de entorno configuradas directamente en el proveedor de hosting.) Tj ET
+BT /F1 10.5 Tf 52.00 452.89 Td (El hosting puede mejorar la experiencia si está bien configurado, pero la velocidad) Tj ET
+BT /F1 10.5 Tf 52.00 437.89 Td (también depende de la base de datos, ubicación del servidor, consultas realizadas,) Tj ET
+BT /F1 10.5 Tf 52.00 422.89 Td (imágenes y optimización general del sitio.) Tj ET
+BT /F2 14.0 Tf 52.00 390.89 Td (7. Diferencia entre código y contenido) Tj ET
+BT /F1 10.5 Tf 52.00 365.89 Td (Los cambios de código requieren despliegue. Ejemplos:) Tj ET
+BT /F1 10.5 Tf 64.00 345.89 Td (- Cambios de diseño.) Tj ET
+BT /F1 10.5 Tf 64.00 330.89 Td (- Nuevas funcionalidades.) Tj ET
+BT /F1 10.5 Tf 64.00 315.89 Td (- Cambios en la estructura del panel.) Tj ET
+BT /F1 10.5 Tf 64.00 300.89 Td (- Correcciones internas del sistema.) Tj ET
+BT /F1 10.5 Tf 52.00 280.89 Td (Los cambios de contenido no deberían requerir despliegue. Ejemplos:) Tj ET
+BT /F1 10.5 Tf 64.00 260.89 Td (- Crear una noticia.) Tj ET
+BT /F1 10.5 Tf 64.00 245.89 Td (- Editar un plan.) Tj ET
+BT /F1 10.5 Tf 64.00 230.89 Td (- Agregar una competencia.) Tj ET
+BT /F1 10.5 Tf 64.00 215.89 Td (- Cambiar un slide del inicio.) Tj ET
+BT /F1 10.5 Tf 52.00 195.89 Td (Estos cambios se guardan en la base de datos y se reflejan en el sitio.) Tj ET
+BT /F2 14.0 Tf 52.00 163.89 Td (8. Próximos puntos importantes) Tj ET
+BT /F1 10.5 Tf 52.00 138.89 Td (Antes de una publicación definitiva, se recomienda revisar:) Tj ET
+BT /F1 10.5 Tf 64.00 118.89 Td (- Seguridad de todas las acciones del panel admin.) Tj ET
+BT /F1 10.5 Tf 64.00 103.89 Td (- Validación de formularios.) Tj ET
+BT /F1 10.5 Tf 64.00 88.89 Td (- Manejo definitivo de imágenes.) Tj ET
+BT /F1 8.5 Tf 52.00 34.00 Td (Theia - Resumen tecnico | Pagina 2 de 3) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Length 1127 >>
+stream
+BT /F1 10.5 Tf 64.00 789.89 Td (- Optimización de rendimiento.) Tj ET
+BT /F1 10.5 Tf 64.00 774.89 Td (- Revisión responsive para celulares.) Tj ET
+BT /F1 10.5 Tf 64.00 759.89 Td (- Pruebas de creación, edición y eliminación de contenido.) Tj ET
+BT /F1 10.5 Tf 64.00 744.89 Td (- Configuración correcta de variables de entorno en producción.) Tj ET
+BT /F2 14.0 Tf 52.00 712.89 Td (9. Resumen ejecutivo) Tj ET
+BT /F1 10.5 Tf 52.00 687.89 Td (El proyecto tiene una base moderna y escalable para un sitio administrable. La) Tj ET
+BT /F1 10.5 Tf 52.00 672.89 Td (arquitectura permite separar los cambios de contenido de los cambios de código, lo que) Tj ET
+BT /F1 10.5 Tf 52.00 657.89 Td (facilita que un administrador actualice información sin depender de despliegues) Tj ET
+BT /F1 10.5 Tf 52.00 642.89 Td (constantes.) Tj ET
+BT /F1 10.5 Tf 52.00 622.89 Td (La siguiente etapa recomendada es preparar el entorno de producción, reforzar seguridad y) Tj ET
+BT /F1 10.5 Tf 52.00 607.89 Td (definir el sistema definitivo de almacenamiento de imágenes.) Tj ET
+BT /F1 8.5 Tf 52.00 34.00 Td (Theia - Resumen tecnico | Pagina 3 de 3) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 9 0 R >>
+endobj
+xref
+0 11
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000128 00000 n 
+0000000225 00000 n 
+0000000327 00000 n 
+0000003582 00000 n 
+0000003724 00000 n 
+0000007219 00000 n 
+0000007361 00000 n 
+0000008540 00000 n 
+trailer
+<< /Size 11 /Root 1 0 R >>
+startxref
+8683
+%%EOF

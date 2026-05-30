@@ -3,24 +3,24 @@ import { CLUB_INFO } from '@/lib/constants';
 
 export default function AboutPreview() {
   return (
-    <section id="about-preview" className="w-full px-6 sm:px-8 lg:px-12 py-16 sm:py-20 bg-gradient-to-br from-white via-bg-warm to-brand-blue-pale/70">
-      <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-center">
+    <section id="about-preview" className="w-full bg-gradient-to-br from-white via-bg-warm to-brand-blue-pale/70 px-4 py-12 sm:px-6 sm:py-16 lg:px-12 lg:py-20">
+      <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <div>
           <div className="accent-line mb-6" />
-          <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4">
+          <h2 className="mb-4 text-2xl font-bold leading-tight text-text-primary sm:text-4xl">
             Entrenar se siente distinto cuando hay equipo
           </h2>
-          <p className="text-text-secondary text-lg leading-relaxed mb-6">
+          <p className="mb-6 text-base leading-relaxed text-text-secondary sm:text-lg">
             {CLUB_INFO.description}
           </p>
-          <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg">
+          <div className="mb-8 grid max-w-lg grid-cols-3 gap-2 sm:gap-4">
             {[
               { value: '+30', label: 'atletas' },
               { value: '3', label: 'disciplinas' },
               { value: 'Todos', label: 'los niveles' },
             ].map((item) => (
               <div key={item.label} className="border-t border-border-subtle pt-3">
-                <p className="text-2xl font-bold leading-none text-brand-blue">{item.value}</p>
+                <p className="text-xl font-bold leading-none text-brand-blue sm:text-2xl">{item.value}</p>
                 <p className="mt-1 text-xs text-text-muted">{item.label}</p>
               </div>
             ))}
@@ -28,7 +28,7 @@ export default function AboutPreview() {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="relative col-span-2 aspect-[16/9] overflow-hidden rounded-2xl shadow-lg shadow-brand-blue/10">
+          <div className="relative col-span-2 aspect-[16/9] overflow-hidden rounded-xl shadow-lg shadow-brand-blue/10 sm:rounded-2xl">
             <Image
               src="/images/atletas-collage.jpg"
               alt="Atletas Theia entrenando y compitiendo"
@@ -37,7 +37,7 @@ export default function AboutPreview() {
               sizes="(max-width: 1024px) 40vw, 22vw"
             />
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-lg shadow-brand-blue/10">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-lg shadow-brand-blue/10 sm:rounded-2xl">
             <Image
               src="/images/equipo-jersey.png"
               alt="Jersey Theia de competencia"

@@ -63,6 +63,7 @@ export interface NewsArticle {
   date: string;            // Formato ISO: "2026-05-10"
   category: 'resultados' | 'noticias' | 'entrenamiento' | 'comunidad';
   imagePlaceholder?: string;
+  imageUrl?: string;
 }
 
 /**
