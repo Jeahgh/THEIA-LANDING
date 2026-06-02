@@ -30,7 +30,7 @@ export default async function NosotrosPage() {
       <section className="relative overflow-hidden pt-16 lg:pt-20">
         <div className="relative h-[300px] sm:h-[400px]">
           <Image src="/images/atletas-collage.jpg" alt="Equipo Theia en entrenamiento" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-blue/70 via-brand-blue/50 to-bg-warm" />
+          <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="accent-line mx-auto mb-6" />
@@ -41,10 +41,10 @@ export default async function NosotrosPage() {
         </div>
       </section>
 
-      <section className="section-padding bg-gradient-to-br from-bg-warm via-white to-brand-blue-pale/70">
+      <section className="section-padding theia-light-section">
         <div className="content-shell">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
-            <div className="order-2 rounded-lg border border-border-subtle bg-white p-6 text-center text-text-secondary shadow-xl shadow-brand-blue/10 sm:rounded-2xl sm:p-10 lg:order-1">
+            <div className="order-2 rounded-lg p-6 text-center text-text-secondary theia-card-glow sm:rounded-2xl sm:p-10 lg:order-1">
               No hay imagen institucional activa.
             </div>
             <div className="order-1 lg:order-2">
@@ -55,7 +55,7 @@ export default async function NosotrosPage() {
               </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
                 {['Atletas activos', 'Entrenadores', 'Competencias'].map((label) => (
-                  <div key={label} className="rounded-xl bg-white p-4 text-center shadow-sm">
+                  <div key={label} className="rounded-xl border border-white/70 bg-white/85 p-4 text-center shadow-lg shadow-brand-blue/8">
                     <p className="text-2xl font-bold text-brand-blue sm:text-3xl">-</p>
                     <p className="text-text-muted text-sm">{label}</p>
                   </div>
@@ -66,26 +66,26 @@ export default async function NosotrosPage() {
         </div>
       </section>
 
-      <section className="section-padding bg-gradient-to-br from-brand-navy via-brand-blue to-brand-blue-vivid">
+      <section className="section-padding theia-night-section">
         <div className="content-shell">
           <SectionTitle title="Mision y Vision" subtitle="Pendiente de contenido editable" dark />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
             {['Nuestra Mision', 'Nuestra Vision'].map((title) => (
-              <div key={title} className="rounded-lg bg-white p-6 shadow-lg sm:rounded-2xl sm:p-8">
-                <div className="w-12 h-1 bg-gradient-to-r from-swim to-brand-blue rounded-full mb-4" />
-                <h3 className="text-text-primary font-bold text-xl mb-3">{title}</h3>
-                <p className="text-text-secondary leading-relaxed">No hay contenido publicado por ahora.</p>
+              <div key={title} className="rounded-lg border border-white/15 bg-white/10 p-6 text-white shadow-xl shadow-black/15 backdrop-blur-sm sm:rounded-2xl sm:p-8">
+                <div className="w-12 h-1 bg-gradient-to-r from-brand-blue via-brand-blue-light to-white rounded-full mb-4" />
+                <h3 className="text-white font-bold text-xl mb-3">{title}</h3>
+                <p className="text-white/70 leading-relaxed">No hay contenido publicado por ahora.</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-padding bg-gradient-to-b from-brand-blue-pale via-bg-section to-white">
+      <section className="section-padding theia-light-section">
         <div className="content-shell">
           <SectionTitle title="Equipo Theia" subtitle="Entrenadores activos publicados desde el panel admin" gradient />
           {coaches.length === 0 ? (
-            <div className="rounded-lg border border-border-subtle bg-white p-6 text-center text-text-secondary shadow-lg shadow-brand-blue/8 sm:rounded-2xl sm:p-10">
+            <div className="rounded-lg p-6 text-center text-text-secondary theia-card-glow sm:rounded-2xl sm:p-10">
               No hay entrenadores activos por ahora.
             </div>
           ) : (

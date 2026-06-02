@@ -1,10 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const ATHLETES_COUNT = 30;
 
 export interface HeroSlideView {
   id: string;
@@ -16,193 +14,132 @@ export interface HeroSlideView {
   buttonVariant: string;
 }
 
-const buttonStyles: Record<string, string> = {
-  primary:
-    'bg-gradient-to-r from-brand-blue to-swim text-white shadow-lg shadow-brand-blue/25 hover:-translate-y-0.5 hover:shadow-xl',
-  teal:
-    'bg-gradient-to-r from-accent-teal to-run text-white shadow-lg shadow-accent-teal/25 hover:-translate-y-0.5 hover:shadow-xl',
-  warm:
-    'bg-gradient-to-r from-accent-warm to-accent-coral text-white shadow-lg shadow-accent-warm/25 hover:-translate-y-0.5 hover:shadow-xl',
-  outline:
-    'border-2 border-brand-blue bg-white/70 text-brand-blue shadow-md shadow-brand-blue/10 hover:-translate-y-0.5 hover:bg-brand-blue hover:text-white',
-};
+const heroPhotos = [
+  {
+    id: 'trisuit-collage',
+    src: '/images/theia-hero-collage.jpeg',
+    alt: 'Atletas Theia en triatlón',
+    position: 'center center',
+  },
+  {
+    id: 'running-pack',
+    src: '/images/hero-running-pack.jpg',
+    alt: 'Atletas corriendo en competencia urbana',
+    position: 'center center',
+  },
+  {
+    id: 'bike-team',
+    src: '/images/hero-bike-team.jpg',
+    alt: 'Equipo Theia con bicicletas y bandera',
+    position: 'center 62%',
+  },
+  {
+    id: 'team-finish',
+    src: '/images/hero-team-finish.jpg',
+    alt: 'Equipo Theia celebrando después de una carrera',
+    position: 'center center',
+  },
+  {
+    id: 'podium',
+    src: '/images/hero-podium.jpg',
+    alt: 'Atleta Theia celebrando en podio',
+    position: 'center 30%',
+  },
+];
 
 export default function HeroCarouselClient({ slides }: { slides: HeroSlideView[] }) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentPhoto, setCurrentPhoto] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [athletesCount, setAthletesCount] = useState(0);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const hasCountedRef = useRef(false);
-  const counterAnimationRef = useRef<number | null>(null);
-  const hasSlides = slides.length > 0;
-  const activeIndex = hasSlides ? currentSlide % slides.length : 0;
-  const slide = slides[activeIndex] ?? null;
+  const hasManagedSlides = slides.length > 0;
 
-  const nextSlide = useCallback(() => {
-    if (slides.length <= 1) return;
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  }, [slides.length]);
-
-  useEffect(() => {
-    if (isPaused || slides.length <= 1) return;
-    const interval = window.setInterval(nextSlide, 5000);
-    return () => window.clearInterval(interval);
-  }, [isPaused, nextSlide, slides.length]);
-
-  useEffect(() => {
-    const statsElement = statsRef.current;
-    if (!statsElement || hasCountedRef.current) return;
-
-    const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const startCounter = () => {
-      if (hasCountedRef.current) return;
-      hasCountedRef.current = true;
-
-      if (shouldReduceMotion) {
-        setAthletesCount(ATHLETES_COUNT);
-        return;
-      }
-
-      const duration = 1300;
-      const startTime = performance.now();
-
-      const tick = (currentTime: number) => {
-        const progress = Math.min((currentTime - startTime) / duration, 1);
-        const easedProgress = 1 - Math.pow(1 - progress, 3);
-
-        setAthletesCount(Math.round(easedProgress * ATHLETES_COUNT));
-
-        if (progress < 1) {
-          counterAnimationRef.current = requestAnimationFrame(tick);
-        }
-      };
-
-      counterAnimationRef.current = requestAnimationFrame(tick);
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          startCounter();
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.35 }
-    );
-
-    observer.observe(statsElement);
-
-    return () => {
-      observer.disconnect();
-      if (counterAnimationRef.current) {
-        cancelAnimationFrame(counterAnimationRef.current);
-      }
-    };
+  const nextPhoto = useCallback(() => {
+    setCurrentPhoto((photo) => (photo + 1) % heroPhotos.length);
   }, []);
 
+  useEffect(() => {
+    if (isPaused || heroPhotos.length <= 1) return;
+
+    const interval = window.setInterval(nextPhoto, 3000);
+    return () => window.clearInterval(interval);
+  }, [isPaused, nextPhoto]);
+
   return (
-    <section id="hero" className="pt-16 lg:pt-24">
-      <div className="w-full bg-gradient-to-b from-bg-warm via-white to-brand-blue-pale px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-16">
-        <div className="grid grid-cols-1 items-center gap-7 lg:grid-cols-2 lg:gap-14">
-          <div className="order-1">
-            <div className="mb-6 lg:min-h-[17.5rem] xl:min-h-[18.5rem]">
-              <h1 className="mb-4 text-4xl font-bold leading-tight text-text-primary sm:text-5xl lg:text-5xl xl:text-6xl">
-                {slide?.title ?? 'Contenido principal pendiente'}
-              </h1>
-              <p className="max-w-lg text-base leading-relaxed text-text-secondary sm:text-xl">
-                {slide?.subtitle ?? 'Agrega slides del hero desde el panel de administracion.'}
-              </p>
-            </div>
+    <section
+      id="hero"
+      className="bg-brand-navy pt-16 lg:pt-20"
+      aria-label={hasManagedSlides ? 'Hero principal con fondo editorial' : 'Hero principal de Theia'}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="relative flex min-h-[calc(100vh-4rem)] w-full items-center justify-center overflow-hidden border-b border-white/10 px-4 py-16 text-white sm:px-6 lg:min-h-[calc(100vh-5rem)] lg:px-12">
+        {heroPhotos.map((photo, index) => (
+          <div
+            key={photo.id}
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+              index === currentPhoto ? 'scale-100 opacity-100' : 'scale-[1.03] opacity-0'
+            }`}
+          >
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              className="object-cover"
+              style={{ objectPosition: photo.position }}
+              priority={index === 0}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              sizes="100vw"
+              quality={100}
+            />
+          </div>
+        ))}
 
-            <div className="mb-8 flex flex-wrap gap-4 lg:mb-10">
-              {slide?.ctaText && slide.ctaHref && (
-                <Link
-                  href={slide.ctaHref}
-                  className={`inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold transition-all duration-300 sm:w-64 ${
-                    buttonStyles[slide.buttonVariant] ?? buttonStyles.primary
-                  }`}
-                >
-                  {slide.ctaText}
-                </Link>
-              )}
-            </div>
+        <div className="absolute inset-0 bg-brand-navy/58" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(255,255,255,0.22),transparent_27%),radial-gradient(circle_at_52%_44%,rgba(10,132,255,0.2),transparent_34%),linear-gradient(180deg,rgba(7,20,38,0.14)_0%,rgba(7,20,38,0.9)_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
+        <div className="absolute inset-x-8 bottom-10 hidden h-px bg-white/10 sm:block lg:inset-x-40" />
 
-            <div ref={statsRef} className="relative max-w-md border-t border-border-subtle/80 pt-6 lg:pt-7">
-              <div className="absolute left-0 top-0 h-px w-36 bg-gradient-to-r from-brand-blue via-accent-teal to-transparent" />
-              <div className="grid grid-cols-2 overflow-hidden rounded-xl bg-white/35 ring-1 ring-brand-blue/5">
-                <div className="px-3 py-3 sm:px-5 sm:py-3.5">
-                  <p
-                    className="flex min-w-20 items-baseline text-3xl font-bold leading-none tracking-normal text-brand-blue tabular-nums sm:text-4xl"
-                    aria-label={`Mas de ${ATHLETES_COUNT} atletas activos`}
-                  >
-                    <span className="mr-0.5 text-2xl leading-none text-brand-blue-light">+</span>
-                    {athletesCount}
-                  </p>
-                  <p className="mt-2 text-sm leading-none text-text-muted">Atletas activos</p>
-                </div>
-                <div className="border-l border-border-subtle/80 px-3 py-3 sm:px-5 sm:py-3.5">
-                  <p className="text-3xl font-bold leading-none tracking-normal text-accent-warm sm:text-4xl">Todos</p>
-                  <p className="mt-2 text-sm leading-none text-text-muted">los niveles</p>
-                </div>
-              </div>
-            </div>
+        <div className="relative z-10 mx-auto flex w-full max-w-6xl translate-y-6 flex-col items-center text-center sm:translate-y-8 lg:translate-y-10">
+          <p className="mb-7 text-[10px] font-black uppercase tracking-[0.52em] text-brand-blue-light sm:text-xs">
+            Club de triatlón · Santiago, Chile
+          </p>
+
+          <h1 className="max-w-5xl text-5xl font-black uppercase leading-[0.88] tracking-tight text-white sm:text-7xl lg:text-8xl">
+            Nada.
+            <span className="block text-brand-blue">Pedalea.</span>
+            Corre.
+          </h1>
+
+          <p className="mt-8 max-w-3xl text-sm leading-relaxed text-white/72 sm:text-base">
+            Entrenamiento de triatlón con planificación real, equipo y objetivos de competencia.
+          </p>
+
+          <div className="mt-14 flex w-full max-w-2xl flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 lg:mt-20">
+            <Link
+              href="/planes"
+              className="inline-flex w-full items-center justify-center rounded-full bg-brand-blue px-8 py-4 text-xs font-black uppercase tracking-tight text-white shadow-lg shadow-brand-blue/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-blue-vivid sm:w-auto sm:min-w-64"
+            >
+              Ver planes de entrenamiento
+            </Link>
+            <Link
+              href="/competencias"
+              className="inline-flex w-full items-center justify-center rounded-full border border-white/35 bg-white/10 px-8 py-4 text-xs font-black uppercase tracking-tight text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-blue hover:bg-brand-blue sm:w-auto sm:min-w-64"
+            >
+              Entrenar para competir
+            </Link>
           </div>
 
-          <div
-            className="relative order-2"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-brand-blue-pale shadow-2xl shadow-brand-blue/15 sm:rounded-2xl">
-              {hasSlides ? (
-                slides.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                      index === activeIndex ? 'scale-100 opacity-100' : 'scale-105 opacity-0'
-                    }`}
-                  >
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                        loading={index === 0 ? 'eager' : 'lazy'}
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                        quality={90}
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center p-8 text-center text-brand-blue/70">
-                        Slide sin imagen.
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="flex h-full items-center justify-center p-8 text-center text-brand-blue/70">
-                  No hay slides activos en el hero.
-                </div>
-              )}
-
-              {slides.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-                  {slides.map((item, index) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setCurrentSlide(index)}
-                      className={`rounded-full transition-all duration-300 ${
-                        index === activeIndex ? 'h-2 w-8 bg-white' : 'h-2 w-2 bg-white/50 hover:bg-white/75'
-                      }`}
-                      aria-label={`Mostrar slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="absolute -right-4 -top-4 -z-10 hidden h-full w-full rounded-2xl bg-gradient-to-br from-swim/20 to-brand-blue/20 lg:block" />
+          <div className="mt-10 flex justify-center gap-2">
+            {heroPhotos.map((photo, index) => (
+              <button
+                key={photo.id}
+                type="button"
+                onClick={() => setCurrentPhoto(index)}
+                className={`rounded-full transition-all duration-300 ${
+                  index === currentPhoto ? 'h-2 w-8 bg-white' : 'h-2 w-2 bg-white/45 hover:bg-white/75'
+                }`}
+                aria-label={`Mostrar foto ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>

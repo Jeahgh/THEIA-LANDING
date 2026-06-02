@@ -32,10 +32,10 @@ function formatDate(dateStr: string): string {
  */
 function getCategoryStyle(category: string): { label: string; className: string } {
   const styles: Record<string, { label: string; className: string }> = {
-    resultados: { label: 'Resultados', className: 'bg-green-50 text-green-700' },
-    noticias: { label: 'Noticias', className: 'bg-blue-50 text-brand-blue' },
-    entrenamiento: { label: 'Entrenamiento', className: 'bg-amber-50 text-amber-700' },
-    comunidad: { label: 'Comunidad', className: 'bg-purple-50 text-purple-700' },
+    resultados: { label: 'Resultados', className: 'bg-brand-blue-pale text-brand-blue' },
+    noticias: { label: 'Noticias', className: 'bg-brand-blue-pale text-brand-blue' },
+    entrenamiento: { label: 'Entrenamiento', className: 'bg-swim-light text-brand-navy' },
+    comunidad: { label: 'Comunidad', className: 'bg-bg-section text-brand-blue-vivid' },
   };
   return styles[category] || { label: category, className: 'bg-gray-50 text-gray-600' };
 }
@@ -48,10 +48,10 @@ export default async function NewsPreview() {
 
   if (!featured) {
     return (
-      <section id="noticias" className="section-padding bg-bg-warm">
+      <section id="noticias" className="section-padding theia-light-section">
         <div className="content-shell">
           <SectionTitle title="Noticias del Equipo" subtitle="Pronto compartiremos nuevas historias del equipo" />
-          <div className="rounded-lg border border-border-subtle bg-white p-6 text-center text-text-secondary shadow-lg shadow-brand-blue/8 sm:rounded-2xl sm:p-10">
+          <div className="rounded-lg p-6 text-center text-text-secondary theia-card-glow sm:rounded-2xl sm:p-10">
             No hay noticias publicadas por ahora.
           </div>
         </div>
@@ -60,7 +60,7 @@ export default async function NewsPreview() {
   }
 
   return (
-    <section id="noticias" className="section-padding bg-bg-warm">
+    <section id="noticias" className="section-padding theia-light-section">
       <div className="content-shell">
         <SectionTitle
           title="Noticias del Equipo"

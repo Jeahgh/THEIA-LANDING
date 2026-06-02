@@ -29,7 +29,7 @@ export default async function AdminCompetitionsPage({
       </div>
 
       <CreateContentPanel closedLabel="Crear competencia">
-        <form action={createRace} className="rounded-lg border border-border-subtle bg-white p-4 shadow-lg shadow-brand-blue/8 sm:rounded-2xl sm:p-6">
+        <form action={createRace} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
           <h2 className="text-lg font-bold text-text-primary sm:text-xl">Nueva competencia</h2>
           <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
             <input name="name" placeholder="Nombre" className="rounded-lg border border-border-subtle px-4 py-3 sm:rounded-xl" required />
@@ -61,7 +61,7 @@ export default async function AdminCompetitionsPage({
 
       {eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
 
-      <div className="overflow-hidden rounded-lg border border-border-subtle bg-white shadow-lg shadow-brand-blue/8 sm:rounded-2xl">
+      <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
         <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
           <h2 className="text-lg font-bold text-text-primary sm:text-xl">Competencias existentes</h2>
         </div>

@@ -53,7 +53,7 @@ export default function ContactForm() {
       </div>
 
       {status === 'success' && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+        <div className="p-4 bg-brand-blue-pale border border-brand-blue-soft rounded-xl text-brand-blue text-sm">
           ¡Mensaje enviado con éxito! Te responderemos pronto.
         </div>
       )}

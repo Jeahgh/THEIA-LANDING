@@ -16,7 +16,7 @@ export default function PlanForm({ action, plan, submitLabel }: PlanFormProps) {
   const imageValue = plan?.imageUrl && plan.imageUrl !== oldDefaultPlanImage ? plan.imageUrl : null;
 
   return (
-    <form action={action} className="rounded-lg border border-border-subtle bg-white p-4 shadow-lg shadow-brand-blue/8 sm:p-6">
+    <form action={action} className="rounded-lg p-4 theia-card-glow sm:p-6">
       <div className="mb-5">
         <h2 className="text-lg font-bold text-text-primary">{plan ? 'Editar plan' : 'Nuevo plan'}</h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">

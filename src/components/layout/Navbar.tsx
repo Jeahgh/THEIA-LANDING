@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { NAV_LINKS } from '@/lib/constants';
 import Button from '@/components/ui/Button';
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'ADMIN';
   const userName = session?.user?.name?.split(' ')[0] ?? 'Atleta';
@@ -24,15 +25,21 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const closeSession = () => signOut({ callbackUrl: '/' });
+  const closeSession = async () => {
+    setIsProfileMenuOpen(false);
+    setIsMobileMenuOpen(false);
+    await signOut({ redirect: false });
+    router.replace('/');
+    router.refresh();
+  };
 
   return (
     <nav
       id="main-navbar"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-brand-navy/98 backdrop-blur-xl shadow-lg shadow-brand-navy/20'
-          : 'bg-gradient-to-r from-brand-navy/92 via-brand-navy/88 to-brand-blue-vivid/92 backdrop-blur-md'
+          ? 'bg-brand-navy/98 backdrop-blur-xl shadow-lg shadow-black/25'
+          : 'bg-gradient-to-r from-brand-navy via-[#06111F] to-brand-navy backdrop-blur-md'
       }`}
     >
       <div className="w-full px-4 sm:px-6 lg:px-12">

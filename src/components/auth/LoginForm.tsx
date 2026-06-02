@@ -57,7 +57,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md rounded-lg border border-border-subtle bg-white p-4 shadow-xl shadow-brand-blue/10 sm:rounded-2xl sm:p-8">
+    <div className="w-full max-w-md rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-8">
       <div className="mb-6 text-center sm:mb-8">
         <div className="accent-line mx-auto mb-5" />
         <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">Iniciar sesion</h1>

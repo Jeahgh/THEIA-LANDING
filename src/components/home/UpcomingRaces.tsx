@@ -15,8 +15,8 @@ function formatDate(dateStr: string): { day: string; month: string } {
 function getStatusBadge(status: RaceStatus) {
   const badges: Record<RaceStatus, { text: string; className: string }> = {
     upcoming:             { text: 'Próximamente',          className: 'bg-white/15 text-white border border-white/25' },
-    registration_open:   { text: 'Inscripciones abiertas', className: 'bg-run text-white shadow-sm shadow-run/40' },
-    registration_closed: { text: 'Inscripciones cerradas', className: 'bg-accent-warm text-white shadow-sm shadow-accent-warm/40' },
+    registration_open:   { text: 'Inscripciones abiertas', className: 'bg-brand-blue text-white shadow-sm shadow-brand-blue/40' },
+    registration_closed: { text: 'Inscripciones cerradas', className: 'bg-brand-blue-light text-brand-navy shadow-sm shadow-brand-blue/30' },
     finished:            { text: 'Finalizado',             className: 'bg-white/10 text-white/50 border border-white/15' },
   };
   return badges[status];
@@ -26,13 +26,13 @@ export default async function UpcomingRaces() {
   const upcomingRaces = (await getActiveRaces()).slice(0, 3);
 
   return (
-    <section id="upcoming-races" className="section-padding bg-gradient-to-br from-brand-navy via-brand-blue-vivid to-brand-navy">
+    <section id="upcoming-races" className="section-padding bg-gradient-to-br from-brand-navy via-[#08213d] to-brand-navy">
       <div className="content-shell">
 
         {/* Encabezado con contraste máximo */}
         <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-12">
           {/* Línea decorativa blanca */}
-          <div className="w-16 h-1 bg-gradient-to-r from-brand-blue-soft via-white to-accent-warm rounded-full" />
+          <div className="w-16 h-1 bg-gradient-to-r from-brand-blue via-brand-blue-light to-white rounded-full" />
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Próximas Competencias
           </h2>

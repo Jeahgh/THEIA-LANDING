@@ -29,7 +29,7 @@ export default function Button({
 
   const variants = {
     primary: 'bg-brand-blue hover:bg-brand-blue-vivid text-white shadow-md shadow-brand-blue/20 hover:shadow-lg hover:shadow-brand-blue/30 hover:-translate-y-0.5 active:translate-y-0',
-    secondary: 'bg-brand-warm hover:bg-amber-500 text-white shadow-md shadow-brand-warm/20 hover:shadow-lg hover:shadow-brand-warm/30 hover:-translate-y-0.5 active:translate-y-0',
+    secondary: 'bg-accent-warm hover:bg-brand-blue-light text-brand-navy shadow-md shadow-accent-warm/20 hover:shadow-lg hover:shadow-brand-blue/20 hover:-translate-y-0.5 active:translate-y-0',
     outline: 'border-2 border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white hover:-translate-y-0.5 active:translate-y-0',
     white: 'bg-white hover:bg-gray-50 text-brand-blue shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0',
   };

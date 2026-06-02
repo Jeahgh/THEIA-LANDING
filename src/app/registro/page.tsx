@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <section className="min-h-screen bg-gradient-to-br from-bg-warm via-white to-run-light/60 px-4 pb-12 pt-24 sm:px-8 sm:pb-16 sm:pt-32 lg:px-12">
+    <section className="theia-light-section min-h-screen px-4 pb-12 pt-24 sm:px-8 sm:pb-16 sm:pt-32 lg:px-12">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         <div className="max-w-xl text-center lg:text-left">
           <div className="accent-line mx-auto mb-6 lg:mx-0" />

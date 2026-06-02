@@ -24,7 +24,7 @@ export default function ContactoPage() {
       <section className="relative overflow-hidden pt-16 lg:pt-20">
         <div className="relative h-[300px] sm:h-[400px]">
           <Image src="/images/atletas-collage.jpg" alt="Atletas Theia" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-blue/70 via-brand-blue/50 to-bg-warm" />
+          <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="accent-line mx-auto mb-6" />
@@ -35,7 +35,7 @@ export default function ContactoPage() {
         </div>
       </section>
 
-      <section className="section-padding bg-gradient-to-br from-bg-warm via-white to-brand-blue-pale/80">
+      <section className="section-padding theia-light-section">
         <div className="content-shell">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
             <div>
@@ -59,7 +59,7 @@ export default function ContactoPage() {
                   </div>
                 ))}
               </div>
-              <Card className="mb-8 bg-gradient-to-br from-brand-blue-pale via-white to-run-light/60">
+              <Card className="mb-8 bg-gradient-to-br from-brand-blue-pale via-white to-bg-section">
                 <h3 className="text-text-primary font-semibold mb-2">Inscripción rápida</h3>
                 <p className="text-text-secondary text-sm leading-relaxed mb-5">
                   Si ya quieres sumarte, escríbenos por WhatsApp y te orientamos con horarios, niveles y próximos pasos.

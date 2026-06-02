@@ -11,7 +11,7 @@ export default function NewsForm({ action, post, submitLabel }: NewsFormProps) {
   const date = post?.date ? post.date.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={action} className="rounded-lg border border-border-subtle bg-white p-4 shadow-lg shadow-brand-blue/8 sm:rounded-2xl sm:p-6">
+    <form action={action} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-semibold text-text-primary">Titulo</label>

@@ -86,7 +86,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-md rounded-lg border border-border-subtle bg-white p-4 shadow-xl shadow-brand-blue/10 sm:rounded-2xl sm:p-8">
+    <div className="w-full max-w-md rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-8">
       <div className="mb-6 text-center sm:mb-8">
         <div className="accent-line mx-auto mb-5" />
         <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">Crear cuenta</h1>
@@ -175,7 +175,7 @@ export default function RegisterForm() {
         </div>
 
         {message && (
-          <p className={`rounded-xl px-4 py-3 text-sm ${isError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+          <p className={`rounded-xl px-4 py-3 text-sm ${isError ? 'bg-red-50 text-red-700' : 'bg-brand-blue-pale text-brand-blue'}`}>
             {message}
           </p>
         )}

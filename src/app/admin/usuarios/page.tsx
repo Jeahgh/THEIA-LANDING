@@ -28,7 +28,7 @@ export default async function AdminUsersPage() {
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Usuarios y roles</h1>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border-subtle bg-white shadow-lg shadow-brand-blue/8 sm:rounded-2xl">
+      <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
         <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
           <h2 className="text-lg font-bold text-text-primary sm:text-xl">Usuarios</h2>
         </div>

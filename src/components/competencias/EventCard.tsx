@@ -1,5 +1,5 @@
 // =============================================================================
-// EventCard — Tema Claro, Cálido
+// EventCard — Tema Race Night
 // =============================================================================
 
 import Card from '@/components/ui/Card';
@@ -7,10 +7,10 @@ import type { Race, RaceStatus, RaceType } from '@/types';
 
 function getStatusBadge(status: RaceStatus) {
   const badges: Record<RaceStatus, { text: string; className: string }> = {
-    upcoming: { text: 'Próximamente', className: 'bg-gray-100 text-gray-600' },
-    registration_open: { text: 'Inscripciones abiertas', className: 'bg-green-50 text-green-700 border border-green-200' },
-    registration_closed: { text: 'Inscripciones cerradas', className: 'bg-yellow-50 text-yellow-700 border border-yellow-200' },
-    finished: { text: 'Finalizado', className: 'bg-gray-50 text-gray-500' },
+    upcoming: { text: 'Próximamente', className: 'bg-brand-blue-pale text-brand-blue' },
+    registration_open: { text: 'Inscripciones abiertas', className: 'bg-brand-blue text-white border border-brand-blue' },
+    registration_closed: { text: 'Inscripciones cerradas', className: 'bg-swim-light text-brand-navy border border-brand-blue-soft' },
+    finished: { text: 'Finalizado', className: 'bg-bg-section text-text-muted' },
   };
   return badges[status];
 }
@@ -43,7 +43,7 @@ export default function EventCard({ race }: { race: Race }) {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full ${badge.className}`}>{badge.text}</span>
-            <span className="text-xs text-text-muted bg-gray-50 px-2 py-0.5 rounded-full">{getRaceTypeLabel(race.type)}</span>
+            <span className="text-xs text-brand-blue bg-brand-blue-pale px-2 py-0.5 rounded-full">{getRaceTypeLabel(race.type)}</span>
           </div>
           <h3 className="mb-2 text-lg font-bold leading-tight text-text-primary transition-colors group-hover:text-brand-blue sm:text-xl">{race.name}</h3>
           <p className="text-text-muted text-sm mb-2">{race.location}</p>

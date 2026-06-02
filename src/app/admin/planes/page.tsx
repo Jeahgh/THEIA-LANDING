@@ -41,7 +41,7 @@ export default async function AdminPlansPage({
 
       {params?.eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
 
-      <div className="overflow-hidden rounded-lg border border-border-subtle bg-white shadow-lg shadow-brand-blue/8">
+      <div className="overflow-hidden rounded-lg theia-card-glow">
         <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
           <h2 className="text-lg font-bold text-text-primary sm:text-xl">Planes existentes</h2>
         </div>

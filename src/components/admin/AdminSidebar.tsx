@@ -15,7 +15,7 @@ export default function AdminSidebar({ email }: { email?: string | null }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex shrink-0 border-b border-white/10 bg-gradient-to-r from-brand-navy/95 via-brand-navy/90 to-brand-blue-vivid/95 text-white shadow-lg shadow-brand-navy/15 lg:min-h-[calc(100vh-5rem)] lg:w-72 lg:flex-col lg:border-b-0 lg:border-r lg:bg-gradient-to-b">
+    <aside className="flex shrink-0 border-b border-white/10 bg-gradient-to-r from-brand-navy via-[#06111f] to-brand-navy text-white shadow-lg shadow-black/20 lg:min-h-[calc(100vh-5rem)] lg:w-72 lg:flex-col lg:border-b-0 lg:border-r lg:bg-gradient-to-b">
       <div className="flex w-full flex-col px-4 py-4 lg:px-4 lg:py-8">
         <div className="mb-4 lg:mb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/50">Admin Theia</p>

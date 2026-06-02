@@ -207,13 +207,13 @@ function HeroSlidesWorkspace({ slides }: { slides: AdminHeroSlide[] }) {
       </div>
 
       {editorMode?.type === 'create' && (
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-lg theia-card-glow">
           <SlideEditor mode={editorMode} onClose={() => setEditorMode(null)} />
         </div>
       )}
 
       {orderedSlides.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-slate-500">
+        <div className="rounded-lg border border-dashed border-brand-blue-soft bg-white/80 p-6 text-center text-slate-500 shadow-lg shadow-brand-blue/8">
           No hay slides creados todavia.
         </div>
       )}

@@ -1,5 +1,5 @@
 // =============================================================================
-// Componente: Card — Tema Claro y Cálido
+// Componente: Card — Tema Race Night
 // =============================================================================
 
 interface CardProps {
@@ -18,9 +18,9 @@ export default function Card({
   return (
     <div
       className={`
-        rounded-lg border border-border-subtle bg-bg-card p-4 sm:rounded-2xl sm:p-6
-        shadow-sm transition-all duration-300
-        ${hover ? 'hover:bg-bg-card-hover hover:border-brand-blue-soft hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-blue/5' : ''}
+        rounded-lg p-4 sm:rounded-2xl sm:p-6
+        theia-card-glow transition-all duration-300
+        ${hover ? 'hover:border-brand-blue-soft hover:-translate-y-1 hover:bg-white hover:shadow-2xl hover:shadow-brand-blue/15' : ''}
         ${glow ? 'animate-pulse-glow' : ''}
         ${className}
       `}

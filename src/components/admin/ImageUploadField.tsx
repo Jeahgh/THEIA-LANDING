@@ -58,7 +58,7 @@ export default function ImageUploadField({
       </label>
       <input name={name} type="hidden" value={value} />
 
-      <div className="grid grid-cols-[132px_1fr] gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-[160px_1fr] sm:gap-4 sm:p-4">
+      <div className="grid grid-cols-[132px_1fr] gap-3 rounded-lg border border-white/70 bg-white/90 p-3 shadow-lg shadow-brand-blue/8 sm:grid-cols-[160px_1fr] sm:gap-4 sm:p-4">
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
@@ -111,7 +111,7 @@ export default function ImageUploadField({
             {isUploading ? 'Subiendo la imagen...' : helper ?? 'Haz clic en el recuadro para cargar una imagen.'}
           </p>
           {status && (
-            <p className={`mt-2 text-sm font-semibold ${statusType === 'error' ? 'text-red-700' : 'text-green-700'}`}>
+            <p className={`mt-2 text-sm font-semibold ${statusType === 'error' ? 'text-red-700' : 'text-brand-blue'}`}>
               {status}
             </p>
           )}

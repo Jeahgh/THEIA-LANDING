@@ -41,7 +41,7 @@ export default async function ProfilePage({
   if (!user) redirect('/login');
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-bg-warm via-white to-brand-blue-pale/70 px-6 pb-16 pt-32 sm:px-8 lg:px-12">
+    <section className="theia-light-section min-h-screen px-6 pb-16 pt-32 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-6xl">
         <div className="mb-10 text-center">
           <div className="accent-line mx-auto mb-6" />
@@ -49,7 +49,7 @@ export default async function ProfilePage({
         </div>
 
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="h-fit rounded-2xl border border-border-subtle bg-white p-6 shadow-lg shadow-brand-blue/8">
+          <div className="h-fit rounded-2xl p-6 theia-card-glow">
             <AvatarUpload image={user.image} name={user.name} />
 
             <div className="mt-8 border-t border-border-subtle pt-6">
@@ -60,7 +60,7 @@ export default async function ProfilePage({
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-text-muted">Verificacion email</dt>
-                  <dd className={user.emailVerified ? 'font-semibold text-green-700' : 'font-semibold text-amber-700'}>
+                  <dd className={user.emailVerified ? 'font-semibold text-brand-blue' : 'font-semibold text-brand-navy'}>
                     {user.emailVerified ? 'Verificado' : 'Pendiente'}
                   </dd>
                 </div>
@@ -76,17 +76,17 @@ export default async function ProfilePage({
                   </button>
                 </form>
               )}
-              {params.verification === 'sent' && <p className="mt-4 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">Te enviamos un enlace para verificar tu cuenta.</p>}
+              {params.verification === 'sent' && <p className="mt-4 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Te enviamos un enlace para verificar tu cuenta.</p>}
               {params.verification === 'dev' && <p className="mt-4 rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-700">Enlace generado en modo local. Revisalo en la consola del servidor.</p>}
-              {params.verification === 'verified' && <p className="mt-4 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">Cuenta verificada correctamente.</p>}
-              {params.verification === 'expired' && <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">El enlace vencio. Puedes solicitar uno nuevo.</p>}
+              {params.verification === 'verified' && <p className="mt-4 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Cuenta verificada correctamente.</p>}
+              {params.verification === 'expired' && <p className="mt-4 rounded-xl bg-bg-section px-4 py-3 text-sm text-brand-navy">El enlace vencio. Puedes solicitar uno nuevo.</p>}
               {(params.verification === 'invalid' || params.verification === 'send-error' || params.verification === 'error') && (
                 <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">No pudimos validar el correo. Intentalo nuevamente.</p>
               )}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border-subtle bg-white p-6 shadow-xl shadow-brand-blue/10 sm:p-8">
+          <div className="rounded-2xl p-6 theia-card-glow sm:p-8">
             <form action={updateProfile}>
               <h2 className="text-2xl font-bold text-text-primary">Datos personales</h2>
               <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -105,7 +105,7 @@ export default async function ProfilePage({
                 </div>
               </div>
 
-              {params.updated && <p className="mt-5 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">Perfil actualizado.</p>}
+              {params.updated && <p className="mt-5 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Perfil actualizado.</p>}
               {params.error && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">Revisa los datos ingresados.</p>}
 
               <button className="mt-7 rounded-xl bg-brand-blue px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-all hover:-translate-y-0.5 hover:bg-brand-blue-vivid">
@@ -133,7 +133,7 @@ export default async function ProfilePage({
                 </div>
               </div>
 
-              {params.passwordUpdated && <p className="mt-5 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">Contrasena actualizada.</p>}
+              {params.passwordUpdated && <p className="mt-5 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Contrasena actualizada.</p>}
               {params.passwordError && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">No pudimos cambiar la contrasena. Revisa los datos.</p>}
 
               <button className="mt-7 rounded-xl border-2 border-brand-blue px-6 py-3 font-semibold text-brand-blue transition-all hover:-translate-y-0.5 hover:bg-brand-blue hover:text-white">
