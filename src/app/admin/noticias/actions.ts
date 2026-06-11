@@ -3,13 +3,11 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { NewsCategory } from '@prisma/client';
-import { auth } from '@/auth';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 
 async function ensureAdmin() {
-  const session = await auth();
-  if (!session?.user) redirect('/login?callbackUrl=/admin/noticias');
-  if (session.user.role !== 'ADMIN') redirect('/');
+  await requireAdmin('/admin/noticias');
 }
 
 function readNewsData(formData: FormData) {

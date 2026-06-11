@@ -16,6 +16,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        if (!profile.email_verified) {
+          throw new Error('Google account email is not verified.');
+        }
+
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     }),
     Credentials({
       name: 'Email y contraseña',
@@ -41,6 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           image: user.image,
           role: user.role,
+          sessionVersion: user.sessionVersion,
         };
       },
     }),
@@ -50,15 +63,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role ?? 'MEMBER';
+        token.sessionVersion = user.sessionVersion ?? 0;
+        token.isActive = true;
+        token.revoked = false;
+      } else if (token.revoked) {
+        token.id = '';
+        token.role = 'MEMBER';
+        token.isActive = false;
+        return token;
       }
 
-      if (!token.role && token.email) {
+      if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { id: true, role: true },
+          select: { id: true, role: true, isActive: true, sessionVersion: true },
         });
-        token.id = dbUser?.id;
-        token.role = dbUser?.role ?? 'MEMBER';
+
+        if (
+          !dbUser?.isActive ||
+          (typeof token.sessionVersion === 'number' && token.sessionVersion !== dbUser.sessionVersion)
+        ) {
+          token.id = '';
+          token.role = 'MEMBER';
+          token.isActive = false;
+          token.revoked = true;
+          return token;
+        }
+
+        token.id = dbUser.id;
+        token.role = dbUser.role;
+        token.isActive = true;
+        token.sessionVersion = dbUser.sessionVersion;
+        token.revoked = false;
       }
 
       return token;
@@ -67,6 +103,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = String(token.id ?? '');
         session.user.role = (token.role ?? 'MEMBER') as 'ADMIN' | 'COACH' | 'MEMBER';
+        session.user.isActive = token.isActive !== false && Boolean(token.id);
+        session.user.sessionVersion = Number(token.sessionVersion ?? 0);
       }
 
       return session;

@@ -3,13 +3,11 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { PlanCategory } from '@prisma/client';
-import { auth } from '@/auth';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 
 async function ensureAdmin() {
-  const session = await auth();
-  if (!session?.user) redirect('/login?callbackUrl=/admin/planes');
-  if (session.user.role !== 'ADMIN') redirect('/');
+  await requireAdmin('/admin/planes');
 }
 
 const cleanText = (value: FormDataEntryValue | null) => String(value ?? '').trim();

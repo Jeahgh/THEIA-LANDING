@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { auth } from '@/auth';
+import { requireActiveUser } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import AvatarUpload from '@/components/profile/AvatarUpload';
 import { requestEmailVerification, updatePassword, updateProfile } from './actions';
@@ -16,16 +16,12 @@ export default async function ProfilePage({
 }: {
   searchParams: Promise<{ updated?: string; error?: string; passwordUpdated?: string; passwordError?: string; verification?: string }>;
 }) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/login?callbackUrl=/perfil');
-  }
+  const currentUser = await requireActiveUser('/perfil');
 
   const [params, user] = await Promise.all([
     searchParams,
     prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: currentUser.id },
       select: {
         name: true,
         email: true,
@@ -134,7 +130,12 @@ export default async function ProfilePage({
               </div>
 
               {params.passwordUpdated && <p className="mt-5 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Contrasena actualizada.</p>}
-              {params.passwordError && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">No pudimos cambiar la contrasena. Revisa los datos.</p>}
+              {params.passwordError === 'verify-email' && (
+                <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">Verifica tu email antes de crear una contrasena local.</p>
+              )}
+              {params.passwordError && params.passwordError !== 'verify-email' && (
+                <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">No pudimos cambiar la contrasena. Revisa los datos.</p>
+              )}
 
               <button className="mt-7 rounded-xl border-2 border-brand-blue px-6 py-3 font-semibold text-brand-blue transition-all hover:-translate-y-0.5 hover:bg-brand-blue hover:text-white">
                 Cambiar contrasena

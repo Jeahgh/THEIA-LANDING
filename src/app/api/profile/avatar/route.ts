@@ -1,15 +1,15 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { getCurrentUser } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
 export async function POST(request: Request) {
-  const session = await auth();
+  const user = await getCurrentUser();
 
-  if (!session?.user?.id) {
+  if (!user) {
     return NextResponse.json({ success: false, message: 'No autorizado.' }, { status: 401 });
   }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   const extension = file.type.split('/')[1] === 'jpeg' ? 'jpg' : file.type.split('/')[1];
-  const fileName = `${session.user.id}-${Date.now()}.${extension}`;
+  const fileName = `${user.id}-${Date.now()}.${extension}`;
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'profiles');
   const publicUrl = `/uploads/profiles/${fileName}`;
 
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   await writeFile(path.join(uploadDir, fileName), Buffer.from(await file.arrayBuffer()));
 
   await prisma.user.update({
-    where: { id: session.user.id },
+    where: { id: user.id },
     data: { image: publicUrl },
   });
 

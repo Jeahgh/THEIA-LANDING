@@ -150,7 +150,7 @@ function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: bo
 
 export default async function PlanesPage() {
   const [session, trainingPlans] = await Promise.all([auth(), getTrainingPlans()]);
-  const canViewPrice = Boolean(session?.user);
+  const canViewPrice = Boolean(session?.user?.id && session.user.isActive);
 
   return (
     <>

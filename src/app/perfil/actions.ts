@@ -1,10 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { compare, hash } from 'bcryptjs';
-import { auth } from '@/auth';
+import { requireActiveUser } from '@/lib/authz';
 import {
   createVerificationToken,
   getEmailVerificationIdentifier,
@@ -13,12 +12,18 @@ import {
 } from '@/lib/email-verification';
 import { prisma } from '@/lib/prisma';
 
-export async function updateProfile(formData: FormData) {
-  const session = await auth();
+function getTrustedAppOrigin() {
+  const configuredOrigin = process.env.AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL;
 
-  if (!session?.user?.id) {
-    redirect('/login?callbackUrl=/perfil');
+  if (configuredOrigin) {
+    return configuredOrigin;
   }
+
+  return process.env.NODE_ENV === 'production' ? null : 'http://localhost:3000';
+}
+
+export async function updateProfile(formData: FormData) {
+  const currentUser = await requireActiveUser('/perfil');
 
   const name = String(formData.get('name') ?? '').trim();
   const phone = String(formData.get('phone') ?? '').trim();
@@ -28,7 +33,7 @@ export async function updateProfile(formData: FormData) {
   }
 
   await prisma.user.update({
-    where: { id: session.user.id },
+    where: { id: currentUser.id },
     data: {
       name,
       phone: phone || null,
@@ -40,11 +45,7 @@ export async function updateProfile(formData: FormData) {
 }
 
 export async function updatePassword(formData: FormData) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/login?callbackUrl=/perfil');
-  }
+  const currentUser = await requireActiveUser('/perfil');
 
   const currentPassword = String(formData.get('currentPassword') ?? '');
   const newPassword = String(formData.get('newPassword') ?? '');
@@ -55,8 +56,8 @@ export async function updatePassword(formData: FormData) {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { passwordHash: true },
+    where: { id: currentUser.id },
+    select: { passwordHash: true, emailVerified: true },
   });
 
   if (user?.passwordHash) {
@@ -64,26 +65,27 @@ export async function updatePassword(formData: FormData) {
     if (!valid) {
       redirect('/perfil?passwordError=current');
     }
+  } else if (!user?.emailVerified) {
+    redirect('/perfil?passwordError=verify-email');
   }
 
   await prisma.user.update({
-    where: { id: session.user.id },
-    data: { passwordHash: await hash(newPassword, 12) },
+    where: { id: currentUser.id },
+    data: {
+      passwordHash: await hash(newPassword, 12),
+      sessionVersion: { increment: 1 },
+    },
   });
 
   revalidatePath('/perfil');
-  redirect('/perfil?passwordUpdated=1');
+  redirect('/login?callbackUrl=/perfil&passwordUpdated=1');
 }
 
 export async function requestEmailVerification() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/login?callbackUrl=/perfil');
-  }
+  const currentUser = await requireActiveUser('/perfil');
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: currentUser.id },
     select: { email: true, emailVerified: true, name: true },
   });
 
@@ -99,10 +101,12 @@ export async function requestEmailVerification() {
   const identifier = getEmailVerificationIdentifier(user.email);
   const hashedToken = hashVerificationToken(token);
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const headerStore = await headers();
-  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
-  const protocol = headerStore.get('x-forwarded-proto') ?? (host?.startsWith('localhost') ? 'http' : 'https');
-  const origin = host ? `${protocol}://${host}` : (process.env.AUTH_URL ?? 'http://localhost:3000');
+  const origin = getTrustedAppOrigin();
+
+  if (!origin) {
+    redirect('/perfil?verification=config-error');
+  }
+
   const verificationUrl = new URL('/api/auth/verify-email', origin);
 
   verificationUrl.searchParams.set('email', user.email);

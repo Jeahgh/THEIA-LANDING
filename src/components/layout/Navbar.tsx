@@ -28,6 +28,7 @@ export default function Navbar() {
   const closeSession = async () => {
     setIsProfileMenuOpen(false);
     setIsMobileMenuOpen(false);
+    await fetch('/api/session/revoke', { method: 'POST' });
     await signOut({ redirect: false });
     router.replace('/');
     router.refresh();

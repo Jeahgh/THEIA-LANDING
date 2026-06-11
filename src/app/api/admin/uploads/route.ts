@@ -1,16 +1,20 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { getCurrentUser } from '@/lib/authz';
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 const allowedFolders = ['home', 'news', 'plans', 'coaches', 'testimonials', 'competitions'];
 
 export async function POST(request: Request) {
-  const session = await auth();
+  const user = await getCurrentUser();
 
-  if (session?.user?.role !== 'ADMIN') {
+  if (!user) {
     return NextResponse.json({ success: false, message: 'No autorizado.' }, { status: 401 });
+  }
+
+  if (user.role !== 'ADMIN') {
+    return NextResponse.json({ success: false, message: 'No autorizado.' }, { status: 403 });
   }
 
   const formData = await request.formData();
