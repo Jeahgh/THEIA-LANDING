@@ -22,7 +22,7 @@ export default function HeroCarousel() {
           <h1 className="select-none text-[clamp(4rem,13vw,12rem)] font-bold uppercase leading-[0.82] tracking-[0.05em] text-white drop-shadow-[0_14px_30px_rgba(7,20,38,0.95)]">
             THEIA
           </h1>
-          <p className="mt-4 text-[9px] font-bold uppercase tracking-[0.2em] text-white/75 sm:mt-5 sm:text-xs">
+          <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-white/75 sm:mt-5 sm:text-sm md:text-base lg:text-lg">
             Triathlon Performance
           </p>
           <Link

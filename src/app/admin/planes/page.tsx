@@ -26,6 +26,11 @@ export default async function AdminPlansPage({
   const params = await searchParams;
   const plans = await prisma.plan.findMany({
     orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }],
+    include: {
+      features: {
+        orderBy: { sortOrder: 'asc' },
+      },
+    },
   });
 
   return (
@@ -58,6 +63,10 @@ export default async function AdminPlansPage({
                 </div>
                 <p className="mt-1 text-sm text-text-secondary">${plan.price.toLocaleString('es-CL')} CLP - {plan.modality}</p>
                 <p className="mt-1 line-clamp-1 text-sm text-text-muted">{plan.excerpt}</p>
+                {plan.idealFor && (
+                  <p className="mt-1 line-clamp-1 text-xs font-medium text-brand-navy/70">Ideal para: {plan.idealFor}</p>
+                )}
+                <p className="mt-1 text-xs text-text-muted">{plan.features.length} caracteristicas</p>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
                 <Link

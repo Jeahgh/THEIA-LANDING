@@ -77,6 +77,7 @@ export interface TrainingPlan {
   price: string;
   modality: string;
   excerpt: string;
+  idealFor?: string;
   features: string[];
   imageUrl: string;
   imageAlt: string;

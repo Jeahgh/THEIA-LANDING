@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/authz';
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-const allowedFolders = ['home', 'news', 'plans', 'coaches', 'testimonials', 'competitions'];
+const allowedFolders = ['home', 'news', 'plans', 'coaches', 'athletes', 'testimonials', 'competitions'];
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();

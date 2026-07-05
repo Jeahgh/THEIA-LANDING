@@ -1,7 +1,15 @@
 import Image from 'next/image';
 import { CLUB_INFO } from '@/lib/constants';
+import { getClubStats } from '@/lib/team';
 
-export default function AboutPreview() {
+export default async function AboutPreview() {
+  const stats = await getClubStats();
+  const summary = [
+    { value: String(stats.athletes), label: 'atletas' },
+    { value: String(stats.coaches), label: 'entrenadores' },
+    { value: String(stats.races), label: 'competencias' },
+  ];
+
   return (
     <section id="about-preview" className="theia-light-section w-full px-4 py-12 sm:px-6 sm:py-16 lg:px-12 lg:py-20">
       <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
@@ -14,11 +22,7 @@ export default function AboutPreview() {
             {CLUB_INFO.description}
           </p>
           <div className="mb-8 grid max-w-lg grid-cols-3 gap-2 sm:gap-4">
-            {[
-              { value: '+30', label: 'atletas' },
-              { value: '3', label: 'disciplinas' },
-              { value: 'Todos', label: 'los niveles' },
-            ].map((item) => (
+            {summary.map((item) => (
               <div key={item.label} className="border-t border-brand-blue/15 pt-3">
                 <p className="text-xl font-bold leading-none text-brand-blue sm:text-2xl">{item.value}</p>
                 <p className="mt-1 text-xs text-text-muted">{item.label}</p>

@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Planes',
-  description: 'Planes de running y triatlon de Theia Triathlon Performance, con modalidad online, presencial, plus y pro.',
+  description: 'Planes de running y triatlon de Theia Triathlon Performance, con modalidad a distancia, base, performance y pro.',
 };
 
 const planCategories = [
@@ -41,17 +41,15 @@ const getPriceLabel = (price: string) => {
 
 const getShortPlanName = (name: string) => name.replace(/^Plan\s+/i, '');
 
-const getPlanLevel = (plan: TrainingPlan) => {
-  const key = `${plan.id} ${plan.name} ${plan.modality}`.toLowerCase();
-
-  if (key.includes('pro') || key.includes('rendimiento')) return 'Nivel competitivo';
-  if (key.includes('plus') || key.includes('mixto')) return 'Nivel avanzado';
-  if (key.includes('presencial')) return 'Nivel intermedio';
-  return 'Nivel inicial';
-};
-
 const getIdealFor = (plan: TrainingPlan) => {
+  if (plan.idealFor?.trim()) return plan.idealFor.trim();
+
   const key = `${plan.id} ${plan.name} ${plan.modality}`.toLowerCase();
+
+  if (key.includes('pro')) return 'Proyecto deportivo avanzado, temporada y competencias prioritarias.';
+  if (key.includes('performance') || key.includes('plus')) return 'Marca personal, 21K/42K, 70.3, Ironman o mejora competitiva.';
+  if (key.includes('base') || key.includes('presencial')) return 'Deportistas en desarrollo que quieren feedback y equipo.';
+  if (key.includes('distancia')) return 'Atletas autonomos que necesitan estructura profesional.';
 
   if (key.includes('pro') || key.includes('rendimiento')) return 'Objetivos exigentes y calendario competitivo.';
   if (key.includes('plus') || key.includes('mixto')) return 'Deportistas que buscan seguimiento más cercano.';
@@ -60,67 +58,61 @@ const getIdealFor = (plan: TrainingPlan) => {
 };
 
 const isRecommendedPlan = (plan: TrainingPlan) =>
-  Boolean(plan.highlighted) || plan.id.toLowerCase().includes('plus') || plan.modality.toLowerCase().includes('mixto');
+  Boolean(plan.highlighted) ||
+  plan.name.toLowerCase().includes('performance') ||
+  plan.id.toLowerCase().includes('plus') ||
+  plan.modality.toLowerCase().includes('mixto');
 
 function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: boolean }) {
-  const visibleFeatures = plan.features.slice(0, 3);
+  const visibleFeatures = plan.features.slice(0, 4);
   const recommended = isRecommendedPlan(plan);
 
   return (
     <article
-      className={`group relative flex h-full min-h-[410px] flex-col rounded-[1.6rem] border bg-white p-5 shadow-lg shadow-brand-navy/8 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-brand-navy/15 sm:p-6 ${
-        recommended ? 'border-brand-blue-vivid ring-1 ring-brand-blue-vivid/30' : 'border-brand-navy/10'
+      className={`relative flex h-full min-h-[360px] flex-col rounded-2xl border bg-white p-4 shadow-md shadow-brand-navy/6 transition-colors duration-200 sm:p-5 ${
+        recommended ? 'border-brand-blue-vivid ring-1 ring-brand-blue-vivid/25' : 'border-brand-navy/10 hover:border-brand-blue/35'
       }`}
       style={{ fontFamily: 'var(--font-montserrat), system-ui, sans-serif' }}
     >
       {recommended && (
-        <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center rounded-full bg-brand-navy px-4 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-white shadow-lg shadow-brand-navy/25">
-          Recomendado
+        <span className="absolute right-4 top-4 inline-flex items-center rounded-full bg-brand-blue-vivid px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white">
+          Mejor valor
         </span>
       )}
 
       <div className="flex flex-1 flex-col">
-        <h3 className="text-2xl font-black uppercase leading-none tracking-[-0.04em] text-brand-navy">
+        <h3 className={`max-w-[13rem] text-xl font-black uppercase leading-[0.95] text-brand-navy sm:text-2xl ${recommended ? 'pr-16' : ''}`}>
           {getShortPlanName(plan.name)}
         </h3>
 
-        <p className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-brand-blue-vivid">{getPlanLevel(plan)}</p>
+        <p className="mt-4 text-sm leading-relaxed text-text-secondary">{plan.excerpt}</p>
 
-        <p className="mt-5 text-sm leading-relaxed text-text-secondary">{plan.excerpt}</p>
-
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-brand-navy px-3 py-1 text-[11px] font-bold text-white">Mensual</span>
-          <span className="rounded-full border border-brand-navy/15 bg-brand-navy/5 px-3 py-1 text-[11px] font-bold text-brand-navy">
-            {plan.modality}
-          </span>
-        </div>
-
-        <div className="mt-5">
+        <div className="mt-5 border-y border-brand-navy/10 py-4">
           {canViewPrice ? (
-            <p className="text-[2rem] font-black leading-none tracking-[-0.06em] text-brand-blue-vivid sm:text-[2.25rem]">
+            <p className="font-sans text-[2.15rem] font-black leading-none tracking-normal text-brand-blue-vivid sm:text-[2.45rem]">
               {getPriceLabel(plan.price)}
-              <span className="ml-1 text-sm font-bold tracking-normal text-text-secondary">/mes</span>
+              <span className="ml-1 text-sm font-black uppercase tracking-normal text-brand-navy/65">/mes</span>
             </p>
           ) : (
-            <p className="rounded-2xl bg-brand-blue-pale px-4 py-3 text-sm font-bold text-brand-navy">
+            <p className="rounded-xl bg-brand-blue-pale px-4 py-3 text-sm font-bold text-brand-navy">
               Inicia sesión para ver precio
             </p>
           )}
         </div>
 
         {visibleFeatures.length > 0 && (
-          <ul className="mt-6 divide-y divide-brand-navy/10 text-sm text-text-secondary">
+          <ul className="mt-4 space-y-2 text-sm text-text-secondary">
             {visibleFeatures.map((feature) => (
-              <li key={feature} className="flex gap-3 py-3">
-                <span className="mt-0.5 text-brand-blue-vivid">✓</span>
+              <li key={feature} className="flex gap-2.5">
+                <span className="mt-0.5 text-brand-blue-vivid">-</span>
                 <span>{feature}</span>
               </li>
             ))}
           </ul>
         )}
 
-        <div className="mt-auto pt-6">
-          <p className="mb-4 rounded-2xl bg-brand-navy/5 px-4 py-3 text-xs leading-relaxed text-text-secondary">
+        <div className="mt-auto pt-5">
+          <p className="mb-4 rounded-xl bg-brand-navy/5 px-4 py-3 text-xs leading-relaxed text-text-secondary">
             <span className="font-black text-brand-navy">Ideal para:</span> {getIdealFor(plan)}
           </p>
           {canViewPrice ? (
@@ -128,7 +120,7 @@ function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: bo
               href={getWhatsAppHref(plan.name)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-black uppercase tracking-tight text-white shadow-md shadow-brand-navy/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-blue-vivid hover:shadow-lg hover:shadow-brand-blue/30"
+              className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-black uppercase tracking-tight text-white shadow-sm shadow-brand-navy/15 transition-colors duration-200 hover:bg-brand-blue-vivid"
             >
               Contratar
             </a>
@@ -170,19 +162,12 @@ export default async function PlanesPage() {
 
       {planCategories.map((category, index) => {
         const plans = trainingPlans.filter((plan) => plan.category === category.id);
-        const isTriathlon = category.id === 'triatlon';
-
         return (
           <section
             key={category.id}
-            className={`section-padding relative overflow-hidden ${
-              isTriathlon
-                ? 'theia-light-section'
-                : 'theia-light-section'
-            }`}
+            className={`section-padding ${index % 2 === 0 ? 'bg-bg-warm' : 'bg-white'}`}
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_15%,rgba(10,132,255,0.10),transparent_35%),radial-gradient(circle_at_82%_70%,rgba(88,178,255,0.12),transparent_38%)]" />
-            <div className="relative w-full px-6 sm:px-8 lg:px-12">
+            <div className="w-full px-6 sm:px-8 lg:px-12">
               <SectionTitle title={category.title} gradient />
 
               {plans.length > 0 ? (

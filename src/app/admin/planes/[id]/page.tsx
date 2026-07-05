@@ -14,6 +14,11 @@ export default async function EditPlanPage({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const plan = await prisma.plan.findUnique({
     where: { id },
+    include: {
+      features: {
+        orderBy: { sortOrder: 'asc' },
+      },
+    },
   });
 
   if (!plan) notFound();

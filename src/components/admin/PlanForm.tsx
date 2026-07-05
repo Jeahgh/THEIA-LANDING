@@ -1,19 +1,25 @@
-import type { Plan } from '@prisma/client';
-import ImageUploadField from '@/components/admin/ImageUploadField';
+import type { Plan, PlanFeature } from '@prisma/client';
+
+type EditablePlan = Plan & {
+  features?: Pick<PlanFeature, 'text' | 'sortOrder'>[];
+};
 
 interface PlanFormProps {
   action: (formData: FormData) => Promise<void>;
-  plan?: Plan;
+  plan?: EditablePlan;
   submitLabel: string;
 }
 
 const fieldClasses =
   'w-full rounded-lg border border-border-subtle bg-white px-4 py-3 text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10';
 
-const oldDefaultPlanImage = '/images/atletas-collage.jpg';
-
 export default function PlanForm({ action, plan, submitLabel }: PlanFormProps) {
-  const imageValue = plan?.imageUrl && plan.imageUrl !== oldDefaultPlanImage ? plan.imageUrl : null;
+  const featureValue =
+    plan?.features
+      ?.slice()
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((feature) => feature.text)
+      .join('\n') ?? '';
 
   return (
     <form action={action} className="rounded-lg p-4 theia-card-glow sm:p-6">
@@ -55,15 +61,6 @@ export default function PlanForm({ action, plan, submitLabel }: PlanFormProps) {
           </div>
           <p className="mt-1.5 text-xs text-text-muted">Ingresa el valor en pesos chilenos, sin decimales.</p>
         </div>
-        <div className="md:col-span-2">
-          <ImageUploadField
-            name="imageUrl"
-            label="Imagen del plan"
-            folder="plans"
-            defaultValue={imageValue}
-            helper="Haz clic en el recuadro para cargar o cambiar la foto del plan."
-          />
-        </div>
       </div>
 
       <div className="mt-4">
@@ -75,6 +72,30 @@ export default function PlanForm({ action, plan, submitLabel }: PlanFormProps) {
           placeholder="Describe para quien es el plan, que incluye y que objetivo ayuda a lograr."
           required
         />
+      </div>
+
+      <div className="mt-4">
+        <label className="mb-1 block text-sm font-semibold text-text-primary">Ideal para</label>
+        <textarea
+          name="idealFor"
+          defaultValue={plan?.idealFor ?? ''}
+          className={`${fieldClasses} min-h-24 resize-y`}
+          placeholder="Ej: Deportistas que quieren preparar una carrera objetivo con seguimiento cercano."
+          required
+        />
+        <p className="mt-1.5 text-xs text-text-muted">Este texto aparece en la tarjeta publica del plan.</p>
+      </div>
+
+      <div className="mt-4">
+        <label className="mb-1 block text-sm font-semibold text-text-primary">Caracteristicas</label>
+        <textarea
+          name="features"
+          defaultValue={featureValue}
+          className={`${fieldClasses} min-h-36 resize-y font-mono text-sm leading-relaxed`}
+          placeholder={'Planificacion personalizada\nFeedback semanal\nEvaluaciones periodicas'}
+          required
+        />
+        <p className="mt-1.5 text-xs text-text-muted">Escribe una caracteristica por linea.</p>
       </div>
 
       <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-colors hover:bg-brand-blue-vivid sm:w-auto">

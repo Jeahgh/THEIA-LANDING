@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const adminLinks = [
-  { href: '/admin/home', label: 'Inicio' },
   { href: '/admin/planes', label: 'Planes' },
+  { href: '/admin/equipo', label: 'Equipo Theia' },
   { href: '/admin/noticias', label: 'Noticias' },
   { href: '/admin/competencias', label: 'Competencias' },
   { href: '/admin/usuarios', label: 'Usuarios y roles' },

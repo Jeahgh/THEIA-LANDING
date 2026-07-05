@@ -33,6 +33,7 @@ export async function getTrainingPlans(): Promise<TrainingPlan[]> {
       price: formatPrice(plan.price, plan.currency),
       modality: plan.modality,
       excerpt: plan.excerpt,
+      idealFor: plan.idealFor ?? '',
       features: plan.features.map((feature) => feature.text),
       imageUrl: plan.imageUrl === oldDefaultPlanImage ? '' : plan.imageUrl || '',
       imageAlt: plan.imageAlt || `Imagen de ${plan.name}`,

@@ -17,6 +17,15 @@ const parsePrice = (value: FormDataEntryValue | null) => {
   return Number.isFinite(price) ? price : 0;
 };
 
+const parseFeatures = (value: FormDataEntryValue | null) =>
+  String(value ?? '')
+    .split(/\r?\n/)
+    .map((feature) => feature.trim())
+    .filter(Boolean);
+
+const defaultPlanImage = (category: PlanCategory) =>
+  category === 'TRIATLON' ? '/images/equipo-jersey.png' : '/images/equipo-running.jpg';
+
 const slugify = (value: string) =>
   value
     .normalize('NFD')
@@ -51,6 +60,7 @@ export async function createPlan(formData: FormData) {
 
   const name = cleanText(formData.get('name'));
   const category = String(formData.get('category') ?? 'RUNNING') as PlanCategory;
+  const features = parseFeatures(formData.get('features'));
   const lastPlan = await prisma.plan.findFirst({
     where: { category },
     orderBy: { sortOrder: 'desc' },
@@ -64,11 +74,22 @@ export async function createPlan(formData: FormData) {
       name,
       modality: cleanText(formData.get('modality')),
       excerpt: cleanText(formData.get('excerpt')),
+      idealFor: cleanText(formData.get('idealFor')) || null,
       price: parsePrice(formData.get('price')),
-      imageUrl: cleanText(formData.get('imageUrl')),
+      imageUrl: defaultPlanImage(category),
       imageAlt: `Imagen de ${name}`,
       sortOrder: (lastPlan?.sortOrder ?? 0) + 1,
       isActive: true,
+      ...(features.length > 0
+        ? {
+            features: {
+              create: features.map((text, index) => ({
+                text,
+                sortOrder: index + 1,
+              })),
+            },
+          }
+        : {}),
     },
   });
 
@@ -81,19 +102,36 @@ export async function updatePlan(planId: string, formData: FormData) {
   await ensureAdmin();
 
   const name = cleanText(formData.get('name'));
+  const category = String(formData.get('category') ?? 'RUNNING') as PlanCategory;
+  const features = parseFeatures(formData.get('features'));
+  const slug = await buildUniqueSlug(name, planId);
 
-  await prisma.plan.update({
-    where: { id: planId },
-    data: {
-      slug: await buildUniqueSlug(name, planId),
-      category: String(formData.get('category') ?? 'RUNNING') as PlanCategory,
-      name,
-      modality: cleanText(formData.get('modality')),
-      excerpt: cleanText(formData.get('excerpt')),
-      price: parsePrice(formData.get('price')),
-      imageUrl: cleanText(formData.get('imageUrl')),
-      imageAlt: `Imagen de ${name}`,
-    },
+  await prisma.$transaction(async (tx) => {
+    await tx.plan.update({
+      where: { id: planId },
+      data: {
+        slug,
+        category,
+        name,
+        modality: cleanText(formData.get('modality')),
+        excerpt: cleanText(formData.get('excerpt')),
+        idealFor: cleanText(formData.get('idealFor')) || null,
+        price: parsePrice(formData.get('price')),
+        imageAlt: `Imagen de ${name}`,
+      },
+    });
+
+    await tx.planFeature.deleteMany({ where: { planId } });
+
+    if (features.length > 0) {
+      await tx.planFeature.createMany({
+        data: features.map((text, index) => ({
+          planId,
+          text,
+          sortOrder: index + 1,
+        })),
+      });
+    }
   });
 
   revalidatePath('/planes');
