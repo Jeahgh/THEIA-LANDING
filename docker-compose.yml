@@ -1,0 +1,53 @@
+x-app-env: &app-env
+  DATABASE_URL: postgresql://postgres:postgres@db:5432/theia?schema=public
+  DIRECT_URL: postgresql://postgres:postgres@db:5432/theia?schema=public
+  AUTH_SECRET: theia-docker-local-secret-change-me-before-production
+  AUTH_URL: http://localhost:3001
+  NEXT_PUBLIC_APP_URL: http://localhost:3001
+  AUTH_GOOGLE_ID: docker-local-google-id
+  AUTH_GOOGLE_SECRET: docker-local-google-secret
+  NEXT_TELEMETRY_DISABLED: "1"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: theia
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - theia-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d theia"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    image: theia-web:local
+    build:
+      context: .
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && node prisma/seed.mjs"
+    restart: "no"
+
+  web:
+    image: theia-web:local
+    build:
+      context: .
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "3001:3000"
+
+volumes:
+  theia-postgres-data:

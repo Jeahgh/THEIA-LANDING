@@ -16,6 +16,37 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Docker
+
+Para levantar la app junto con PostgreSQL:
+
+```bash
+docker compose up --build
+```
+
+La aplicacion queda en [http://localhost:3001](http://localhost:3001). PostgreSQL queda disponible desde tu maquina en `localhost:5433` con usuario `postgres`, password `postgres` y base `theia`.
+
+El servicio `migrate` ejecuta:
+
+```bash
+npx prisma migrate deploy
+node prisma/seed.mjs
+```
+
+Para detener los contenedores:
+
+```bash
+docker compose down
+```
+
+Para borrar tambien la base de datos local de Docker y partir desde cero:
+
+```bash
+docker compose down -v
+```
+
+Docker conviene para probar el proyecto completo o desplegarlo en un servidor. Para desarrollo diario en Windows, `npm run dev` suele ser mas rapido.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
