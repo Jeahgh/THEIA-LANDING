@@ -47,6 +47,42 @@ docker compose down -v
 
 Docker conviene para probar el proyecto completo o desplegarlo en un servidor. Para desarrollo diario en Windows, `npm run dev` suele ser mas rapido.
 
+## Email transaccional
+
+La app envia correos para verificar cuenta y recuperar contrasena. Puedes usar SMTP de cPanel o Resend.
+
+Variables minimas:
+
+```env
+AUTH_URL="https://theiasport.cl"
+NEXT_PUBLIC_APP_URL="https://theiasport.cl"
+EMAIL_FROM="Theia <contacto@theiasport.cl>"
+```
+
+Para SMTP/cPanel:
+
+```env
+SMTP_HOST="mail.theiasport.cl"
+SMTP_PORT="465"
+SMTP_SECURE="true"
+SMTP_USER="contacto@theiasport.cl"
+SMTP_PASS="password-del-correo"
+```
+
+Correos oficiales visibles del sitio:
+
+- contacto@theiasport.cl
+- finanzas@theiasport.cl
+- administracion@theiasport.cl
+
+Para Resend:
+
+```env
+RESEND_API_KEY="re_..."
+```
+
+En desarrollo, si no configuras SMTP ni Resend, la app imprime el enlace de verificacion/recuperacion en la consola del servidor.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

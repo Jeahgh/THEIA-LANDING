@@ -5,6 +5,7 @@ import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import PlanForm from '@/components/admin/PlanForm';
 import TimedStatusMessage from '@/components/admin/TimedStatusMessage';
+import EmptyState from '@/components/ui/EmptyState';
 import { createPlan, deletePlan } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -46,41 +47,44 @@ export default async function AdminPlansPage({
 
       {params?.eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
 
-      <div className="overflow-hidden rounded-lg theia-card-glow">
-        <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
-          <h2 className="text-lg font-bold text-text-primary sm:text-xl">Planes existentes</h2>
-        </div>
-        <div className="divide-y divide-border-subtle">
-          {plans.length === 0 && <p className="px-4 py-5 text-text-muted sm:px-6">No hay planes creados.</p>}
-          {plans.map((plan) => (
-            <div key={plan.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-bold text-text-primary">{plan.name}</h3>
-                  <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">
-                    {categoryLabels[plan.category]}
-                  </span>
+      {plans.length === 0 ? (
+        <EmptyState tone="admin">No hay planes creados.</EmptyState>
+      ) : (
+        <div className="overflow-hidden rounded-lg theia-card-glow">
+          <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
+            <h2 className="text-lg font-bold text-text-primary sm:text-xl">Planes existentes</h2>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {plans.map((plan) => (
+              <div key={plan.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-bold text-text-primary">{plan.name}</h3>
+                    <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">
+                      {categoryLabels[plan.category]}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-text-secondary">${plan.price.toLocaleString('es-CL')} CLP - {plan.modality}</p>
+                  <p className="mt-1 line-clamp-1 text-sm text-text-muted">{plan.excerpt}</p>
+                  {plan.idealFor && (
+                    <p className="mt-1 line-clamp-1 text-xs font-medium text-brand-navy/70">Ideal para: {plan.idealFor}</p>
+                  )}
+                  <p className="mt-1 text-xs text-text-muted">{plan.features.length} caracteristicas</p>
                 </div>
-                <p className="mt-1 text-sm text-text-secondary">${plan.price.toLocaleString('es-CL')} CLP - {plan.modality}</p>
-                <p className="mt-1 line-clamp-1 text-sm text-text-muted">{plan.excerpt}</p>
-                {plan.idealFor && (
-                  <p className="mt-1 line-clamp-1 text-xs font-medium text-brand-navy/70">Ideal para: {plan.idealFor}</p>
-                )}
-                <p className="mt-1 text-xs text-text-muted">{plan.features.length} caracteristicas</p>
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
+                  <Link
+                    href={`/admin/planes/${plan.id}`}
+                    className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
+                  >
+                    Editar
+                  </Link>
+                  <ConfirmDeleteButton action={deletePlan.bind(null, plan.id)} itemName={`el plan "${plan.name}"`} />
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
-                <Link
-                  href={`/admin/planes/${plan.id}`}
-                  className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
-                >
-                  Editar
-                </Link>
-                <ConfirmDeleteButton action={deletePlan.bind(null, plan.id)} itemName={`el plan "${plan.name}"`} />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

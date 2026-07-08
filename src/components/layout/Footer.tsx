@@ -12,6 +12,12 @@ const SocialIcon = ({ platform }: { platform: string }) => {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const contactEmails = [
+    { value: CLUB_INFO.email, href: `mailto:${CLUB_INFO.email}` },
+    { value: CLUB_INFO.financeEmail, href: `mailto:${CLUB_INFO.financeEmail}` },
+    { value: CLUB_INFO.administrationEmail, href: `mailto:${CLUB_INFO.administrationEmail}` },
+    { value: CLUB_INFO.phone, href: SOCIAL_LINKS.find((s) => s.platform === 'whatsapp')?.url },
+  ];
 
   return (
     <footer>
@@ -44,13 +50,18 @@ export default function Footer() {
             <div>
               <h3 className="text-white font-semibold mb-4">Contacto</h3>
               <ul className="space-y-3 text-sm text-white/60">
-                <li><span className="text-white/80">Email: </span><a href={`mailto:${CLUB_INFO.email}`} className="hover:text-swim transition-colors">{CLUB_INFO.email}</a></li>
-                <li>
-                  <span className="text-white/80">WhatsApp: </span>
-                  <a href={SOCIAL_LINKS.find((s) => s.platform === 'whatsapp')?.url} target="_blank" rel="noopener noreferrer" className="hover:text-swim transition-colors">
-                    {CLUB_INFO.phone}
-                  </a>
-                </li>
+                {contactEmails.map((item) => (
+                  <li key={item.value}>
+                    <a
+                      href={item.href}
+                      target={item.href?.startsWith('http') ? '_blank' : undefined}
+                      rel={item.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className="break-all transition-colors hover:text-swim"
+                    >
+                      {item.value}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
@@ -58,7 +69,7 @@ export default function Footer() {
               <div className="flex gap-3">
                 {SOCIAL_LINKS.map((s) => (
                   <a key={s.platform} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label}
-                    className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-brand-blue transition-all duration-200">
+                    className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all duration-200">
                     <SocialIcon platform={s.platform} />
                   </a>
                 ))}

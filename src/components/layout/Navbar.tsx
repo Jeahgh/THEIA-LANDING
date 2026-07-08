@@ -1,17 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { NAV_LINKS } from '@/lib/constants';
 import Button from '@/components/ui/Button';
+import { useDismissableLayer } from '@/hooks/useDismissableLayer';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
@@ -25,6 +28,21 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
+  const closeProfileMenu = useCallback(() => setIsProfileMenuOpen(false), []);
+
+  useDismissableLayer({
+    enabled: isMobileMenuOpen,
+    refs: [navRef],
+    onDismiss: closeMobileMenu,
+  });
+
+  useDismissableLayer({
+    enabled: isProfileMenuOpen,
+    refs: [profileMenuRef],
+    onDismiss: closeProfileMenu,
+  });
+
   const closeSession = async () => {
     setIsProfileMenuOpen(false);
     setIsMobileMenuOpen(false);
@@ -36,6 +54,7 @@ export default function Navbar() {
 
   return (
     <nav
+      ref={navRef}
       id="main-navbar"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
@@ -74,7 +93,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <div className="hidden lg:flex items-center gap-2">
               {session?.user ? (
-                <div className="relative">
+                <div ref={profileMenuRef} className="relative">
                   <button
                     type="button"
                     onClick={() => setIsProfileMenuOpen((current) => !current)}

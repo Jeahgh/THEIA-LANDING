@@ -6,6 +6,7 @@ import { getTrainingPlans } from '@/lib/training-plans';
 import type { TrainingPlan } from '@/types';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Button from '@/components/ui/Button';
+import EmptyState from '@/components/ui/EmptyState';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,10 +67,11 @@ const isRecommendedPlan = (plan: TrainingPlan) =>
 function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: boolean }) {
   const visibleFeatures = plan.features.slice(0, 4);
   const recommended = isRecommendedPlan(plan);
+  const planHref = getWhatsAppHref(plan.name);
 
   return (
     <article
-      className={`relative flex h-full min-h-[360px] flex-col rounded-2xl border bg-white p-4 shadow-md shadow-brand-navy/6 transition-colors duration-200 sm:p-5 ${
+      className={`relative flex h-full min-h-[340px] flex-col rounded-2xl border bg-white p-4 shadow-md shadow-brand-navy/6 transition-colors duration-200 sm:min-h-[360px] sm:p-5 lg:p-6 ${
         recommended ? 'border-brand-blue-vivid ring-1 ring-brand-blue-vivid/25' : 'border-brand-navy/10 hover:border-brand-blue/35'
       }`}
       style={{ fontFamily: 'var(--font-montserrat), system-ui, sans-serif' }}
@@ -85,20 +87,16 @@ function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: bo
           {getShortPlanName(plan.name)}
         </h3>
 
-        <p className="mt-4 text-sm leading-relaxed text-text-secondary">{plan.excerpt}</p>
+        <p className="mt-4 text-[15px] leading-relaxed text-text-secondary">{plan.excerpt}</p>
 
-        <div className="mt-5 border-y border-brand-navy/10 py-4">
-          {canViewPrice ? (
+        {canViewPrice && (
+          <div className="mt-5">
             <p className="font-sans text-[2.15rem] font-black leading-none tracking-normal text-brand-blue-vivid sm:text-[2.45rem]">
               {getPriceLabel(plan.price)}
               <span className="ml-1 text-sm font-black uppercase tracking-normal text-brand-navy/65">/mes</span>
             </p>
-          ) : (
-            <p className="rounded-xl bg-brand-blue-pale px-4 py-3 text-sm font-bold text-brand-navy">
-              Inicia sesión para ver precio
-            </p>
-          )}
-        </div>
+          </div>
+        )}
 
         {visibleFeatures.length > 0 && (
           <ul className="mt-4 space-y-2 text-sm text-text-secondary">
@@ -115,25 +113,14 @@ function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: bo
           <p className="mb-4 rounded-xl bg-brand-navy/5 px-4 py-3 text-xs leading-relaxed text-text-secondary">
             <span className="font-black text-brand-navy">Ideal para:</span> {getIdealFor(plan)}
           </p>
-          {canViewPrice ? (
-            <a
-              href={getWhatsAppHref(plan.name)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-black uppercase tracking-tight text-white shadow-sm shadow-brand-navy/15 transition-colors duration-200 hover:bg-brand-blue-vivid"
-            >
-              Contratar
-            </a>
-          ) : (
-            <Button
-              variant="primary"
-              size="sm"
-              href={`/login?callbackUrl=${encodeURIComponent('/planes')}`}
-              className="w-full rounded-full py-3 font-black uppercase tracking-tight"
-            >
-              Iniciar sesión
-            </Button>
-          )}
+          <a
+            href={planHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-black uppercase tracking-tight text-white shadow-sm shadow-brand-navy/15 transition-colors duration-200 hover:bg-brand-blue-vivid"
+          >
+            {canViewPrice ? 'Contratar' : 'Consultar plan'}
+          </a>
         </div>
       </div>
     </article>
@@ -171,15 +158,15 @@ export default async function PlanesPage() {
               <SectionTitle title={category.title} gradient />
 
               {plans.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                   {plans.map((plan) => (
                     <PlanCard key={plan.id} plan={plan} canViewPrice={canViewPrice} />
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl p-10 text-center text-text-secondary theia-card-glow">
+                <EmptyState>
                   No hay planes publicados en esta categoria.
-                </div>
+                </EmptyState>
               )}
 
               {index === 0 && (

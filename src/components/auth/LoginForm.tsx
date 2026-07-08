@@ -6,11 +6,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Button from '@/components/ui/Button';
 import GoogleLogo from '@/components/auth/GoogleLogo';
+import ToastMessage from '@/components/ui/ToastMessage';
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/planes';
+  const passwordReset = searchParams.get('passwordReset');
+  const passwordUpdated = searchParams.get('passwordUpdated');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -58,6 +61,9 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-8">
+      {(passwordReset || passwordUpdated) && (
+        <ToastMessage message="Contrasena actualizada. Ya puedes iniciar sesion." />
+      )}
       <div className="mb-6 text-center sm:mb-8">
         <div className="accent-line mx-auto mb-5" />
         <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">Iniciar sesion</h1>
@@ -103,7 +109,12 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-semibold text-text-primary">Contrasena</label>
+          <div className="mb-1 flex items-center justify-between gap-3">
+            <label htmlFor="password" className="block text-sm font-semibold text-text-primary">Contrasena</label>
+            <Link href="/recuperar-contrasena" className="text-xs font-semibold text-brand-blue hover:text-brand-blue-vivid">
+              Olvidaste?
+            </Link>
+          </div>
           <input
             id="password"
             type="password"

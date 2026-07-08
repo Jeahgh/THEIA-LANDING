@@ -1,6 +1,7 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
+import { useDismissableLayer } from '@/hooks/useDismissableLayer';
 
 interface ConfirmDeleteButtonProps {
   action?: () => Promise<void>;
@@ -18,6 +19,14 @@ export default function ConfirmDeleteButton({
   className = 'w-full rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 sm:w-auto',
 }: ConfirmDeleteButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeDialog = useCallback(() => setIsOpen(false), []);
+
+  useDismissableLayer({
+    enabled: isOpen,
+    refs: [dialogRef],
+    onDismiss: closeDialog,
+  });
 
   function confirmClientAction() {
     onConfirm?.();
@@ -32,7 +41,7 @@ export default function ConfirmDeleteButton({
 
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 px-4 py-6">
-          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-2xl shadow-slate-950/20">
+          <div ref={dialogRef} className="w-full max-w-sm rounded-xl bg-white p-5 shadow-2xl shadow-slate-950/20">
             <h2 className="text-lg font-bold text-slate-900">Confirmar eliminacion</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
               ¿Seguro que quieres eliminar {itemName}? Esta accion no se puede deshacer.
@@ -41,7 +50,7 @@ export default function ConfirmDeleteButton({
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={closeDialog}
                 className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
               >
                 Cancelar

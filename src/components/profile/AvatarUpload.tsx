@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import ToastMessage from '@/components/ui/ToastMessage';
 
 export default function AvatarUpload({
   image,
@@ -15,6 +16,8 @@ export default function AvatarUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState(image ?? '');
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState<'success' | 'error'>('success');
+  const [messageKey, setMessageKey] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const initial = (name ?? 'A').charAt(0).toUpperCase();
 
@@ -34,19 +37,23 @@ export default function AvatarUpload({
     setIsUploading(false);
 
     if (!response.ok) {
+      setMessageTone('error');
       setMessage(data.message ?? 'No pudimos subir la imagen.');
+      setMessageKey((current) => current + 1);
       return;
     }
 
     setPreview(data.imageUrl);
+    setMessageTone('success');
     setMessage('Foto actualizada.');
+    setMessageKey((current) => current + 1);
     router.refresh();
   };
 
   return (
     <div>
+      {message && <ToastMessage key={messageKey} message={message} tone={messageTone} />}
       <h2 className="text-xl font-bold text-text-primary">Foto de perfil</h2>
-      <p className="mt-1 text-sm text-text-secondary">Pasa el mouse por la foto y haz click para cambiarla.</p>
 
       <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row">
         <button
@@ -77,7 +84,6 @@ export default function AvatarUpload({
             }}
           />
           <p className="text-sm text-text-secondary">Formatos JPG, PNG o WebP. Maximo 2 MB.</p>
-          {message && <p className="mt-3 text-sm text-text-secondary">{message}</p>}
         </div>
       </div>
     </div>

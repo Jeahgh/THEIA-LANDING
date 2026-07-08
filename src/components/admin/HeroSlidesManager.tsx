@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import ImageUploadField from '@/components/admin/ImageUploadField';
+import EmptyState from '@/components/ui/EmptyState';
 import {
   createHeroSlide,
   deleteHeroSlide,
@@ -213,9 +214,9 @@ function HeroSlidesWorkspace({ slides }: { slides: AdminHeroSlide[] }) {
       )}
 
       {orderedSlides.length === 0 && (
-        <div className="rounded-lg border border-dashed border-brand-blue-soft bg-white/80 p-6 text-center text-slate-500 shadow-lg shadow-brand-blue/8">
+        <EmptyState tone="admin">
           No hay slides creados todavia.
-        </div>
+        </EmptyState>
       )}
 
       <div className={`grid gap-2 pr-1 ${editorMode?.type === 'edit' ? '' : 'max-h-[56vh] overflow-y-auto'}`}>

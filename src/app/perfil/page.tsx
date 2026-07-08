@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { requireActiveUser } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import AvatarUpload from '@/components/profile/AvatarUpload';
+import ToastMessage from '@/components/ui/ToastMessage';
 import { requestEmailVerification, updatePassword, updateProfile } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -36,8 +37,33 @@ export default async function ProfilePage({
 
   if (!user) redirect('/login');
 
+  let toast: { message: string; tone?: 'success' | 'error' | 'info' } | null = null;
+
+  if (params.verification === 'sent') {
+    toast = { message: 'Te enviamos un enlace para verificar tu cuenta.' };
+  } else if (params.verification === 'dev') {
+    toast = { message: 'Enlace generado en modo local. Revisalo en la consola del servidor.', tone: 'info' };
+  } else if (params.verification === 'verified') {
+    toast = { message: 'Cuenta verificada correctamente.' };
+  } else if (params.verification === 'expired') {
+    toast = { message: 'El enlace vencio. Puedes solicitar uno nuevo.', tone: 'info' };
+  } else if (params.verification === 'invalid' || params.verification === 'send-error' || params.verification === 'error') {
+    toast = { message: 'No pudimos validar el correo. Intentalo nuevamente.', tone: 'error' };
+  } else if (params.updated) {
+    toast = { message: 'Perfil actualizado.' };
+  } else if (params.error) {
+    toast = { message: 'Revisa los datos ingresados.', tone: 'error' };
+  } else if (params.passwordUpdated) {
+    toast = { message: 'Contrasena actualizada.' };
+  } else if (params.passwordError === 'verify-email') {
+    toast = { message: 'Verifica tu email antes de crear una contrasena local.', tone: 'error' };
+  } else if (params.passwordError) {
+    toast = { message: 'No pudimos cambiar la contrasena. Revisa los datos.', tone: 'error' };
+  }
+
   return (
     <section className="theia-light-section min-h-screen px-6 pb-16 pt-32 sm:px-8 lg:px-12">
+      {toast && <ToastMessage message={toast.message} tone={toast.tone} />}
       <div className="mx-auto max-w-6xl">
         <div className="mb-10 text-center">
           <div className="accent-line mx-auto mb-6" />
@@ -72,13 +98,6 @@ export default async function ProfilePage({
                   </button>
                 </form>
               )}
-              {params.verification === 'sent' && <p className="mt-4 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Te enviamos un enlace para verificar tu cuenta.</p>}
-              {params.verification === 'dev' && <p className="mt-4 rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-700">Enlace generado en modo local. Revisalo en la consola del servidor.</p>}
-              {params.verification === 'verified' && <p className="mt-4 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Cuenta verificada correctamente.</p>}
-              {params.verification === 'expired' && <p className="mt-4 rounded-xl bg-bg-section px-4 py-3 text-sm text-brand-navy">El enlace vencio. Puedes solicitar uno nuevo.</p>}
-              {(params.verification === 'invalid' || params.verification === 'send-error' || params.verification === 'error') && (
-                <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">No pudimos validar el correo. Intentalo nuevamente.</p>
-              )}
             </div>
           </div>
 
@@ -100,9 +119,6 @@ export default async function ProfilePage({
                   <p className="mt-2 text-xs text-text-muted">El cambio de email requiere verificacion y queda reservado para la siguiente etapa.</p>
                 </div>
               </div>
-
-              {params.updated && <p className="mt-5 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Perfil actualizado.</p>}
-              {params.error && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">Revisa los datos ingresados.</p>}
 
               <button className="mt-7 rounded-xl bg-brand-blue px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-all hover:-translate-y-0.5 hover:bg-brand-blue-vivid">
                 Guardar datos
@@ -128,14 +144,6 @@ export default async function ProfilePage({
                   <input name="confirmPassword" type="password" minLength={8} className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" required />
                 </div>
               </div>
-
-              {params.passwordUpdated && <p className="mt-5 rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">Contrasena actualizada.</p>}
-              {params.passwordError === 'verify-email' && (
-                <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">Verifica tu email antes de crear una contrasena local.</p>
-              )}
-              {params.passwordError && params.passwordError !== 'verify-email' && (
-                <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">No pudimos cambiar la contrasena. Revisa los datos.</p>
-              )}
 
               <button className="mt-7 rounded-xl border-2 border-brand-blue px-6 py-3 font-semibold text-brand-blue transition-all hover:-translate-y-0.5 hover:bg-brand-blue hover:text-white">
                 Cambiar contrasena

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ContactFormData, ApiResponse } from '@/types';
 import Button from '@/components/ui/Button';
 
@@ -8,6 +8,18 @@ export default function ContactForm() {
   const [formData, setFormData] = useState<ContactFormData>({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (status !== 'success') {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setStatus('idle');
+    }, 3000);
+
+    return () => window.clearTimeout(timeout);
+  }, [status]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -53,8 +65,8 @@ export default function ContactForm() {
       </div>
 
       {status === 'success' && (
-        <div className="p-4 bg-brand-blue-pale border border-brand-blue-soft rounded-xl text-brand-blue text-sm">
-          ¡Mensaje enviado con éxito! Te responderemos pronto.
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm">
+          Mensaje enviado con exito
         </div>
       )}
       {status === 'error' && (

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getActiveRaces } from '@/lib/races';
 import SectionTitle from '@/components/ui/SectionTitle';
 import EventCard from '@/components/competencias/EventCard';
+import EmptyState from '@/components/ui/EmptyState';
 
 export const metadata: Metadata = {
   title: 'Competencias',
@@ -37,9 +38,9 @@ export default async function CompetenciasPage() {
       {races.length === 0 && (
         <section className="section-padding theia-light-section">
           <div className="content-shell max-w-4xl">
-            <div className="rounded-lg p-6 text-center text-text-secondary theia-card-glow sm:rounded-2xl sm:p-10">
+            <EmptyState>
               No hay competencias activas por ahora.
-            </div>
+            </EmptyState>
           </div>
         </section>
       )}

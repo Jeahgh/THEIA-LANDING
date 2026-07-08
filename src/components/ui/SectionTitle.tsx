@@ -25,7 +25,7 @@ export default function SectionTitle({
     <div className={`mb-8 flex flex-col gap-3 sm:mb-12 sm:gap-4 ${alignmentClasses} ${className}`}>
       <div className="accent-line" />
       <h2
-        className={`text-2xl font-bold leading-tight sm:text-4xl lg:text-5xl ${
+        className={`text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl ${
           gradient ? 'text-gradient' : dark ? 'text-text-white' : 'text-text-primary'
         }`}
       >

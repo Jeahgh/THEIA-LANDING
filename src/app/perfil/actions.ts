@@ -7,20 +7,11 @@ import { requireActiveUser } from '@/lib/authz';
 import {
   createVerificationToken,
   getEmailVerificationIdentifier,
+  getTrustedAppOrigin,
   hashVerificationToken,
   sendVerificationEmail,
 } from '@/lib/email-verification';
 import { prisma } from '@/lib/prisma';
-
-function getTrustedAppOrigin() {
-  const configuredOrigin = process.env.AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL;
-
-  if (configuredOrigin) {
-    return configuredOrigin;
-  }
-
-  return process.env.NODE_ENV === 'production' ? null : 'http://localhost:3000';
-}
 
 export async function updateProfile(formData: FormData) {
   const currentUser = await requireActiveUser('/perfil');

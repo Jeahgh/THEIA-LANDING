@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import SectionTitle from '@/components/ui/SectionTitle';
+import EmptyState from '@/components/ui/EmptyState';
 
 async function getTestimonials() {
   try {
@@ -22,9 +23,9 @@ export default async function Testimonials() {
         <SectionTitle title="Lo que dicen nuestros atletas" subtitle="Testimonios de quienes viven la experiencia Theia" dark />
 
         {testimonials.length === 0 ? (
-          <div className="mx-auto max-w-3xl rounded-lg border border-white/15 bg-white/10 p-6 text-center text-white/75 shadow-xl shadow-black/20 sm:rounded-2xl sm:p-10">
+          <EmptyState tone="dark" className="mx-auto max-w-3xl">
             No hay testimonios activos por ahora.
-          </div>
+          </EmptyState>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 sm:gap-6">
             {testimonials.map((testimonial) => (

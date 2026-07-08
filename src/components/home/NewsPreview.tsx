@@ -10,6 +10,7 @@ import { SOCIAL_LINKS } from '@/lib/constants';
 import { getPublishedNews } from '@/lib/news';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 
 const NEWS_IMAGES: Record<string, string> = {
   '1': '/images/equipo-running.jpg',
@@ -51,9 +52,9 @@ export default async function NewsPreview() {
       <section id="noticias" className="section-padding theia-light-section">
         <div className="content-shell">
           <SectionTitle title="Noticias del Equipo" subtitle="Pronto compartiremos nuevas historias del equipo" />
-          <div className="rounded-lg p-6 text-center text-text-secondary theia-card-glow sm:rounded-2xl sm:p-10">
+          <EmptyState>
             No hay noticias publicadas por ahora.
-          </div>
+          </EmptyState>
         </div>
       </section>
     );

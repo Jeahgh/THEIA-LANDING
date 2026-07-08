@@ -1,6 +1,7 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
+import { useDismissableLayer } from '@/hooks/useDismissableLayer';
 
 export default function CreateContentPanel({
   children,
@@ -12,9 +13,17 @@ export default function CreateContentPanel({
   openLabel?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closePanel = useCallback(() => setIsOpen(false), []);
+
+  useDismissableLayer({
+    enabled: isOpen,
+    refs: [panelRef],
+    onDismiss: closePanel,
+  });
 
   return (
-    <div className="grid gap-4">
+    <div ref={panelRef} className="grid gap-4">
       <div className="flex justify-end">
         <button
           type="button"

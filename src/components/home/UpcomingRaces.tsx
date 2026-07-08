@@ -4,6 +4,7 @@
 
 import { getActiveRaces } from '@/lib/races';
 import Button from '@/components/ui/Button';
+import EmptyState from '@/components/ui/EmptyState';
 import type { RaceStatus } from '@/types';
 
 function formatDate(dateStr: string): { day: string; month: string } {
@@ -83,9 +84,9 @@ export default async function UpcomingRaces() {
             })}
           </div>
         ) : (
-          <div className="rounded-lg border border-white/15 bg-white/10 p-6 text-center text-white/80 sm:rounded-2xl sm:p-10">
+          <EmptyState tone="dark">
             No hay competencias activas por ahora.
-          </div>
+          </EmptyState>
         )}
 
         <div className="mt-10 text-center sm:mt-12">

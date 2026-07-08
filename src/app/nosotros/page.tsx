@@ -4,6 +4,7 @@ import { CLUB_INFO } from '@/lib/constants';
 import { getActiveAthletes, getClubStats } from '@/lib/team';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,9 +84,9 @@ export default async function NosotrosPage() {
         <div className="content-shell">
           <SectionTitle title="Equipo Theia" subtitle="Atletas activos publicados desde el panel de administracion" gradient />
           {athletes.length === 0 ? (
-            <div className="rounded-lg p-6 text-center text-text-secondary theia-card-glow sm:rounded-2xl sm:p-10">
+            <EmptyState>
               No hay atletas publicados por ahora.
-            </div>
+            </EmptyState>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               {athletes.map((athlete) => (

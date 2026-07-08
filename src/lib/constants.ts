@@ -395,7 +395,9 @@ export const TRAINING_LEVELS = [
 export const CLUB_INFO = {
   name: 'Theia Triathlon Performance',
   shortName: 'Theia',
-  email: 'contacto@theiatri.cl',
+  email: 'contacto@theiasport.cl',
+  financeEmail: 'finanzas@theiasport.cl',
+  administrationEmail: 'administracion@theiasport.cl',
   phone: '+56 9 8214 7660',
   address: 'Santiago, Chile',
   foundedYear: 2020,

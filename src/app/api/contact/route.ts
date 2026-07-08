@@ -1,114 +1,99 @@
-// =============================================================================
-// API Route: /api/contact
-// =============================================================================
-// Endpoint POST para recibir mensajes del formulario de contacto.
-// Actualmente valida y devuelve respuesta de éxito.
-// Cuando conectes PostgreSQL, descomenta las líneas de Prisma para
-// guardar los mensajes en la base de datos.
-//
-// Uso:
-//   POST /api/contact
-//   Body: { name: string, email: string, message: string }
-// =============================================================================
-
 import { NextRequest, NextResponse } from 'next/server';
-// import { prisma } from '@/lib/prisma'; // Descomentar cuando conectes la DB
+import { CLUB_INFO } from '@/lib/constants';
+import { sendEmail } from '@/lib/email-verification';
 
-/**
- * Maneja las solicitudes POST al formulario de contacto.
- * Valida los datos, y opcionalmente los guarda en la base de datos.
- */
+export const runtime = 'nodejs';
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function cleanField(value: unknown) {
+  return String(value ?? '').trim();
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function cleanSubjectValue(value: string) {
+  return value.replace(/[\r\n]+/g, ' ').slice(0, 120);
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Parsear el body de la solicitud
     const body = await request.json();
-    const { name, email, message } = body;
+    const name = cleanField(body.name);
+    const email = cleanField(body.email).toLowerCase();
+    const message = cleanField(body.message);
 
-    // ----------------------------------------------------------------
-    // Validación de campos obligatorios
-    // ----------------------------------------------------------------
     if (!name || !email || !message) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Todos los campos son obligatorios (name, email, message).',
-        },
+        { success: false, message: 'Todos los campos son obligatorios.' },
         { status: 400 }
       );
     }
 
-    // Validación de formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'El formato del email no es válido.',
-        },
+        { success: false, message: 'El formato del email no es valido.' },
         { status: 400 }
       );
     }
 
-    // Validación de longitud mínima
-    if (name.trim().length < 2) {
+    if (name.length < 2) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'El nombre debe tener al menos 2 caracteres.',
-        },
+        { success: false, message: 'El nombre debe tener al menos 2 caracteres.' },
         { status: 400 }
       );
     }
 
-    if (message.trim().length < 10) {
+    if (message.length < 10) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'El mensaje debe tener al menos 10 caracteres.',
-        },
+        { success: false, message: 'El mensaje debe tener al menos 10 caracteres.' },
         { status: 400 }
       );
     }
 
-    // ----------------------------------------------------------------
-    // Guardar en base de datos (descomentar cuando PostgreSQL esté configurado)
-    // ----------------------------------------------------------------
-    // const contactMessage = await prisma.contactMessage.create({
-    //   data: {
-    //     name: name.trim(),
-    //     email: email.trim().toLowerCase(),
-    //     message: message.trim(),
-    //   },
-    // });
-    //
-    // console.log('Mensaje guardado:', contactMessage.id);
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message).replace(/\n/g, '<br />');
 
-    // Log temporal mientras no hay DB
-    console.log('📩 Nuevo mensaje de contacto:', {
-      name: name.trim(),
-      email: email.trim(),
-      message: message.trim().substring(0, 50) + '...',
-      timestamp: new Date().toISOString(),
+    const emailSent = await sendEmail({
+      to: CLUB_INFO.email,
+      replyTo: email,
+      subject: `Nuevo mensaje de contacto - ${cleanSubjectValue(name)}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
+          <h1 style="margin:0 0 16px">Nuevo mensaje de contacto</h1>
+          <p><strong>Nombre:</strong> ${safeName}</p>
+          <p><strong>Email:</strong> ${safeEmail}</p>
+          <p><strong>Mensaje:</strong></p>
+          <div style="padding:14px 16px;border-radius:12px;background:#f1f5f9">
+            ${safeMessage}
+          </div>
+        </div>
+      `,
+      text: `Nuevo mensaje de contacto\n\nNombre: ${name}\nEmail: ${email}\n\nMensaje:\n${message}`,
+      logLabel: 'contact-form',
+      devUrl: `Mensaje de ${name} <${email}>: ${message}`,
     });
 
-    // ----------------------------------------------------------------
-    // Respuesta exitosa
-    // ----------------------------------------------------------------
-    return NextResponse.json(
-      {
-        success: true,
-        message: '¡Mensaje recibido con éxito! Te contactaremos pronto.',
-      },
-      { status: 200 }
-    );
+    if (!emailSent) {
+      return NextResponse.json(
+        { success: false, message: 'El correo de contacto no esta configurado.' },
+        { status: 500 }
+      );
+    }
 
+    return NextResponse.json({ success: true, message: 'Mensaje enviado con exito' }, { status: 200 });
   } catch (error) {
     console.error('Error en /api/contact:', error);
     return NextResponse.json(
-      {
-        success: false,
-        message: 'Error interno del servidor. Por favor intenta de nuevo.',
-      },
+      { success: false, message: 'No pudimos enviar el mensaje. Intenta nuevamente.' },
       { status: 500 }
     );
   }

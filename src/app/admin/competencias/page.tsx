@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import TimedStatusMessage from '@/components/admin/TimedStatusMessage';
+import EmptyState from '@/components/ui/EmptyState';
 import { createRace, deleteRace } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -61,23 +62,26 @@ export default async function AdminCompetitionsPage({
 
       {eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
 
-      <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
-        <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
-          <h2 className="text-lg font-bold text-text-primary sm:text-xl">Competencias existentes</h2>
-        </div>
-        <div className="divide-y divide-border-subtle">
-          {races.length === 0 && <p className="px-4 py-5 text-text-muted sm:px-6">No hay competencias.</p>}
-          {races.map((race) => (
-            <div key={race.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div>
-                <h3 className="font-bold text-text-primary">{race.name}</h3>
-                <p className="text-sm text-text-secondary">{race.location} - {race.date.toLocaleDateString('es-CL')} - {race.status}</p>
+      {races.length === 0 ? (
+        <EmptyState tone="admin">No hay competencias.</EmptyState>
+      ) : (
+        <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
+          <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
+            <h2 className="text-lg font-bold text-text-primary sm:text-xl">Competencias existentes</h2>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {races.map((race) => (
+              <div key={race.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div>
+                  <h3 className="font-bold text-text-primary">{race.name}</h3>
+                  <p className="text-sm text-text-secondary">{race.location} - {race.date.toLocaleDateString('es-CL')} - {race.status}</p>
+                </div>
+                <ConfirmDeleteButton action={deleteRace.bind(null, race.id)} itemName={`la competencia "${race.name}"`} />
               </div>
-              <ConfirmDeleteButton action={deleteRace.bind(null, race.id)} itemName={`la competencia "${race.name}"`} />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

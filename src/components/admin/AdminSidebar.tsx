@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 const adminLinks = [
   { href: '/admin/planes', label: 'Planes' },
   { href: '/admin/equipo', label: 'Equipo Theia' },
+  { href: '/admin/testimonios', label: 'Testimonios' },
   { href: '/admin/noticias', label: 'Noticias' },
   { href: '/admin/competencias', label: 'Competencias' },
   { href: '/admin/usuarios', label: 'Usuarios y roles' },
