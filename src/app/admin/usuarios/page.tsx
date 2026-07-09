@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Role } from '@prisma/client';
-import type { Prisma } from '@prisma/client';
+import { Role } from '@/generated/prisma';
+import type { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import EmptyState from '@/components/ui/EmptyState';
 import { updateUserRole } from './actions';

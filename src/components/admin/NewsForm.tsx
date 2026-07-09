@@ -1,4 +1,4 @@
-import type { NewsPost } from '@prisma/client';
+import type { NewsPost } from '@/generated/prisma';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 interface NewsFormProps {

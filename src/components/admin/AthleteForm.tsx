@@ -1,4 +1,4 @@
-import type { Athlete } from '@prisma/client';
+import type { Athlete } from '@/generated/prisma';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 interface AthleteFormProps {

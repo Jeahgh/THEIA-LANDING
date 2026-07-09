@@ -1,4 +1,4 @@
-import type { Testimonial } from '@prisma/client';
+import type { Testimonial } from '@/generated/prisma';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 interface TestimonialFormProps {

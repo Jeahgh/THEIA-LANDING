@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import type { Role } from '@prisma/client';
+import type { Role } from '@/generated/prisma';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 

@@ -1,8 +1,9 @@
 import nextEnv from '@next/env';
-import { PrismaClient } from '@prisma/client';
+import prismaClientPkg from '../src/generated/prisma/index.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const { loadEnvConfig } = nextEnv;
+const { PrismaClient } = prismaClientPkg;
 
 loadEnvConfig(process.cwd());
 

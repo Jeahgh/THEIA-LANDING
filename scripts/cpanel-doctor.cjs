@@ -62,8 +62,9 @@ for (const packageName of [
 
 console.log('\n=== Generated Prisma Client ===');
 for (const file of [
-  'node_modules/.prisma/client/index.js',
-  'node_modules/@prisma/client/index.js',
+  'src/generated/prisma/index.js',
+  'src/generated/prisma/index.d.ts',
+  'src/generated/prisma/runtime/client.js',
 ]) {
   console.log(`${exists(file) ? 'OK' : 'MISSING'} ${file}`);
 }

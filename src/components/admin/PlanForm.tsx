@@ -1,4 +1,4 @@
-import type { Plan, PlanFeature } from '@prisma/client';
+import type { Plan, PlanFeature } from '@/generated/prisma';
 
 type EditablePlan = Plan & {
   features?: Pick<PlanFeature, 'text' | 'sortOrder'>[];
