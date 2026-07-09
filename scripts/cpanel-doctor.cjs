@@ -48,12 +48,24 @@ for (const packageName of [
   'react-dom',
   'prisma',
   '@prisma/client',
+  '@prisma/debug',
+  '@prisma/engines',
+  '@prisma/engines-version',
+  '@prisma/fetch-engine',
   '@prisma/get-platform',
   '@prisma/adapter-pg',
   'pg',
   'next-auth',
 ]) {
   resolvePackage(packageName);
+}
+
+console.log('\n=== Generated Prisma Client ===');
+for (const file of [
+  'node_modules/.prisma/client/index.js',
+  'node_modules/@prisma/client/index.js',
+]) {
+  console.log(`${exists(file) ? 'OK' : 'MISSING'} ${file}`);
 }
 
 console.log('\n=== Prisma CLI syntax check ===');
