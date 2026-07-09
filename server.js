@@ -5,7 +5,7 @@ const next = require('next');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = Number.parseInt(process.env.PORT || '3000', 10);
-const hostname = process.env.HOSTNAME || '127.0.0.1';
+const hostname = process.env.HOST || '127.0.0.1';
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
