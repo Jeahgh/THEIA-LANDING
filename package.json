@@ -17,6 +17,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "node prisma/seed.mjs",
     "db:studio": "prisma studio",
+    "cpanel:doctor": "node scripts/cpanel-doctor.cjs",
+    "cpanel:install-app": "node scripts/cpanel-install.cjs",
     "cpanel:prepare": "node node_modules/prisma/build/index.js generate && node node_modules/next/dist/bin/next build --webpack"
   },
   "dependencies": {
