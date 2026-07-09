@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "build:cpanel": "node node_modules/next/dist/bin/next build --webpack",
+    "build:cpanel": "node scripts/cpanel-build-local.cjs",
     "start": "next start --port 3000",
     "start:cpanel": "NODE_ENV=production node server.js",
     "lint": "eslint",
@@ -21,7 +21,7 @@
     "cpanel:fix-prisma-platform": "node scripts/cpanel-fix-prisma-platform.cjs",
     "cpanel:generate-debug": "node scripts/cpanel-generate-debug.cjs",
     "cpanel:install-app": "node scripts/cpanel-install.cjs",
-    "cpanel:prepare": "node node_modules/next/dist/bin/next build --webpack"
+    "cpanel:prepare": "node scripts/cpanel-prepare.cjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

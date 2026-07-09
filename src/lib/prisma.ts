@@ -8,8 +8,11 @@
 import { PrismaClient } from '@/generated/prisma';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-const connectionString =
-  process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5432/theia?schema=public';
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error('DATABASE_URL no esta configurada.');
+}
 
 const adapter = new PrismaPg({ connectionString });
 

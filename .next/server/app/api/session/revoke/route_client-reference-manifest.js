@@ -1,0 +1,1 @@
+globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/session/revoke/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"C:\\CODE\\WAMP\\www\\Proyectos\\Theia\\src\\app\\api\\session\\revoke\\route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};

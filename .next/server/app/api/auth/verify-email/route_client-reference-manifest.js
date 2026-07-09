@@ -1,0 +1,1 @@
+globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/auth/verify-email/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"C:\\CODE\\WAMP\\www\\Proyectos\\Theia\\src\\app\\api\\auth\\verify-email\\route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};
