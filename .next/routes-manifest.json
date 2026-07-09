@@ -155,6 +155,12 @@
       "namedRegex": "^/api/contact(?:/)?$"
     },
     {
+      "page": "/api/cpanel-health",
+      "regex": "^/api/cpanel\\-health(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cpanel\\-health(?:/)?$"
+    },
+    {
       "page": "/api/profile/avatar",
       "regex": "^/api/profile/avatar(?:/)?$",
       "routeKeys": {},
