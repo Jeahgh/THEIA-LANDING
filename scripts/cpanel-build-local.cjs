@@ -3,6 +3,25 @@ const fs = require('fs');
 const path = require('path');
 
 const root = process.cwd();
+const nextBuildId = path.join(root, '.next', 'BUILD_ID');
+const nextServerDir = path.join(root, '.next', 'server');
+const isCpanel =
+  root.startsWith('/home/theiaspo/') ||
+  process.execPath.includes('/opt/alt/alt-nodejs') ||
+  Boolean(process.env.PASSENGER_APP_ENV);
+
+if (isCpanel) {
+  console.log('Skipping local Next.js build on cPanel.');
+  console.log('Use the prebuilt .next output committed from the local machine.');
+
+  if (fs.existsSync(nextBuildId) && fs.existsSync(nextServerDir)) {
+    console.log('OK prebuilt .next output exists. Restart the Node.js app.');
+    process.exit(0);
+  }
+
+  console.error('Missing prebuilt .next output. Pull the latest deployment commit first.');
+  process.exit(1);
+}
 
 function copyDir(source, target) {
   if (!fs.existsSync(source)) return;
