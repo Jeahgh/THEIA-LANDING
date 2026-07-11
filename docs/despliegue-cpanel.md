@@ -119,9 +119,12 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
 
 1. Publica la version preparada en `main`.
 2. En **Git Version Control**, usa **Update from Remote**.
-3. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
-4. En **Setup Node.js App**, pulsa **Restart Application**.
-5. Ejecuta el script npm `cpanel:doctor` desde la interfaz.
+3. Si quieres usar **Deploy HEAD Commit**, el repositorio incluye `.cpanel.yml`.
+   Ese archivo solo valida que el arranque y el artefacto existan; no ejecuta
+   `npm install`, `build` ni migraciones.
+4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
+5. En **Setup Node.js App**, pulsa **Restart Application**.
+6. Ejecuta el script npm `cpanel:doctor` desde la interfaz.
 
 No ejecutes `db:generate`, `db:deploy`, `build`, `build:cpanel` ni instaladores
 manuales dentro de cPanel.
