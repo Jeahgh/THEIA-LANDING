@@ -38,3 +38,8 @@ vite-dev*.log
 # deploy/cpanel is intentionally tracked: it is the Linux standalone artifact
 # consumed by cPanel. Rebuild it only with `npm run build:cpanel`.
 /deploy/cpanel/.next/cache/
+
+# Runtime uploads must not make the cPanel Git working tree dirty.
+# Existing files remain tracked; new files created by the app are ignored.
+/public/uploads/**
+/deploy/cpanel/public/uploads/**

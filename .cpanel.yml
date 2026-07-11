@@ -1,6 +1,6 @@
 ---
 deployment:
   tasks:
-    - export APPPATH="$HOME/repositories/THEIA-LANDING"
-    - /bin/test -f "$APPPATH/server.js"
-    - /bin/test -f "$APPPATH/deploy/cpanel/server.js"
+    - export DEPLOYPATH=/home/theiaspo/repositories/THEIA-LANDING/
+    - /bin/test -f $DEPLOYPATH/server.js
+    - /bin/test -f $DEPLOYPATH/deploy/cpanel/server.js

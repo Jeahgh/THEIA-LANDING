@@ -85,6 +85,10 @@ de cambiar el arranque. Luego puedes eliminar/recrear solo la aplicacion Node
 desde cPanel para liberar la instalacion parcial antigua. No borres la carpeta
 del repositorio ni ningun upload sin respaldo.
 
+Los uploads nuevos de la aplicacion quedan ignorados por Git para que no vuelvan
+`dirty` el repositorio administrado por cPanel. No los agregues manualmente al
+repositorio.
+
 ## 5. Variables de entorno
 
 Configura en cPanel, sin comillas envolventes:
