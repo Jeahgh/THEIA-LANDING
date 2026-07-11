@@ -26,20 +26,21 @@ services:
       retries: 20
 
   migrate:
-    image: theia-web:local
+    image: theia-migrator:local
     build:
       context: .
+      target: migrator
     environment: *app-env
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npx prisma migrate deploy && node prisma/seed.mjs"
     restart: "no"
 
   web:
     image: theia-web:local
     build:
       context: .
+      target: runner
     environment: *app-env
     depends_on:
       db:

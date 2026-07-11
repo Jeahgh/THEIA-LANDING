@@ -1,5 +1,6 @@
 .git
 .next
+deploy
 node_modules
 npm-debug.log*
 yarn-debug.log*
@@ -9,7 +10,6 @@ yarn-error.log*
 !.env.example
 coverage
 tmp
-public/uploads
 *.tsbuildinfo
 Dockerfile
 docker-compose*.yml

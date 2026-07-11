@@ -1,0 +1,5 @@
+* text=auto
+
+# Artefacto generado en Linux: conservar bytes y permisos/logica sin que
+# Windows normalice finales de linea ni intente mostrar diffs de vendor.
+deploy/cpanel/** -text -diff

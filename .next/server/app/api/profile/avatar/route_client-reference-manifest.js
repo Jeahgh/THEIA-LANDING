@@ -1,1 +1,0 @@
-globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/profile/avatar/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"C:\\CODE\\WAMP\\www\\Proyectos\\Theia\\src\\app\\api\\profile\\avatar\\route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};

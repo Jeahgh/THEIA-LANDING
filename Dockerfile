@@ -11,14 +11,41 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --no-audit --no-fund
 
 FROM deps AS builder
 
 COPY . .
-RUN npx prisma generate
-RUN npm run build
-RUN npm prune --omit=dev
+
+# Prisma exige una URL al cargar prisma.config.ts, aunque `generate` y el build
+# no se conectan a esta base ficticia. El valor no se copia al artefacto final.
+ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public
+
+RUN npm run db:generate
+RUN npm run build -- --webpack
+
+# El servidor standalone no copia estos directorios por defecto.
+RUN mkdir -p .next/standalone/public \
+  && cp -R public/. .next/standalone/public/ \
+  && mkdir -p .next/standalone/.next \
+  && cp -R .next/static .next/standalone/.next/static \
+  && find .next/standalone -maxdepth 1 -type f -name '.env*' -delete \
+  && mkdir -p /app/cpanel-artifact \
+  && cp -aL .next/standalone/. /app/cpanel-artifact/
+
+# Salida exportable con `docker build --target cpanel-artifact --output ...`.
+FROM scratch AS cpanel-artifact
+COPY --from=builder /app/cpanel-artifact/ /
+
+FROM deps AS migrator
+
+COPY prisma ./prisma
+COPY prisma.config.ts ./prisma.config.ts
+
+ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public
+RUN npm run db:generate
+
+CMD ["sh", "-c", "npm run db:deploy && npm run db:seed"]
 
 FROM node:22-bookworm-slim AS runner
 
@@ -33,14 +60,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates openssl \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --chown=node:node --from=builder /app/package.json ./package.json
-COPY --chown=node:node --from=builder /app/package-lock.json ./package-lock.json
-COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-COPY --chown=node:node --from=builder /app/.next ./.next
-COPY --chown=node:node --from=builder /app/public ./public
-COPY --chown=node:node --from=builder /app/prisma ./prisma
-COPY --chown=node:node --from=builder /app/next.config.ts ./next.config.ts
-COPY --chown=node:node --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --chown=node:node --from=builder /app/.next/standalone ./
 
 RUN mkdir -p public/uploads \
   && chown -R node:node public/uploads .next
@@ -49,4 +69,4 @@ USER node
 
 EXPOSE 3000
 
-CMD ["./node_modules/.bin/next", "start", "--port", "3000", "--hostname", "0.0.0.0"]
+CMD ["node", "server.js"]

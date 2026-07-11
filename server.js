@@ -2,29 +2,23 @@
 
 const fs = require('fs');
 const path = require('path');
-const { createServer } = require('http');
-const next = require('next');
 
-const standaloneServer = path.join(__dirname, '.next', 'standalone', 'server.js');
+// cPanel/Passenger ejecuta este archivo. La aplicacion real es el artefacto
+// standalone construido en Linux y versionado en deploy/cpanel.
+const standaloneServer = path.join(__dirname, 'deploy', 'cpanel', 'server.js');
 
-if (process.env.NODE_ENV === 'production' && fs.existsSync(standaloneServer)) {
-  process.env.HOSTNAME = process.env.HOSTNAME || process.env.HOST || '127.0.0.1';
-  process.chdir(path.dirname(standaloneServer));
-  require(standaloneServer);
-  return;
+if (!fs.existsSync(standaloneServer)) {
+  console.error('Falta deploy/cpanel/server.js.');
+  console.error('Ejecuta npm run build:cpanel localmente y publica el artefacto generado.');
+  process.exit(1);
 }
 
-const dev = process.env.NODE_ENV !== 'production';
-const port = Number.parseInt(process.env.PORT || '3000', 10);
-const hostname = process.env.HOST || '127.0.0.1';
+process.env.NODE_ENV = 'production';
+// El HOSTNAME del sistema puede ser el nombre publico del servidor y no una
+// interfaz valida para listen(). cPanel puede definir HOST; si no, usa loopback.
+process.env.HOSTNAME = process.env.HOST || '127.0.0.1';
 
-const app = next({ dev, hostname, port });
-const handle = app.getRequestHandler();
-
-app.prepare().then(() => {
-  createServer((req, res) => {
-    handle(req, res);
-  }).listen(port, hostname, () => {
-    console.log(`Theia running on http://${hostname}:${port}`);
-  });
-});
+// Las rutas de uploads usan process.cwd(); mantenerlo dentro del artefacto
+// hace que public/uploads sea unico y predecible en cPanel.
+process.chdir(path.dirname(standaloneServer));
+require(standaloneServer);

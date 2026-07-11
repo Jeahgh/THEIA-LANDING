@@ -11,9 +11,9 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "deploy/**",
     "next-env.d.ts",
     "src/generated/prisma/**",
-    "cpanel-smoke-server.js",
     "scripts/*.cjs",
   ]),
 ]);

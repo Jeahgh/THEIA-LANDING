@@ -1,69 +1,40 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# Dependencies
+/node_modules/
 /.pnp
 .pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+/nodevenv/
 
-# testing
-/coverage
-
-# next.js
-/.next/*
-!/.next/BUILD_ID
-!/.next/app-build-manifest.json
-!/.next/app-path-routes-manifest.json
-!/.next/build-manifest.json
-!/.next/build-summary.json
-!/.next/export-marker.json
-!/.next/fallback-build-manifest.json
-!/.next/images-manifest.json
-!/.next/next-minimal-server.js.nft.json
-!/.next/next-server.js.nft.json
-!/.next/package.json
-!/.next/prerender-manifest.json
-!/.next/react-loadable-manifest.json
-!/.next/required-server-files.js
-!/.next/required-server-files.json
-!/.next/routes-manifest.json
-!/.next/server/
-!/.next/server/**
-!/.next/static/
-!/.next/static/**
-!/.next/trace
-/.next/cache/
-/.next/dev/
-/.next/diagnostics/
-/.next/standalone/
-/.next/trace-build
-/.next/types/
+# Generated source and local builds
+/.next/
 /out/
+/build/
+/src/generated/prisma/
+/coverage/
+*.tsbuildinfo
+next-env.d.ts
 
-# production
-/build
+# Temporary cPanel artifact directories
+/deploy/.cpanel-build-*/
 
-# misc
-.DS_Store
-*.pem
+# Environment and secrets
+.env
+.env.*
+!.env.example
 
-# debug
+# Logs and diagnostics
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+/tmp/
 
-# env files
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Tooling and OS files
+.DS_Store
+*.pem
+/.vercel/
 vite-dev*.log
+
+# deploy/cpanel is intentionally tracked: it is the Linux standalone artifact
+# consumed by cPanel. Rebuild it only with `npm run build:cpanel`.
+/deploy/cpanel/.next/cache/
