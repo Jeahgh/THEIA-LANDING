@@ -123,9 +123,11 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
 
 1. Publica la version preparada en `main`.
 2. En **Git Version Control**, usa **Update from Remote**.
-3. Si quieres usar **Deploy HEAD Commit**, el repositorio incluye `.cpanel.yml`.
-   Ese archivo solo valida que el arranque y el artefacto existan; no ejecuta
-   `npm install`, `build` ni migraciones.
+3. Usa **Deploy HEAD Commit**. El `.cpanel.yml` valida el artefacto y copia
+   solo `deploy/cpanel/.next/static` a `public_html/_next/static`, para que
+   Apache entregue los CSS y JavaScript de Next.js. No ejecuta `npm install`,
+   `build` ni migraciones. La raiz de **Setup Node.js App** debe seguir siendo
+   la carpeta del repositorio; no la cambies a `deploy/cpanel`.
 4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
 5. En **Setup Node.js App**, pulsa **Restart Application**.
 6. Ejecuta el script npm `cpanel:doctor` desde la interfaz.
