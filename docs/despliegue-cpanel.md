@@ -130,6 +130,10 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
    la carpeta del repositorio; no la cambies a `deploy/cpanel`. Al final crea
    `tmp/restart.txt` para que Passenger descarte el proceso anterior y cargue
    el mismo build cuyos archivos estaticos acaba de publicar.
+
+   Antes de reiniciar, el despliegue copia `scripts/cpanel-entry.cjs` sobre el
+   `server.js` de la raiz. Esto evita que CloudLinux conserve un launcher viejo
+   que arranque el `.next` obsoleto de la raiz en lugar de `deploy/cpanel`.
 4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
 5. En **Setup Node.js App**, pulsa **Restart Application**.
 6. Ejecuta el script npm `cpanel:doctor` desde la interfaz.
