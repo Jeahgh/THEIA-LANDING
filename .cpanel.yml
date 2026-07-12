@@ -6,3 +6,5 @@ deployment:
     - /bin/test -f $DEPLOYPATH/deploy/cpanel/server.js
     - /bin/mkdir -p /home/theiaspo/public_html/_next
     - /bin/cp -R deploy/cpanel/.next/static /home/theiaspo/public_html/_next/
+    - /bin/mkdir -p $DEPLOYPATH/tmp
+    - /bin/touch $DEPLOYPATH/tmp/restart.txt

@@ -127,7 +127,9 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
    solo `deploy/cpanel/.next/static` a `public_html/_next/static`, para que
    Apache entregue los CSS y JavaScript de Next.js. No ejecuta `npm install`,
    `build` ni migraciones. La raiz de **Setup Node.js App** debe seguir siendo
-   la carpeta del repositorio; no la cambies a `deploy/cpanel`.
+   la carpeta del repositorio; no la cambies a `deploy/cpanel`. Al final crea
+   `tmp/restart.txt` para que Passenger descarte el proceso anterior y cargue
+   el mismo build cuyos archivos estaticos acaba de publicar.
 4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
 5. En **Setup Node.js App**, pulsa **Restart Application**.
 6. Ejecuta el script npm `cpanel:doctor` desde la interfaz.
