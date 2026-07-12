@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const artifact = path.join(root, 'deploy', 'cpanel');
@@ -192,6 +193,83 @@ function checkArtifact() {
   }
 }
 
+function listNames(directory, pattern) {
+  if (!fs.existsSync(directory)) return [];
+  return fs.readdirSync(directory).filter((name) => pattern.test(name)).sort();
+}
+
+function checkDeploymentState() {
+  const rootServer = path.join(root, 'server.js');
+  const canonicalServer = path.join(root, 'scripts', 'cpanel-entry.cjs');
+  const artifactBuildId = path.join(artifact, '.next', 'BUILD_ID');
+  const rootBuildId = path.join(root, '.next', 'BUILD_ID');
+  const artifactCss = path.join(artifact, '.next', 'static', 'css');
+  const publicCss = path.join(os.homedir(), 'public_html', '_next', 'static', 'css');
+  const restartFile = path.join(root, 'tmp', 'restart.txt');
+
+  try {
+    const head = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    info('Git HEAD real', head);
+  } catch {
+    warn('Git HEAD real', 'no se pudo consultar');
+  }
+
+  if (fs.existsSync(rootServer) && fs.existsSync(canonicalServer)) {
+    const rootBytes = fs.readFileSync(rootServer);
+    const canonicalBytes = fs.readFileSync(canonicalServer);
+    const markerPresent = rootBytes.includes(Buffer.from('THEIA cPanel entry: deploy/cpanel (v2)'));
+
+    if (markerPresent) ok('Launcher raiz v2');
+    else fail('Launcher raiz v2', 'server.js no contiene la marca actual');
+
+    if (rootBytes.equals(canonicalBytes)) ok('Launcher raiz coincide con canonico');
+    else fail('Launcher raiz coincide con canonico', 'server.js difiere de scripts/cpanel-entry.cjs');
+
+    info('Launcher raiz modificado', fs.statSync(rootServer).mtime.toISOString());
+  } else {
+    fail('Launcher de cPanel', 'server.js o scripts/cpanel-entry.cjs ausente');
+  }
+
+  if (fs.existsSync(artifactBuildId)) {
+    info('BUILD_ID artefacto', fs.readFileSync(artifactBuildId, 'utf8').trim());
+  }
+
+  const artifactCssNames = listNames(artifactCss, /\.css$/);
+  info('CSS artefacto', artifactCssNames.join(', ') || 'ninguno');
+
+  const publicCssNames = listNames(publicCss, /\.css$/);
+  info('CSS public_html', publicCssNames.join(', ') || 'ninguno');
+
+  if (fs.existsSync(rootBuildId)) {
+    warn('Build Next antiguo en raiz', fs.readFileSync(rootBuildId, 'utf8').trim());
+    const rootCssNames = listNames(path.join(root, '.next', 'static', 'css'), /\.css$/);
+    info('CSS .next raiz', rootCssNames.join(', ') || 'ninguno');
+  } else {
+    ok('Sin BUILD_ID Next en raiz');
+  }
+
+  if (fs.existsSync(restartFile)) {
+    info('Reinicio Passenger solicitado', fs.statSync(restartFile).mtime.toISOString());
+  } else {
+    warn('Reinicio Passenger solicitado', 'tmp/restart.txt ausente');
+  }
+
+  const htaccessCandidates = [path.join(root, '.htaccess'), path.join(os.homedir(), 'public_html', '.htaccess')];
+  for (const candidate of htaccessCandidates) {
+    if (!fs.existsSync(candidate)) continue;
+    const directives = fs
+      .readFileSync(candidate, 'utf8')
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => /^(Passenger|CloudLinux|NodeApp)/i.test(line));
+    info(`Directivas runtime ${candidate}`, directives.join(' | ') || 'sin directivas visibles');
+  }
+}
+
 async function checkDatabase() {
   if (!process.env.DATABASE_URL) return;
 
@@ -224,6 +302,7 @@ async function main() {
   checkResources();
   checkEnvironment();
   checkArtifact();
+  checkDeploymentState();
   await checkDatabase();
 
   console.log('\n=== Resumen ===');
