@@ -201,6 +201,7 @@ function listNames(directory, pattern) {
 function checkDeploymentState() {
   const rootServer = path.join(root, 'server.js');
   const canonicalServer = path.join(root, 'scripts', 'cpanel-entry.cjs');
+  const selectedEntrypoint = path.join(root, 'cpanel-app.cjs');
   const artifactBuildId = path.join(artifact, '.next', 'BUILD_ID');
   const rootBuildId = path.join(root, '.next', 'BUILD_ID');
   const artifactCss = path.join(artifact, '.next', 'static', 'css');
@@ -233,6 +234,9 @@ function checkDeploymentState() {
   } else {
     fail('Launcher de cPanel', 'server.js o scripts/cpanel-entry.cjs ausente');
   }
+
+  if (fs.existsSync(selectedEntrypoint)) ok('Entrada CloudLinux cpanel-app.cjs');
+  else fail('Entrada CloudLinux cpanel-app.cjs', 'ausente');
 
   if (fs.existsSync(artifactBuildId)) {
     info('BUILD_ID artefacto', fs.readFileSync(artifactBuildId, 'utf8').trim());

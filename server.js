@@ -7,7 +7,10 @@ console.log('THEIA cPanel entry: deploy/cpanel (v2)');
 
 // cPanel/Passenger ejecuta este archivo. La aplicacion real es el artefacto
 // standalone construido en Linux y versionado en deploy/cpanel.
-const standaloneServer = path.join(__dirname, 'deploy', 'cpanel', 'server.js');
+const appRoot = fs.existsSync(path.join(__dirname, 'deploy', 'cpanel'))
+  ? __dirname
+  : path.resolve(__dirname, '..');
+const standaloneServer = path.join(appRoot, 'deploy', 'cpanel', 'server.js');
 
 if (!fs.existsSync(standaloneServer)) {
   console.error('Falta deploy/cpanel/server.js.');

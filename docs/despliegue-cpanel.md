@@ -73,7 +73,7 @@ En cPanel abre **Setup Node.js App** y configura:
 - Application mode: `Production`.
 - Application root: la carpeta donde Git descarga este repositorio.
 - Application URL: el dominio o subdominio definitivo.
-- Application startup file: `server.js`.
+- Application startup file: `cpanel-app.cjs`.
 
 No pulses **Run NPM Install** para esta arquitectura. El artefacto ya incluye
 solo las dependencias runtime necesarias.
@@ -134,6 +134,8 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
    Antes de reiniciar, el despliegue copia `scripts/cpanel-entry.cjs` sobre el
    `server.js` de la raiz. Esto evita que CloudLinux conserve un launcher viejo
    que arranque el `.next` obsoleto de la raiz en lugar de `deploy/cpanel`.
+   La aplicacion usa `cpanel-app.cjs` como nombre de entrada para que LiteSpeed
+   regenere el runtime y no reutilice la instancia historica de `server.js`.
 4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
 5. En **Setup Node.js App**, pulsa **Restart Application**.
 6. Ejecuta el script npm `cpanel:doctor` desde la interfaz.

@@ -4,6 +4,7 @@ deployment:
     - export DEPLOYPATH=/home/theiaspo/repositories/THEIA-LANDING/
     - /bin/cp scripts/cpanel-entry.cjs $DEPLOYPATH/server.js
     - /bin/test -f $DEPLOYPATH/server.js
+    - /bin/test -f $DEPLOYPATH/cpanel-app.cjs
     - /bin/test -f $DEPLOYPATH/deploy/cpanel/server.js
     - /bin/mkdir -p /home/theiaspo/public_html/_next
     - /bin/cp -R deploy/cpanel/.next/static /home/theiaspo/public_html/_next/
