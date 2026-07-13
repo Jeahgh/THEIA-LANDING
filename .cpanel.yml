@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/theiaspo/repositories/THEIA-LANDING/
+    - export DEPLOYPATH=/home/theiaspo/repositories/THEIA-LANDING-live/
     - /bin/cp scripts/cpanel-entry.cjs $DEPLOYPATH/server.js
     - /bin/test -f $DEPLOYPATH/server.js
     - /bin/test -f $DEPLOYPATH/cpanel-app.cjs
