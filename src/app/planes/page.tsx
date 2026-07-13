@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { auth } from '@/auth';
-import { SOCIAL_LINKS } from '@/lib/constants';
 import { getTrainingPlans } from '@/lib/training-plans';
 import type { TrainingPlan } from '@/types';
 import SectionTitle from '@/components/ui/SectionTitle';
@@ -25,15 +25,6 @@ const planCategories = [
     title: 'Triatlón',
   },
 ] as const;
-
-const getWhatsAppHref = (planName: string) => {
-  const whatsappUrl = SOCIAL_LINKS.find((social) => social.platform === 'whatsapp')?.url ?? '/contacto';
-  if (!whatsappUrl.startsWith('https://wa.me/')) return '/contacto';
-
-  const [baseUrl] = whatsappUrl.split('?');
-  const message = encodeURIComponent(`Hola! Quiero mas informacion sobre el ${planName}.`);
-  return `${baseUrl}?text=${message}`;
-};
 
 const getPriceLabel = (price: string) => {
   if (price.toUpperCase().startsWith('CLP')) return price;
@@ -67,7 +58,7 @@ const isRecommendedPlan = (plan: TrainingPlan) =>
 function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: boolean }) {
   const visibleFeatures = plan.features.slice(0, 4);
   const recommended = isRecommendedPlan(plan);
-  const planHref = getWhatsAppHref(plan.name);
+  const planHref = canViewPrice ? '/contacto' : '/login?callbackUrl=%2Fplanes';
 
   return (
     <article
@@ -113,14 +104,12 @@ function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: bo
           <p className="mb-4 rounded-xl bg-brand-navy/5 px-4 py-3 text-xs leading-relaxed text-text-secondary">
             <span className="font-black text-brand-navy">Ideal para:</span> {getIdealFor(plan)}
           </p>
-          <a
+          <Link
             href={planHref}
-            target="_blank"
-            rel="noopener noreferrer"
             className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-black uppercase tracking-tight text-white shadow-sm shadow-brand-navy/15 transition-colors duration-200 hover:bg-brand-blue-vivid"
           >
-            {canViewPrice ? 'Contratar' : 'Consultar plan'}
-          </a>
+            {canViewPrice ? 'Contratar' : 'Cotizar plan'}
+          </Link>
         </div>
       </div>
     </article>

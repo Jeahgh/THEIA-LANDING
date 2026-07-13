@@ -12,16 +12,13 @@ const SocialIcon = ({ platform }: { platform: string }) => {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const contactEmails = [
+  const contactItems = [
     { value: CLUB_INFO.email, href: `mailto:${CLUB_INFO.email}` },
-    { value: CLUB_INFO.financeEmail, href: `mailto:${CLUB_INFO.financeEmail}` },
-    { value: CLUB_INFO.administrationEmail, href: `mailto:${CLUB_INFO.administrationEmail}` },
     { value: CLUB_INFO.phone, href: SOCIAL_LINKS.find((s) => s.platform === 'whatsapp')?.url },
   ];
 
   return (
     <footer>
-      {/* Gradient strip */}
       <div className="h-1.5 w-full bg-gradient-to-r from-brand-blue via-brand-blue-light via-50% to-swim" />
 
       <div className="bg-brand-navy text-white">
@@ -50,7 +47,7 @@ export default function Footer() {
             <div>
               <h3 className="text-white font-semibold mb-4">Contacto</h3>
               <ul className="space-y-3 text-sm text-white/60">
-                {contactEmails.map((item) => (
+                {contactItems.map((item) => (
                   <li key={item.value}>
                     <a
                       href={item.href}

@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "src/generated/prisma/**",
     "scripts/*.cjs",
+    "cpanel-app.cjs",
   ]),
 ]);
 

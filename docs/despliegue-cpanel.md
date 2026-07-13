@@ -138,34 +138,11 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
    regenere el runtime y no reutilice la instancia historica de `server.js`.
 4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
 5. En **Setup Node.js App**, pulsa **Restart Application**.
-6. Ejecuta el script npm `cpanel:doctor` desde la interfaz.
 
 No ejecutes `db:generate`, `db:deploy`, `build`, `build:cpanel` ni instaladores
 manuales dentro de cPanel.
 
-## 7. Doctor seguro
-
-`npm run cpanel:doctor` no modifica archivos ni datos y nunca imprime valores de
-variables. Comprueba:
-
-- version real de Node y plataforma;
-- disco, inodos y limites visibles del proceso;
-- presencia de variables, sin revelar secretos;
-- integridad y versiones del artefacto;
-- Sharp para Linux y ausencia de binarios Windows/macOS;
-- permisos de `public/uploads`;
-- una consulta de solo lectura `SELECT 1` a PostgreSQL.
-
-Una salida sana termina con:
-
-```text
-Fallos: 0
-```
-
-Las advertencias no siempre bloquean el arranque. Por ejemplo, un `node_modules`
-viejo en la raiz no se usa, pero conviene retirarlo si consume cuota.
-
-## 8. Interpretar errores
+## 7. Interpretar errores
 
 | Mensaje | Causa probable | Accion |
 | --- | --- | --- |
@@ -180,15 +157,14 @@ viejo en la raiz no se usa, pero conviene retirarlo si consume cuota.
 CloudLinux documenta que los comandos npm/build pueden morir por limites de
 memoria del proceso. Por eso esta estrategia no compila ni instala en cPanel.
 
-## 9. Evidencia que se debe capturar
+## 8. Evidencia que se debe capturar
 
 Si el despliegue falla, comparte sin recortar:
 
 1. Configuracion de Setup Node.js App (ocultando secretos).
-2. Salida completa de `cpanel:doctor`.
-3. Passenger log desde el primer error.
-4. Pantalla de uso de disco/inodos y limites de recursos.
-5. Estado de Git y hash del commit desplegado.
+2. Passenger log desde el primer error.
+3. Pantalla de uso de disco/inodos y limites de recursos.
+4. Estado de Git y hash del commit desplegado.
 
 No compartas el contenido de `DATABASE_URL`, `AUTH_SECRET`, claves Google ni
 credenciales SMTP.
