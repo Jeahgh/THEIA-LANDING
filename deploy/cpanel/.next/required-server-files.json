@@ -313,7 +313,17 @@
     "turbopack": {
       "root": "/app"
     },
-    "distDirRoot": ".next"
+    "distDirRoot": ".next",
+    "_originalRewrites": {
+      "beforeFiles": [
+        {
+          "source": "/uploads/:folder/:fileName",
+          "destination": "/api/uploads/:folder/:fileName"
+        }
+      ],
+      "afterFiles": [],
+      "fallback": []
+    }
   },
   "appDir": "/app",
   "relativeAppDir": "",

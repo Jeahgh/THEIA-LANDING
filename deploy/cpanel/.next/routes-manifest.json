@@ -17,11 +17,25 @@
   "headers": [],
   "onMatchHeaders": [],
   "rewrites": {
-    "beforeFiles": [],
+    "beforeFiles": [
+      {
+        "source": "/uploads/:folder/:fileName",
+        "destination": "/api/uploads/:folder/:fileName",
+        "regex": "^/uploads(?:/([^/]+?))(?:/([^/]+?))(?:/)?$"
+      }
+    ],
     "afterFiles": [],
     "fallback": []
   },
   "dynamicRoutes": [
+    {
+      "page": "/admin/competencias/[id]",
+      "regex": "^/admin/competencias/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/competencias/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
     {
       "page": "/admin/equipo/[id]",
       "regex": "^/admin/equipo/([^/]+?)(?:/)?$",
@@ -61,6 +75,15 @@
         "nxtPnextauth": "nxtPnextauth"
       },
       "namedRegex": "^/api/auth/(?<nxtPnextauth>.+?)(?:/)?$"
+    },
+    {
+      "page": "/api/uploads/[folder]/[fileName]",
+      "regex": "^/api/uploads/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPfolder": "nxtPfolder",
+        "nxtPfileName": "nxtPfileName"
+      },
+      "namedRegex": "^/api/uploads/(?<nxtPfolder>[^/]+?)/(?<nxtPfileName>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
