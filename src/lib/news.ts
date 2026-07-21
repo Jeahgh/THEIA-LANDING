@@ -14,6 +14,7 @@ export async function getPublishedNews(): Promise<NewsArticle[]> {
       where: { published: true },
       orderBy: [{ sortOrder: 'asc' }, { date: 'desc' }],
       take: 4,
+      include: { results: { orderBy: { sortOrder: 'asc' } } },
     });
 
     return posts.map((post) => ({
@@ -23,6 +24,13 @@ export async function getPublishedNews(): Promise<NewsArticle[]> {
       date: post.date.toISOString().slice(0, 10),
       category: categoryMap[post.category],
       imageUrl: post.imageUrl ?? undefined,
+      results: post.results.map((result) => ({
+        id: result.id,
+        athleteName: result.athleteName,
+        position: result.position,
+        distance: result.distance,
+        time: result.time,
+      })),
     }));
   } catch {
     return [];

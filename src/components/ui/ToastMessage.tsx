@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 type ToastTone = 'success' | 'error' | 'info';
 
 const toneClasses: Record<ToastTone, string> = {
-  success: 'border-brand-blue/20 bg-brand-blue-pale text-brand-blue',
+  success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
   error: 'border-red-200 bg-red-50 text-red-700',
   info: 'border-sky-200 bg-blue-50 text-blue-700',
 };

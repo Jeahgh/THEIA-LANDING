@@ -175,7 +175,7 @@ export default function RegisterForm() {
         </div>
 
         {message && (
-          <p className={`rounded-xl px-4 py-3 text-sm ${isError ? 'bg-red-50 text-red-700' : 'bg-brand-blue-pale text-brand-blue'}`}>
+          <p className={`rounded-xl border px-4 py-3 text-sm ${isError ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`}>
             {message}
           </p>
         )}

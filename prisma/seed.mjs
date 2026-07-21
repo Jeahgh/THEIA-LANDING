@@ -5,7 +5,9 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const { loadEnvConfig } = nextEnv;
 const { PrismaClient } = prismaClientPkg;
 
-loadEnvConfig(process.cwd());
+// En ejecucion local debe prevalecer .env.development.local. Los contenedores
+// y produccion inyectan DATABASE_URL directamente en el proceso.
+loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL no esta configurada.');

@@ -12,8 +12,8 @@ export default async function FeaturedAthletes() {
     <section id="nuestros-atletas" className="section-padding bg-white">
       <div className="content-shell">
         <SectionTitle
-          title="Nuestros atletas"
-          subtitle="Historias reales del equipo Theia, publicadas desde el panel de administracion."
+          title="Nuestro equipo"
+          subtitle="Atletas y entrenadores que forman parte de Theia."
           gradient
         />
 
@@ -31,17 +31,10 @@ export default async function FeaturedAthletes() {
                 )}
               </div>
               <h3 className="text-lg font-black text-text-primary">{athlete.name}</h3>
-              <p className="mt-1 text-sm font-bold text-brand-blue">{athlete.role}</p>
+              <span className={`mx-auto mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${athlete.role === 'Entrenador' ? 'bg-brand-navy text-white' : 'bg-brand-blue-pale text-brand-blue'}`}>
+                {athlete.role}
+              </span>
               <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-text-secondary">{athlete.bio}</p>
-              {athlete.achievements.length > 0 && (
-                <div className="mt-auto flex flex-wrap justify-center gap-1.5 pt-4">
-                  {athlete.achievements.slice(0, 2).map((achievement) => (
-                    <span key={achievement} className="rounded-full bg-brand-blue-pale px-2.5 py-1 text-xs font-semibold text-brand-blue">
-                      {achievement}
-                    </span>
-                  ))}
-                </div>
-              )}
             </article>
           ))}
         </div>

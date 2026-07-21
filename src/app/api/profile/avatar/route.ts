@@ -3,6 +3,7 @@ import path from 'node:path';
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
+import { uploadPublicUrl } from '@/lib/uploads';
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
   const extension = file.type.split('/')[1] === 'jpeg' ? 'jpg' : file.type.split('/')[1];
   const fileName = `${user.id}-${Date.now()}.${extension}`;
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'profiles');
-  const publicUrl = `/uploads/profiles/${fileName}`;
+  const publicUrl = uploadPublicUrl('profiles', fileName);
 
   await mkdir(uploadDir, { recursive: true });
   await writeFile(path.join(uploadDir, fileName), Buffer.from(await file.arrayBuffer()));

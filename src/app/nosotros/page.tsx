@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { CLUB_INFO } from '@/lib/constants';
 import { getActiveAthletes, getClubStats } from '@/lib/team';
 import SectionTitle from '@/components/ui/SectionTitle';
-import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
+import TeamMemberGrid from '@/components/nosotros/TeamMemberGrid';
 
 export const dynamic = 'force-dynamic';
 
@@ -82,33 +82,13 @@ export default async function NosotrosPage() {
 
       <section className="section-padding theia-light-section">
         <div className="content-shell">
-          <SectionTitle title="Equipo Theia" subtitle="Atletas activos publicados desde el panel de administracion" gradient />
+          <SectionTitle title="Equipo Theia" subtitle="Atletas y entrenadores publicados desde el panel de administración" gradient />
           {athletes.length === 0 ? (
             <EmptyState>
-              No hay atletas publicados por ahora.
+              No hay integrantes publicados por ahora.
             </EmptyState>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-              {athletes.map((athlete) => (
-                <Card key={athlete.id} hover className="text-center">
-                  <div className="relative mx-auto mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-brand-blue-pale text-2xl font-bold text-brand-blue ring-4 ring-brand-blue-pale ring-offset-4 ring-offset-white">
-                    {athlete.imageUrl ? (
-                      <Image src={athlete.imageUrl} alt={athlete.imageAlt ?? athlete.name} fill className="object-cover" sizes="112px" />
-                    ) : (
-                      athlete.name.charAt(0)
-                    )}
-                  </div>
-                  <h3 className="text-text-primary font-bold text-lg mb-1">{athlete.name}</h3>
-                  <p className="text-brand-blue text-sm font-medium mb-3">{athlete.role}</p>
-                  <p className="text-text-secondary text-sm leading-relaxed mb-4">{athlete.bio}</p>
-                  <div className="flex flex-wrap gap-1.5 justify-center">
-                    {athlete.achievements.map((achievement) => (
-                      <span key={achievement} className="text-xs bg-brand-blue-pale text-brand-blue px-2 py-0.5 rounded-full">{achievement}</span>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <TeamMemberGrid members={athletes} />
           )}
         </div>
       </section>

@@ -12,7 +12,17 @@ export const metadata: Metadata = {
 
 export default async function EditNewsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const post = await prisma.newsPost.findUnique({ where: { id } });
+  const [post, athletes] = await Promise.all([
+    prisma.newsPost.findUnique({
+      where: { id },
+      include: { results: { orderBy: { sortOrder: 'asc' } } },
+    }),
+    prisma.athlete.findMany({
+      where: { isActive: true, role: 'Atleta' },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      select: { name: true },
+    }),
+  ]);
 
   if (!post) notFound();
 
@@ -22,7 +32,7 @@ export default async function EditNewsPage({ params }: { params: Promise<{ id: s
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Noticias</p>
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Editar noticia</h1>
       </div>
-      <NewsForm action={updateNewsPost.bind(null, post.id)} post={post} submitLabel="Guardar cambios" />
+      <NewsForm action={updateNewsPost.bind(null, post.id)} post={post} submitLabel="Guardar cambios" athleteOptions={athletes.map((athlete) => athlete.name)} />
     </div>
   );
 }

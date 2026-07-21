@@ -20,6 +20,7 @@ function readRaceData(formData: FormData) {
     distance: String(formData.get('distance') ?? '').trim() || null,
     description: String(formData.get('description') ?? '').trim() || null,
     registrationUrl: String(formData.get('registrationUrl') ?? '').trim() || null,
+    isActive: formData.get('isActive') === 'on',
   };
 }
 
@@ -34,13 +35,24 @@ export async function createRace(formData: FormData) {
     data: {
       ...readRaceData(formData),
       sortOrder: (lastRace?.sortOrder ?? 0) + 1,
-      isActive: true,
     },
   });
   revalidatePath('/');
   revalidatePath('/competencias');
   revalidatePath('/admin/competencias');
-  redirect('/admin/competencias');
+  redirect('/admin/competencias?guardado=creado');
+}
+
+export async function updateRace(raceId: string, formData: FormData) {
+  await ensureAdmin();
+  await prisma.race.update({
+    where: { id: raceId },
+    data: readRaceData(formData),
+  });
+  revalidatePath('/');
+  revalidatePath('/competencias');
+  revalidatePath('/admin/competencias');
+  redirect('/admin/competencias?guardado=actualizado');
 }
 
 export async function deleteRace(raceId: string) {

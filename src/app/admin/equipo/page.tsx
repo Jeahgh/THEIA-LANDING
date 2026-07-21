@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import AthleteForm from '@/components/admin/AthleteForm';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
-import TimedStatusMessage from '@/components/admin/TimedStatusMessage';
+import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import { createAthlete, deleteAthlete } from './actions';
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default async function AdminTeamPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ eliminado?: string }>;
+  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
   const params = await searchParams;
   const athletes = await prisma.athlete.findMany({
@@ -29,21 +29,21 @@ export default async function AdminTeamPage({
     <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
       <div className="text-center">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Equipo Theia</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Atletas publicados</h1>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Integrantes publicados</h1>
       </div>
 
-      <CreateContentPanel closedLabel="Agregar atleta">
-        <AthleteForm action={createAthlete} submitLabel="Crear atleta" />
+      <CreateContentPanel closedLabel="Agregar">
+        <AthleteForm action={createAthlete} submitLabel="Crear integrante" />
       </CreateContentPanel>
 
-      {params?.eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
+      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
 
       {athletes.length === 0 ? (
-        <EmptyState tone="admin">No hay atletas creados.</EmptyState>
+        <EmptyState tone="admin">No hay integrantes creados.</EmptyState>
       ) : (
         <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
-            <h2 className="text-lg font-bold text-text-primary sm:text-xl">Atletas existentes</h2>
+            <h2 className="text-lg font-bold text-text-primary sm:text-xl">Integrantes existentes</h2>
           </div>
           <div className="divide-y divide-border-subtle">
             {athletes.map((athlete) => (
@@ -59,13 +59,11 @@ export default async function AdminTeamPage({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-bold text-text-primary">{athlete.name}</h3>
-                      <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">{athlete.role}</span>
                       <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${athlete.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                         {athlete.isActive ? 'Visible' : 'Oculto'}
                       </span>
                     </div>
                     <p className="mt-1 line-clamp-1 text-sm text-text-muted">{athlete.bio}</p>
-                    <p className="mt-1 text-xs text-text-muted">{athlete.achievements.length} logros o etiquetas</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
@@ -75,7 +73,7 @@ export default async function AdminTeamPage({
                   >
                     Editar
                   </Link>
-                  <ConfirmDeleteButton action={deleteAthlete.bind(null, athlete.id)} itemName={`el atleta "${athlete.name}"`} />
+                  <ConfirmDeleteButton action={deleteAthlete.bind(null, athlete.id)} itemName={`el integrante "${athlete.name}"`} />
                 </div>
               </div>
             ))}

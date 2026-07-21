@@ -47,12 +47,9 @@ export default async function UpcomingRaces() {
             {upcomingRaces.map((race) => {
             const { day, month } = formatDate(race.date);
             const badge = getStatusBadge(race.status);
+            const cardClassName = "group block rounded-lg border border-white/20 bg-white/10 p-4 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-white/35 hover:bg-white/[0.15] hover:shadow-xl hover:shadow-black/20 sm:rounded-2xl sm:p-6 lg:hover:-translate-y-1";
 
-            return (
-              <div
-                key={race.id}
-                className="group rounded-lg border border-white/20 bg-white/10 p-4 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-white/35 hover:bg-white/[0.15] hover:shadow-xl hover:shadow-black/20 sm:rounded-2xl sm:p-6 lg:hover:-translate-y-1"
-              >
+            const cardContent = (
                 <div className="flex gap-4">
                   {/* Bloque de fecha — blanco con acento */}
                   <div className="flex min-w-[58px] flex-col items-center justify-center rounded-xl border border-white/25 bg-white/20 px-3 py-2 transition-colors duration-300 group-hover:bg-white/30 sm:min-w-[64px]">
@@ -79,6 +76,22 @@ export default async function UpcomingRaces() {
                     )}
                   </div>
                 </div>
+            );
+
+            return race.registrationUrl ? (
+              <a
+                key={race.id}
+                href={race.registrationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Ir a la inscripción de ${race.name}`}
+                className={`${cardClassName} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-light focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy`}
+              >
+                {cardContent}
+              </a>
+            ) : (
+              <div key={race.id} className={cardClassName}>
+                {cardContent}
               </div>
             );
             })}

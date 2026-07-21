@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import PlanForm from '@/components/admin/PlanForm';
-import TimedStatusMessage from '@/components/admin/TimedStatusMessage';
+import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPlan, deletePlan } from './actions';
 
@@ -22,7 +22,7 @@ const categoryLabels = {
 export default async function AdminPlansPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ eliminado?: string }>;
+  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
   const params = await searchParams;
   const plans = await prisma.plan.findMany({
@@ -45,7 +45,7 @@ export default async function AdminPlansPage({
         <PlanForm action={createPlan} submitLabel="Crear plan" />
       </CreateContentPanel>
 
-      {params?.eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
+      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
 
       {plans.length === 0 ? (
         <EmptyState tone="admin">No hay planes creados.</EmptyState>

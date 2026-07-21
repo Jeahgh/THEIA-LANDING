@@ -11,22 +11,17 @@ async function ensureAdmin() {
 
 const cleanText = (value: FormDataEntryValue | null) => String(value ?? '').trim();
 
-const parseLines = (value: FormDataEntryValue | null) =>
-  String(value ?? '')
-    .split(/\r?\n/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-
 function readAthleteData(formData: FormData) {
   const name = cleanText(formData.get('name'));
+  const role = cleanText(formData.get('role')) === 'Entrenador' ? 'Entrenador' : 'Atleta';
 
   return {
     name,
-    role: cleanText(formData.get('role')),
+    role,
     bio: cleanText(formData.get('bio')),
     imageUrl: cleanText(formData.get('imageUrl')) || null,
     imageAlt: name ? `Foto de ${name}` : null,
-    achievements: parseLines(formData.get('achievements')),
+    achievements: [],
     isActive: formData.get('isActive') === 'on',
   };
 }
@@ -49,7 +44,7 @@ export async function createAthlete(formData: FormData) {
   revalidatePath('/');
   revalidatePath('/nosotros');
   revalidatePath('/admin/equipo');
-  redirect('/admin/equipo');
+  redirect('/admin/equipo?guardado=creado');
 }
 
 export async function updateAthlete(athleteId: string, formData: FormData) {
@@ -63,7 +58,7 @@ export async function updateAthlete(athleteId: string, formData: FormData) {
   revalidatePath('/');
   revalidatePath('/nosotros');
   revalidatePath('/admin/equipo');
-  redirect('/admin/equipo');
+  redirect('/admin/equipo?guardado=actualizado');
 }
 
 export async function deleteAthlete(athleteId: string) {

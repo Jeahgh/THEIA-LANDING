@@ -95,7 +95,7 @@ export async function createPlan(formData: FormData) {
 
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
-  redirect('/admin/planes');
+  redirect('/admin/planes?guardado=creado');
 }
 
 export async function updatePlan(planId: string, formData: FormData) {
@@ -136,7 +136,7 @@ export async function updatePlan(planId: string, formData: FormData) {
 
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
-  redirect('/admin/planes');
+  redirect('/admin/planes?guardado=actualizado');
 }
 
 export async function deletePlan(planId: string) {
