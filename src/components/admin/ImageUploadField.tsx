@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
+import SquareImageCropper from '@/components/ui/SquareImageCropper';
 
 interface ImageUploadFieldProps {
   name: string;
@@ -24,6 +25,7 @@ export default function ImageUploadField({
   const [status, setStatus] = useState('');
   const [statusType, setStatusType] = useState<'success' | 'error'>('success');
   const [isUploading, setIsUploading] = useState(false);
+  const [fileToCrop, setFileToCrop] = useState<File | null>(null);
 
   async function uploadImage(file: File) {
     setIsUploading(true);
@@ -51,8 +53,30 @@ export default function ImageUploadField({
     setStatus('Imagen cargada correctamente.');
   }
 
+  async function uploadCroppedImage(file: File) {
+    setFileToCrop(null);
+
+    try {
+      await uploadImage(file);
+    } catch (error) {
+      setStatusType('error');
+      setStatus(error instanceof Error ? error.message : 'No se pudo subir la imagen.');
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
   return (
     <div>
+      {fileToCrop && (
+        <SquareImageCropper
+          file={fileToCrop}
+          onCancel={() => setFileToCrop(null)}
+          onConfirm={(croppedFile) => {
+            void uploadCroppedImage(croppedFile);
+          }}
+        />
+      )}
       <label htmlFor={inputId} className="mb-2 block text-sm font-bold text-slate-700">
         {label}
       </label>
@@ -95,23 +119,16 @@ export default function ImageUploadField({
               const file = event.target.files?.[0];
               if (!file) return;
 
-              try {
-                await uploadImage(file);
-              } catch (error) {
-                setStatusType('error');
-                setStatus(error instanceof Error ? error.message : 'No se pudo subir la imagen.');
-              } finally {
-                setIsUploading(false);
-                event.target.value = '';
-              }
+              setFileToCrop(file);
+              event.target.value = '';
             }}
           />
 
           <p className="text-xs leading-relaxed text-slate-500 sm:text-sm">
-            {isUploading ? 'Subiendo la imagen...' : helper ?? 'Haz clic en el recuadro para cargar una imagen.'}
+            {isUploading ? 'Subiendo la imagen...' : helper ?? 'Selecciona, ajusta y recorta la imagen antes de guardarla.'}
           </p>
           {status && (
-            <p className={`mt-2 text-sm font-semibold ${statusType === 'error' ? 'text-red-700' : 'text-brand-blue'}`}>
+            <p className={`mt-2 text-sm font-semibold ${statusType === 'error' ? 'text-red-700' : 'text-emerald-700'}`}>
               {status}
             </p>
           )}

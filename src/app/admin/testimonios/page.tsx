@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import TestimonialForm from '@/components/admin/TestimonialForm';
-import TimedStatusMessage from '@/components/admin/TimedStatusMessage';
+import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import { createTestimonial, deleteTestimonial } from './actions';
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default async function AdminTestimonialsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ eliminado?: string }>;
+  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
   const params = await searchParams;
   const testimonials = await prisma.testimonial.findMany({
@@ -36,7 +36,7 @@ export default async function AdminTestimonialsPage({
         <TestimonialForm action={createTestimonial} submitLabel="Crear testimonio" />
       </CreateContentPanel>
 
-      {params?.eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
+      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
 
       {testimonials.length === 0 ? (
         <EmptyState tone="admin">No hay testimonios creados.</EmptyState>
@@ -62,9 +62,6 @@ export default async function AdminTestimonialsPage({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-bold text-text-primary">{testimonial.name}</h3>
-                      <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">
-                        {testimonial.role}
-                      </span>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-semibold ${testimonial.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
                           }`}

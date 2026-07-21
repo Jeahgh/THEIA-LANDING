@@ -64,6 +64,15 @@ export interface NewsArticle {
   category: 'resultados' | 'noticias' | 'entrenamiento' | 'comunidad';
   imagePlaceholder?: string;
   imageUrl?: string;
+  results?: NewsResult[];
+}
+
+export interface NewsResult {
+  id: string;
+  athleteName: string;
+  position: string;
+  distance: string;
+  time: string;
 }
 
 /**

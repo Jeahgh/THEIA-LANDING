@@ -7,7 +7,7 @@ import { updateAthlete } from '../actions';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Editar atleta',
+  title: 'Editar integrante',
 };
 
 export default async function EditAthletePage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,7 +20,7 @@ export default async function EditAthletePage({ params }: { params: Promise<{ id
     <div className="mx-auto max-w-5xl space-y-6 sm:space-y-8">
       <div className="text-center">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Equipo Theia</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Editar atleta</h1>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Editar integrante</h1>
       </div>
       <AthleteForm action={updateAthlete.bind(null, athlete.id)} athlete={athlete} submitLabel="Guardar cambios" />
     </div>

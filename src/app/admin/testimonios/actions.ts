@@ -14,7 +14,7 @@ const cleanText = (value: FormDataEntryValue | null) => String(value ?? '').trim
 function readTestimonialData(formData: FormData) {
   return {
     name: cleanText(formData.get('name')),
-    role: cleanText(formData.get('role')),
+    role: '',
     quote: cleanText(formData.get('quote')),
     imageUrl: cleanText(formData.get('imageUrl')) || null,
     isActive: formData.get('isActive') === 'on',
@@ -38,7 +38,7 @@ export async function createTestimonial(formData: FormData) {
 
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
-  redirect('/admin/testimonios');
+  redirect('/admin/testimonios?guardado=creado');
 }
 
 export async function updateTestimonial(testimonialId: string, formData: FormData) {
@@ -51,7 +51,7 @@ export async function updateTestimonial(testimonialId: string, formData: FormDat
 
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
-  redirect('/admin/testimonios');
+  redirect('/admin/testimonios?guardado=actualizado');
 }
 
 export async function deleteTestimonial(testimonialId: string) {

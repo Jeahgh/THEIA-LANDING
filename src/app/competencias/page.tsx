@@ -14,9 +14,6 @@ export const dynamic = 'force-dynamic';
 
 export default async function CompetenciasPage() {
   const races = await getActiveRaces();
-  const openRaces = races.filter((r) => r.status === 'registration_open');
-  const upcomingRaces = races.filter((r) => r.status === 'upcoming');
-  const finishedRaces = races.filter((r) => r.status === 'finished');
 
   return (
     <>
@@ -45,35 +42,17 @@ export default async function CompetenciasPage() {
         </section>
       )}
 
-      {openRaces.length > 0 && (
+      {races.length > 0 && (
         <section className="section-padding theia-light-section relative">
           {/* Fondo sutil con patrón */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(10,132,255,0.08),transparent_50%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.65),transparent_42%)]" />
           <div className="content-shell relative max-w-5xl">
-            <SectionTitle title="Inscripciones Abiertas" subtitle="¡Inscríbete ahora y asegura tu cupo!" align="left" />
-            <div className="space-y-6">{openRaces.map((r) => <EventCard key={r.id} race={r} />)}</div>
+            <SectionTitle title="Calendario de Competencias" subtitle="Todas las competencias activas de la temporada" align="left" />
+            <div className="space-y-6">{races.map((r) => <EventCard key={r.id} race={r} />)}</div>
           </div>
         </section>
       )}
 
-      {upcomingRaces.length > 0 && (
-        <section className="section-padding bg-gradient-to-br from-brand-blue-pale via-bg-section to-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(46,125,209,0.05),transparent_50%)]" />
-          <div className="content-shell relative max-w-5xl">
-            <SectionTitle title="Próximas Competencias" subtitle="Eventos que se acercan en el calendario" align="left" />
-            <div className="space-y-6">{upcomingRaces.map((r) => <EventCard key={r.id} race={r} />)}</div>
-          </div>
-        </section>
-      )}
-
-      {finishedRaces.length > 0 && (
-        <section className="section-padding theia-light-section relative">
-          <div className="content-shell relative max-w-5xl">
-            <SectionTitle title="Competencias Finalizadas" subtitle="Resultados de la temporada" align="left" />
-            <div className="space-y-6">{finishedRaces.map((r) => <EventCard key={r.id} race={r} />)}</div>
-          </div>
-        </section>
-      )}
     </>
   );
 }

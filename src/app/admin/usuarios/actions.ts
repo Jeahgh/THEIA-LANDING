@@ -52,4 +52,5 @@ export async function updateUserRole(userId: string, formData: FormData) {
   });
 
   revalidatePath('/admin/usuarios');
+  redirect('/admin/usuarios?guardado=actualizado');
 }

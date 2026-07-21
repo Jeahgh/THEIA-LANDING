@@ -126,6 +126,22 @@ model NewsPost {
   sortOrder Int          @default(0)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+
+  results NewsResult[]
+}
+
+model NewsResult {
+  id          String @id @default(cuid())
+  newsPostId  String
+  athleteName String
+  position    String
+  distance    String @default("")
+  time        String
+  sortOrder   Int    @default(0)
+
+  newsPost NewsPost @relation(fields: [newsPostId], references: [id], onDelete: Cascade)
+
+  @@index([newsPostId])
 }
 
 model Race {

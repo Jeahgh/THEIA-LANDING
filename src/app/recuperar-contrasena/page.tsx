@@ -59,7 +59,7 @@ export default async function RecoverPasswordPage({
               </div>
 
               {params.sent && (
-                <p className="rounded-xl bg-brand-blue-pale px-4 py-3 text-sm text-brand-blue">
+                <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                   Si el correo existe, enviamos un enlace para cambiar la contrasena.
                 </p>
               )}

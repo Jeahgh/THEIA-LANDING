@@ -16,6 +16,9 @@ async function getTestimonials() {
 
 export default async function Testimonials() {
   const testimonials = await getTestimonials();
+  const carouselItems = testimonials.length > 1
+    ? Array.from({ length: Math.max(4, testimonials.length) }, (_, index) => testimonials[index % testimonials.length])
+    : testimonials;
 
   return (
     <section id="testimonials" className="section-padding theia-night-section">
@@ -27,21 +30,26 @@ export default async function Testimonials() {
             No hay testimonios activos por ahora.
           </EmptyState>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 sm:gap-6">
-            {testimonials.map((testimonial) => (
-              <article key={testimonial.id} className="rounded-lg border border-white/15 bg-white/10 p-5 text-center shadow-xl shadow-black/15 backdrop-blur-sm sm:rounded-2xl sm:p-6">
-                <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white text-xl font-bold text-brand-blue ring-4 ring-white/10">
-                  {testimonial.imageUrl ? (
-                    <Image src={testimonial.imageUrl} alt={testimonial.name} fill className="object-cover" sizes="80px" />
-                  ) : (
-                    testimonial.name.charAt(0)
-                  )}
+          <div className={`${testimonials.length > 1 ? 'testimonial-marquee -mx-4 overflow-hidden px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8' : ''}`}>
+            <div className={`${testimonials.length > 1 ? 'testimonial-marquee-track flex w-max' : 'flex justify-center'} py-4`}>
+              {[0, 1].map((copy) => (
+                <div key={copy} className={`${testimonials.length > 1 ? 'flex gap-16 pr-16 sm:gap-24 sm:pr-24' : copy === 0 ? 'flex' : 'hidden'}`} aria-hidden={copy === 1}>
+                  {carouselItems.map((testimonial, itemIndex) => (
+                    <article key={`${testimonial.id}-${copy}-${itemIndex}`} className="flex w-[320px] shrink-0 flex-col items-center text-center sm:w-[400px]">
+                      <div className="relative mx-auto mb-7 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-white text-2xl font-bold text-brand-blue ring-4 ring-white/15 sm:h-32 sm:w-32">
+                        {testimonial.imageUrl ? (
+                          <Image src={testimonial.imageUrl} alt={testimonial.name} fill className="object-cover" sizes="128px" />
+                        ) : (
+                          testimonial.name.charAt(0)
+                        )}
+                      </div>
+                      <blockquote className="text-lg leading-relaxed text-white/90 sm:text-xl">&ldquo;{testimonial.quote}&rdquo;</blockquote>
+                      <p className="mt-6 text-lg font-semibold text-brand-blue-light">{testimonial.name}</p>
+                    </article>
+                  ))}
                 </div>
-                <blockquote className="text-white/90 leading-relaxed">&ldquo;{testimonial.quote}&rdquo;</blockquote>
-                <p className="mt-5 font-semibold text-brand-blue-light">{testimonial.name}</p>
-                <p className="text-sm text-white/45">{testimonial.role}</p>
-              </article>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>

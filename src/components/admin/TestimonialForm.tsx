@@ -22,7 +22,7 @@ export default function TestimonialForm({ action, testimonial, submitLabel }: Te
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4">
         <div>
           <label className="mb-1 block text-sm font-semibold text-text-primary">Nombre</label>
           <input
@@ -34,16 +34,6 @@ export default function TestimonialForm({ action, testimonial, submitLabel }: Te
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold text-text-primary">Rol o descripcion breve</label>
-          <input
-            name="role"
-            defaultValue={testimonial?.role}
-            className={fieldClasses}
-            placeholder="Miembro desde 2024, Triatleta, Runner..."
-            required
-          />
-        </div>
-        <div className="md:col-span-2">
           <ImageUploadField
             name="imageUrl"
             label="Foto del atleta"

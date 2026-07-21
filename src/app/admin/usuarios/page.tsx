@@ -4,6 +4,7 @@ import { Role } from '@/generated/prisma';
 import type { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import EmptyState from '@/components/ui/EmptyState';
+import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import { updateUserRole } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -37,7 +38,7 @@ function readStatusFilter(value: string | undefined) {
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; role?: string; status?: string }>;
+  searchParams?: Promise<{ q?: string; role?: string; status?: string; guardado?: string }>;
 }) {
   const params = await searchParams;
   const query = String(params?.q ?? '').trim();
@@ -84,6 +85,8 @@ export default async function AdminUsersPage({
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Usuarios</p>
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Usuarios y roles</h1>
       </div>
+
+      <AdminActionStatus saved={params?.guardado} />
 
       <form className="space-y-3" method="get">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_180px_180px_auto] lg:items-end">

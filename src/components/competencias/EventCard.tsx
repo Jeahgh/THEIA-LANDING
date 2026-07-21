@@ -2,7 +2,6 @@
 // EventCard — Tema Race Night
 // =============================================================================
 
-import Card from '@/components/ui/Card';
 import type { Race, RaceStatus, RaceType } from '@/types';
 
 function getStatusBadge(status: RaceStatus) {
@@ -27,9 +26,9 @@ export default function EventCard({ race }: { race: Race }) {
   const date = new Date(race.date + 'T12:00:00');
   const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   const badge = getStatusBadge(race.status);
+  const className = 'group block border-b border-brand-blue/15 py-6 transition-colors first:pt-0 last:border-b-0 last:pb-0';
 
-  return (
-    <Card hover className="group">
+  const content = (
       <div className="flex flex-col gap-4 sm:flex-row">
         {/* Date */}
         <div className="flex items-center justify-center rounded-xl bg-brand-blue-pale px-4 py-3 transition-colors duration-300 group-hover:bg-brand-blue sm:min-w-[80px] sm:flex-col">
@@ -51,6 +50,19 @@ export default function EventCard({ race }: { race: Race }) {
           {race.description && <p className="text-text-secondary text-sm leading-relaxed">{race.description}</p>}
         </div>
       </div>
-    </Card>
+  );
+
+  return race.registrationUrl ? (
+    <a
+      href={race.registrationUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Ir a la inscripción de ${race.name}`}
+      className={`${className} cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-4`}
+    >
+      {content}
+    </a>
+  ) : (
+    <article className={className}>{content}</article>
   );
 }

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import ToastMessage from '@/components/ui/ToastMessage';
+import SquareImageCropper from '@/components/ui/SquareImageCropper';
 
 export default function AvatarUpload({
   image,
@@ -19,6 +20,7 @@ export default function AvatarUpload({
   const [messageTone, setMessageTone] = useState<'success' | 'error'>('success');
   const [messageKey, setMessageKey] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [fileToCrop, setFileToCrop] = useState<File | null>(null);
   const initial = (name ?? 'A').charAt(0).toUpperCase();
 
   const uploadFile = async (file: File) => {
@@ -52,6 +54,16 @@ export default function AvatarUpload({
 
   return (
     <div>
+      {fileToCrop && (
+        <SquareImageCropper
+          file={fileToCrop}
+          onCancel={() => setFileToCrop(null)}
+          onConfirm={(croppedFile) => {
+            setFileToCrop(null);
+            void uploadFile(croppedFile);
+          }}
+        />
+      )}
       {message && <ToastMessage key={messageKey} message={message} tone={messageTone} />}
       <h2 className="text-xl font-bold text-text-primary">Foto de perfil</h2>
 
@@ -80,10 +92,11 @@ export default function AvatarUpload({
             className="hidden"
             onChange={(event) => {
               const file = event.target.files?.[0];
-              if (file) void uploadFile(file);
+              if (file) setFileToCrop(file);
+              event.target.value = '';
             }}
           />
-          <p className="text-sm text-text-secondary">Formatos JPG, PNG o WebP. Maximo 2 MB.</p>
+          <p className="text-sm text-text-secondary">Formatos JPG, PNG o WebP. Podrás mover y recortar la foto antes de subirla.</p>
         </div>
       </div>
     </div>

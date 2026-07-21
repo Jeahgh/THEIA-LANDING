@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/authz';
+import { uploadPublicUrl } from '@/lib/uploads';
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 const allowedFolders = ['home', 'news', 'plans', 'coaches', 'athletes', 'testimonials', 'competitions'];
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     .slice(0, 40);
   const fileName = `${safeName || 'imagen'}-${Date.now()}.${extension}`;
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);
-  const publicUrl = `/uploads/${folder}/${fileName}`;
+  const publicUrl = uploadPublicUrl(folder, fileName);
 
   await mkdir(uploadDir, { recursive: true });
   await writeFile(path.join(uploadDir, fileName), Buffer.from(await file.arrayBuffer()));

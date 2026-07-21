@@ -1,7 +1,9 @@
 import { loadEnvConfig } from '@next/env';
 import { defineConfig } from 'prisma/config';
 
-loadEnvConfig(process.cwd());
+// Los comandos Prisma ejecutados localmente usan el entorno de desarrollo.
+// Para operar deliberadamente sobre produccion se debe definir NODE_ENV=production.
+loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
 
 const datasourceUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 

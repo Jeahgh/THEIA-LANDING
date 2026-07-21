@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import NewsForm from '@/components/admin/NewsForm';
-import TimedStatusMessage from '@/components/admin/TimedStatusMessage';
+import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import { createNewsPost, deleteNewsPost } from './actions';
 
@@ -17,11 +17,16 @@ export const metadata: Metadata = {
 export default async function AdminNewsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ eliminado?: string }>;
+  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
   const params = await searchParams;
   const posts = await prisma.newsPost.findMany({
     orderBy: [{ sortOrder: 'asc' }, { date: 'desc' }],
+  });
+  const athletes = await prisma.athlete.findMany({
+    where: { isActive: true, role: 'Atleta' },
+    orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+    select: { name: true },
   });
 
   return (
@@ -32,10 +37,10 @@ export default async function AdminNewsPage({
       </div>
 
       <CreateContentPanel closedLabel="Crear noticia">
-        <NewsForm action={createNewsPost} submitLabel="Crear noticia" />
+        <NewsForm action={createNewsPost} submitLabel="Crear noticia" athleteOptions={athletes.map((athlete) => athlete.name)} />
       </CreateContentPanel>
 
-      {params?.eliminado && <TimedStatusMessage message="Se ha borrado correctamente." />}
+      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
 
       {posts.length === 0 ? (
         <EmptyState tone="admin">No hay noticias creadas.</EmptyState>

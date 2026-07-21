@@ -7,7 +7,6 @@ export type PublicAthlete = {
   bio: string;
   imageUrl: string | null;
   imageAlt: string | null;
-  achievements: string[];
 };
 
 export type ClubStats = {
@@ -18,10 +17,9 @@ export type ClubStats = {
 
 export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]> {
   try {
-    return await prisma.athlete.findMany({
+    const members = await prisma.athlete.findMany({
       where: { isActive: true },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-      ...(limit ? { take: limit } : {}),
       select: {
         id: true,
         name: true,
@@ -29,9 +27,16 @@ export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]
         bio: true,
         imageUrl: true,
         imageAlt: true,
-        achievements: true,
       },
     });
+
+    members.sort((first, second) => {
+      const firstPriority = first.role === 'Entrenador' ? 0 : 1;
+      const secondPriority = second.role === 'Entrenador' ? 0 : 1;
+      return firstPriority - secondPriority;
+    });
+
+    return limit ? members.slice(0, limit) : members;
   } catch {
     return [];
   }
@@ -40,8 +45,8 @@ export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]
 export async function getClubStats(): Promise<ClubStats> {
   try {
     const [athletes, coaches, races] = await Promise.all([
-      prisma.athlete.count({ where: { isActive: true } }),
-      prisma.coach.count({ where: { isActive: true } }),
+      prisma.athlete.count({ where: { isActive: true, role: 'Atleta' } }),
+      prisma.athlete.count({ where: { isActive: true, role: 'Entrenador' } }),
       prisma.race.count({ where: { isActive: true } }),
     ]);
 

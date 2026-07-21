@@ -20,8 +20,38 @@ function readNewsData(formData: FormData) {
   };
 }
 
+async function readNewsResults(formData: FormData, category: NewsCategory) {
+  if (category !== 'RESULTADOS') return [];
+
+  const athleteNames = formData.getAll('resultAthlete');
+  const positions = formData.getAll('resultPosition');
+  const distances = formData.getAll('resultDistance');
+  const times = formData.getAll('resultTime');
+
+  const activeAthletes = await prisma.athlete.findMany({
+    where: { isActive: true, role: 'Atleta' },
+    select: { name: true },
+  });
+  const validNames = new Set(activeAthletes.map((athlete) => athlete.name.toLocaleLowerCase('es-CL')));
+
+  return athleteNames.flatMap((athleteName, index) => {
+    const result = {
+      athleteName: String(athleteName).trim(),
+      position: String(positions[index] ?? '').trim(),
+      distance: String(distances[index] ?? '').trim(),
+      time: String(times[index] ?? '').trim(),
+      sortOrder: index,
+    };
+
+    const isComplete = result.athleteName && result.position && result.distance && result.time;
+    const isExistingAthlete = validNames.has(result.athleteName.toLocaleLowerCase('es-CL'));
+    return isComplete && isExistingAthlete ? [result] : [];
+  });
+}
+
 export async function createNewsPost(formData: FormData) {
   await ensureAdmin();
+  const data = readNewsData(formData);
   const lastPost = await prisma.newsPost.findFirst({
     orderBy: { sortOrder: 'desc' },
     select: { sortOrder: true },
@@ -29,25 +59,33 @@ export async function createNewsPost(formData: FormData) {
 
   await prisma.newsPost.create({
     data: {
-      ...readNewsData(formData),
+      ...data,
       sortOrder: (lastPost?.sortOrder ?? 0) + 1,
       published: true,
+      results: { create: await readNewsResults(formData, data.category) },
     },
   });
   revalidatePath('/');
   revalidatePath('/admin/noticias');
-  redirect('/admin/noticias');
+  redirect('/admin/noticias?guardado=creado');
 }
 
 export async function updateNewsPost(postId: string, formData: FormData) {
   await ensureAdmin();
+  const data = readNewsData(formData);
   await prisma.newsPost.update({
     where: { id: postId },
-    data: readNewsData(formData),
+    data: {
+      ...data,
+      results: {
+        deleteMany: {},
+        create: await readNewsResults(formData, data.category),
+      },
+    },
   });
   revalidatePath('/');
   revalidatePath('/admin/noticias');
-  redirect('/admin/noticias');
+  redirect('/admin/noticias?guardado=actualizado');
 }
 
 export async function deleteNewsPost(postId: string) {
