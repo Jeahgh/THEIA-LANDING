@@ -37,6 +37,15 @@ type EmailPayload = {
   replyTo?: string;
 };
 
+function escapeEmailHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export async function sendEmail({ to, subject, html, text, logLabel, devUrl, replyTo }: EmailPayload) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM ?? 'Theia <onboarding@resend.dev>';
@@ -79,8 +88,13 @@ export async function sendEmail({ to, subject, html, text, logLabel, devUrl, rep
     return true;
   }
 
-  console.info(`[${logLabel}] Enlace para ${to}: ${devUrl}`);
-  return false;
+  if (process.env.NODE_ENV !== 'production') {
+    console.info(`[${logLabel}] Enlace para ${to}: ${devUrl}`);
+    return false;
+  }
+
+  console.error(`[${logLabel}] No hay un proveedor de correo configurado.`);
+  throw new Error('email_provider_not_configured');
 }
 
 function renderLinkEmail({
@@ -98,13 +112,15 @@ function renderLinkEmail({
   url: string;
   footer: string;
 }) {
+  const safeUrl = escapeEmailHtml(url);
+
   return `
     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
       <h1 style="margin:0 0 12px">${title}</h1>
       <p>${greeting}</p>
       <p>${body}</p>
       <p>
-        <a href="${url}" style="color:#2563eb;text-decoration:underline;font-weight:700">
+        <a href="${safeUrl}" style="color:#2563eb;text-decoration:underline;font-weight:700">
           ${buttonLabel}
         </a>
       </p>
@@ -122,16 +138,17 @@ export async function sendVerificationEmail({
   name?: string | null;
   verificationUrl: string;
 }) {
-  const displayName = name?.trim() || 'deportista';
+  const displayName = (name?.trim() || 'deportista').replace(/[\r\n]+/g, ' ').slice(0, 80);
+  const safeDisplayName = escapeEmailHtml(displayName);
 
   return sendEmail({
     to,
     subject: 'Verifica tu cuenta Theia',
     html: renderLinkEmail({
       title: 'Verifica tu cuenta',
-      greeting: `Hola ${displayName},`,
-      body: 'Confirma tu correo para activar tu cuenta en Theia.',
-      buttonLabel: 'Verificar cuenta',
+      greeting: `Hola ${safeDisplayName},`,
+      body: 'Confirma tu correo para activar tu cuenta y elegir tu contrasena en Theia.',
+      buttonLabel: 'Verificar y crear contrasena',
       url: verificationUrl,
       footer: 'Este enlace vence en 24 horas.',
     }),
@@ -150,14 +167,15 @@ export async function sendPasswordResetEmail({
   name?: string | null;
   resetUrl: string;
 }) {
-  const displayName = name?.trim() || 'deportista';
+  const displayName = (name?.trim() || 'deportista').replace(/[\r\n]+/g, ' ').slice(0, 80);
+  const safeDisplayName = escapeEmailHtml(displayName);
 
   return sendEmail({
     to,
     subject: 'Restablece tu contrasena Theia',
     html: renderLinkEmail({
       title: 'Restablece tu contrasena',
-      greeting: `Hola ${displayName},`,
+      greeting: `Hola ${safeDisplayName},`,
       body: 'Recibimos una solicitud para cambiar la contrasena de tu cuenta Theia.',
       buttonLabel: 'Cambiar contrasena',
       url: resetUrl,

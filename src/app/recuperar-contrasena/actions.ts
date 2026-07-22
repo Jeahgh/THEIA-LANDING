@@ -1,15 +1,18 @@
 'use server';
 
 import { hash } from 'bcryptjs';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import {
   createVerificationToken,
+  getEmailVerificationIdentifier,
   getPasswordResetIdentifier,
   getTrustedAppOrigin,
   hashVerificationToken,
   sendPasswordResetEmail,
 } from '@/lib/email-verification';
 import { prisma } from '@/lib/prisma';
+import { consumeRateLimit, getClientAddress } from '@/lib/rate-limit';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -18,6 +21,25 @@ export async function requestPasswordReset(formData: FormData) {
 
   if (!emailRegex.test(email)) {
     redirect('/recuperar-contrasena?error=email');
+  }
+
+  const requestHeaders = await headers();
+  const clientAddress = getClientAddress(requestHeaders);
+  const emailLimit = consumeRateLimit({
+    scope: 'email-password-reset',
+    identifiers: [email],
+    limit: 5,
+    windowMs: 60 * 60 * 1_000,
+  });
+  const addressLimit = consumeRateLimit({
+    scope: 'address-password-reset',
+    identifiers: [clientAddress],
+    limit: 20,
+    windowMs: 60 * 60 * 1_000,
+  });
+
+  if (!emailLimit.allowed || !addressLimit.allowed) {
+    redirect('/recuperar-contrasena?sent=1');
   }
 
   const origin = getTrustedAppOrigin();
@@ -118,6 +140,8 @@ export async function resetPassword(formData: FormData) {
     redirect('/recuperar-contrasena?error=invalid');
   }
 
+  const emailVerificationIdentifier = getEmailVerificationIdentifier(email);
+
   await prisma.$transaction([
     prisma.user.update({
       where: { id: user.id },
@@ -127,13 +151,8 @@ export async function resetPassword(formData: FormData) {
         sessionVersion: { increment: 1 },
       },
     }),
-    prisma.verificationToken.delete({
-      where: {
-        identifier_token: {
-          identifier,
-          token: hashedToken,
-        },
-      },
+    prisma.verificationToken.deleteMany({
+      where: { identifier: { in: [identifier, emailVerificationIdentifier] } },
     }),
   ]);
 

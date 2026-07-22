@@ -236,6 +236,12 @@
       "regex": "^/registro(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/registro(?:/)?$"
+    },
+    {
+      "page": "/verificar-email",
+      "regex": "^/verificar\\-email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/verificar\\-email(?:/)?$"
     }
   ],
   "dataRoutes": [],

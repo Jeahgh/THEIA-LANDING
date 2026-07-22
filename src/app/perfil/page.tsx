@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { requireActiveUser } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
+import PasswordInput from '@/components/auth/PasswordInput';
 import AvatarUpload from '@/components/profile/AvatarUpload';
 import ToastMessage from '@/components/ui/ToastMessage';
 import { requestEmailVerification, updatePassword, updateProfile } from './actions';
@@ -132,16 +133,16 @@ export default async function ProfilePage({
                 {user.passwordHash && (
                   <div>
                     <label className="mb-1 block text-sm font-semibold text-text-primary">Contrasena actual</label>
-                    <input name="currentPassword" type="password" className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" />
+                    <PasswordInput name="currentPassword" className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" />
                   </div>
                 )}
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-text-primary">Nueva contrasena</label>
-                  <input name="newPassword" type="password" minLength={8} className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" required />
+                  <PasswordInput name="newPassword" minLength={8} className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" required />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-text-primary">Confirmar nueva contrasena</label>
-                  <input name="confirmPassword" type="password" minLength={8} className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" required />
+                  <PasswordInput name="confirmPassword" minLength={8} className="w-full rounded-xl border border-border-subtle px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15" required />
                 </div>
               </div>
 

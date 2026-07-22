@@ -6,19 +6,34 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Button from '@/components/ui/Button';
 import GoogleLogo from '@/components/auth/GoogleLogo';
+import PasswordInput from '@/components/auth/PasswordInput';
 import ToastMessage from '@/components/ui/ToastMessage';
+import { getSafeCallbackUrl } from '@/lib/safe-callback-url';
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/planes';
+  const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'));
   const passwordReset = searchParams.get('passwordReset');
   const passwordUpdated = searchParams.get('passwordUpdated');
+  const verification = searchParams.get('verification');
+  const authError = searchParams.get('error');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loadingMessage, setLoadingMessage] = useState('');
   const isSubmitting = Boolean(loadingMessage);
+  const notice = passwordReset || passwordUpdated
+    ? 'Contrasena actualizada. Ya puedes iniciar sesion.'
+    : verification === 'verified'
+      ? 'Correo verificado. Ya puedes iniciar sesion.'
+      : verification === 'expired'
+        ? 'El enlace de verificacion vencio.'
+        : verification === 'invalid'
+          ? 'El enlace de verificacion no es valido.'
+          : authError === 'OAuthAccountNotLinked'
+            ? 'Ese correo ya usa otro metodo de acceso. Inicia con contrasena o recuperala.'
+            : '';
 
   const handleGoogleLogin = async () => {
     setError('');
@@ -61,9 +76,7 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-8">
-      {(passwordReset || passwordUpdated) && (
-        <ToastMessage message="Contrasena actualizada. Ya puedes iniciar sesion." />
-      )}
+      {notice && <ToastMessage message={notice} tone={verification === 'expired' || verification === 'invalid' || authError ? 'error' : 'success'} />}
       <div className="mb-6 text-center sm:mb-8">
         <div className="accent-line mx-auto mb-5" />
         <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">Iniciar sesion</h1>
@@ -115,9 +128,8 @@ export default function LoginForm() {
               Olvidaste?
             </Link>
           </div>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"

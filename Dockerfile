@@ -6,6 +6,10 @@ WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Marca interna para los comandos destructivos. BuildKit no siempre crea
+# /.dockerenv durante las instrucciones RUN.
+RUN mkdir -p /run && touch /run/theia-container-context
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates openssl \
   && rm -rf /var/lib/apt/lists/*
@@ -20,9 +24,10 @@ COPY . .
 # Prisma exige una URL al cargar prisma.config.ts, aunque `generate` y el build
 # no se conectan a esta base ficticia. El valor no se copia al artefacto final.
 ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public
+ENV THEIA_CONTAINER_CONTEXT=1
 
 RUN npm run db:generate
-RUN npm run build -- --webpack
+RUN npm run build:container -- --webpack
 
 # El servidor standalone no copia estos directorios por defecto.
 RUN mkdir -p .next/standalone/public \
@@ -41,11 +46,13 @@ FROM deps AS migrator
 
 COPY prisma ./prisma
 COPY prisma.config.ts ./prisma.config.ts
+COPY scripts/container-tools.cjs ./scripts/container-tools.cjs
 
 ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public
+ENV THEIA_CONTAINER_CONTEXT=1
 RUN npm run db:generate
 
-CMD ["sh", "-c", "npm run db:deploy && npm run db:seed"]
+CMD ["sh", "-c", "npm run db:deploy:container && npm run db:seed:container"]
 
 FROM node:22-bookworm-slim AS runner
 
