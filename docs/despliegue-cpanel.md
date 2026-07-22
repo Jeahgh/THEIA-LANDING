@@ -6,7 +6,7 @@ desarrollo, descargar motores Prisma, generar el cliente y compilar Next.js.
 
 ## 1. Arquitectura de despliegue
 
-El flujo es:
+El flujo de publicación es:
 
 ```text
 Codigo fuente
@@ -17,21 +17,43 @@ Codigo fuente
   -> server.js bajo Passenger
 ```
 
+Docker solo interviene en el equipo de desarrollo: mantiene PostgreSQL local y
+crea un artefacto Linux reproducible. cPanel no ejecuta Docker. En producción,
+Passenger ejecuta Node.js y se conecta al PostgreSQL configurado en el panel.
+
+Los entornos son independientes:
+
+- `.env.development.local` contiene únicamente variables locales y usa
+  `localhost:5433`.
+- `.env.production-ops.local` contiene únicamente la conexión que usan los
+  comandos deliberados de migración productiva.
+- Las variables runtime de producción se configuran exclusivamente en
+  **Setup Node.js App** de cPanel.
+
+Nunca copies variables de producción a `.env.local` ni a
+`.env.development.local`.
+
 El `server.js` de la raiz solo arranca `deploy/cpanel/server.js`. No importa
 Next desde el `node_modules` de cPanel y no contiene un segundo servidor custom.
 
 ## 2. Preparar una version localmente
 
-Requisitos: Node 22.12+, Docker Desktop iniciado y variables locales validas.
+Requisitos: Node 22.12+, Docker Desktop iniciado y variables locales válidas.
 
 ```bash
 npm ci
 npm run db:generate
 npm run db:validate
 npm run lint
+npm run db:up
 npm run db:status
 npm run build:cpanel
 ```
+
+`npm ci` solo es necesario después de clonar o cuando cambie
+`package-lock.json`; no es un paso diario. `db:status` está protegido para
+consultar PostgreSQL local. `build:cpanel` utiliza Docker y nunca debe compilar
+contra una base productiva.
 
 `build:cpanel` construye dentro de Debian Linux, comprueba que exista Sharp para
 Linux, rechaza binarios de Windows/macOS y reemplaza `deploy/cpanel` solo cuando
@@ -49,21 +71,41 @@ El commit debe incluir el codigo fuente, `package-lock.json` y todo
 
 ## 3. Migraciones
 
-Las migraciones no se ejecutan en cPanel. Se aplican desde un entorno confiable
-antes de activar una version que dependa de ellas:
+Las migraciones no se ejecutan en cPanel ni durante el build. Se aplican desde
+un equipo confiable antes de activar una versión que dependa de ellas.
 
-```bash
-npm run db:status
-npm run db:deploy
-npm run db:status
-```
+1. Crea el archivo local de operaciones, que está ignorado por Git:
 
-`db:deploy` modifica PostgreSQL; revisa primero los SQL nuevos en
-`prisma/migrations`. El seed es una accion separada y nunca se ejecuta
-automaticamente en produccion.
+   ```powershell
+   Copy-Item .env.production-ops.example .env.production-ops.local
+   ```
 
-Para la version auditada el repositorio contiene 6 migraciones y la base estaba
-al dia al momento de preparar esta guia.
+2. Completa únicamente `THEIA_PRODUCTION_DATABASE_URL`. No copies ese valor a
+   `DATABASE_URL` ni a ningún archivo de desarrollo.
+3. Consulta el estado sin modificar la base:
+
+   ```bash
+   npm run db:status:production
+   ```
+
+4. Revisa todos los SQL pendientes en `prisma/migrations` y confirma que el
+   respaldo productivo esté disponible.
+5. Aplica las migraciones con la confirmación literal obligatoria:
+
+   ```bash
+   npm run db:deploy:production -- --confirm-production
+   ```
+
+6. Verifica nuevamente:
+
+   ```bash
+   npm run db:status:production
+   ```
+
+El repositorio contiene actualmente **8 migraciones**. El seed es una acción
+separada y nunca se ejecuta automáticamente en producción. Los comandos
+locales `db:status`, `db:migrate` y `db:seed` rechazan conexiones que no sean
+locales; tampoco existe un comando genérico para desplegar migraciones.
 
 ## 4. Configurar Setup Node.js App
 
@@ -91,7 +133,8 @@ repositorio.
 
 ## 5. Variables de entorno
 
-Configura en cPanel, sin comillas envolventes:
+Configura las variables de producción directamente en **Setup Node.js App** de
+cPanel, sin comillas envolventes:
 
 ```text
 DATABASE_URL
@@ -103,7 +146,8 @@ AUTH_GOOGLE_SECRET
 EMAIL_FROM
 ```
 
-Para correo configura uno de estos grupos:
+Para que registro, recuperación de contraseña y contacto funcionen de forma
+segura en producción, configura obligatoriamente uno de estos grupos:
 
 ```text
 SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS
@@ -115,9 +159,43 @@ o:
 RESEND_API_KEY
 ```
 
-`AUTH_URL` y `NEXT_PUBLIC_APP_URL` deben usar la URL HTTPS publica. `DIRECT_URL`
-solo hace falta donde se ejecutan migraciones; no es obligatoria para el runtime
-de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
+`AUTH_URL` y `NEXT_PUBLIC_APP_URL` deben usar la misma URL HTTPS pública y
+canónica. En Google Cloud registra exactamente esta URI de redirección:
+
+```text
+https://TU_DOMINIO/api/auth/callback/google
+```
+
+`AUTH_SECRET` debe ser largo, aleatorio y permanecer idéntico entre reinicios y
+versiones; cambiarlo invalida todas las cookies de sesión existentes.
+`DIRECT_URL` no se usa en el runtime de cPanel. Las migraciones externas usan
+exclusivamente `THEIA_PRODUCTION_DATABASE_URL` desde
+`.env.production-ops.local`; esa variable no se configura en cPanel. cPanel
+administra `PORT` y no debes fijarlo manualmente.
+
+### Primer administrador en una base vacía
+
+Después del primer inicio con Google, confirma en la base que se crearon el
+usuario y su cuenta vinculada. Desde la herramienta PostgreSQL de cPanel,
+promueve únicamente tu correo real:
+
+```sql
+UPDATE "User"
+SET "role" = 'ADMIN', "isActive" = true
+WHERE "email" = 'TU_CORREO_REAL';
+```
+
+Comprueba que se actualizó exactamente una fila. La siguiente validación de la
+sesión recogerá el rol nuevo; no insertes usuarios manualmente antes del primer
+inicio con Google.
+
+### Protección frente a abuso
+
+La aplicación limita intentos de contraseña y solicitudes de correo por proceso
+Node.js. Mantén además **ModSecurity/WAF** activo en cPanel para cubrir múltiples
+procesos, reinicios y ataques distribuidos. Antes de abrir el sitio al público,
+comprueba que solicitudes repetidas de registro respondan `429` y que el WAF no
+bloquee el callback legítimo de Google.
 
 ## 6. Actualizar desde Git
 
@@ -139,8 +217,8 @@ de cPanel. cPanel administra `PORT` y no debes fijarlo manualmente.
 4. Confirma que exista `deploy/cpanel/server.js` en el administrador de archivos.
 5. En **Setup Node.js App**, pulsa **Restart Application**.
 
-No ejecutes `db:generate`, `db:deploy`, `build`, `build:cpanel` ni instaladores
-manuales dentro de cPanel.
+No ejecutes `db:generate`, `db:deploy:production`, `build`, `build:cpanel` ni
+instaladores manuales dentro de cPanel.
 
 ## 7. Interpretar errores
 

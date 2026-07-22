@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import nextEnv from '@next/env';
 import prismaClientPkg from '../src/generated/prisma/index.js';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -5,12 +6,47 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const { loadEnvConfig } = nextEnv;
 const { PrismaClient } = prismaClientPkg;
 
-// En ejecucion local debe prevalecer .env.development.local. Los contenedores
-// y produccion inyectan DATABASE_URL directamente en el proceso.
-loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
+const databaseTarget = process.env.THEIA_DATABASE_TARGET ?? 'local';
+
+if (databaseTarget === 'local') {
+  loadEnvConfig(process.cwd(), true);
+} else if (
+  databaseTarget !== 'container'
+  || process.env.THEIA_CONTAINER_CONTEXT !== '1'
+  || !existsSync('/run/theia-container-context')
+) {
+  throw new Error('El seed solo admite la base local o el contenedor Docker de THEIA.');
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL no esta configurada.');
+}
+
+let databaseUrl;
+
+try {
+  databaseUrl = new URL(process.env.DATABASE_URL);
+} catch {
+  throw new Error('DATABASE_URL no contiene una URL valida.');
+}
+
+if (!['postgres:', 'postgresql:'].includes(databaseUrl.protocol)) {
+  throw new Error('DATABASE_URL debe usar postgresql:// o postgres://.');
+}
+
+if ([...databaseUrl.searchParams.keys()].some((key) => key.toLowerCase() === 'host')) {
+  throw new Error('DATABASE_URL no permite reemplazar el host mediante parametros.');
+}
+
+const databaseHost = databaseUrl.hostname.replace(/^\[|\]$/g, '').toLowerCase();
+const isLoopback = ['localhost', '127.0.0.1', '::1'].includes(databaseHost);
+
+if (databaseTarget === 'local' && !isLoopback) {
+  throw new Error(`El seed local rechazo el host no local "${databaseHost}".`);
+}
+
+if (databaseTarget === 'container' && databaseHost !== 'db') {
+  throw new Error(`El seed del contenedor rechazo el host "${databaseHost}"; se esperaba "db".`);
 }
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });

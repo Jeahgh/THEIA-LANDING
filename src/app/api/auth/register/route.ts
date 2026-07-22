@@ -1,4 +1,3 @@
-import { hash } from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import {
   createVerificationToken,
@@ -8,6 +7,7 @@ import {
   sendVerificationEmail,
 } from '@/lib/email-verification';
 import { prisma } from '@/lib/prisma';
+import { consumeRateLimit, getClientAddress } from '@/lib/rate-limit';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -16,10 +16,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const name = String(body.name ?? '').trim();
     const email = String(body.email ?? '').toLowerCase().trim();
-    const password = String(body.password ?? '');
-    const confirmPassword = String(body.confirmPassword ?? '');
 
-    if (name.length < 2) {
+    if (name.length < 2 || name.length > 80) {
       return NextResponse.json({ success: false, message: 'Ingresa tu nombre.' }, { status: 400 });
     }
 
@@ -27,16 +25,43 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Ingresa un email valido.' }, { status: 400 });
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ success: false, message: 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
+    const clientAddress = getClientAddress(request.headers);
+    const emailLimit = consumeRateLimit({
+      scope: 'email-registration',
+      identifiers: [email],
+      limit: 5,
+      windowMs: 60 * 60 * 1_000,
+    });
+    const addressLimit = consumeRateLimit({
+      scope: 'address-registration',
+      identifiers: [clientAddress],
+      limit: 20,
+      windowMs: 60 * 60 * 1_000,
+    });
+
+    if (!emailLimit.allowed || !addressLimit.allowed) {
+      const retryAfter = Math.max(
+        emailLimit.retryAfterSeconds,
+        addressLimit.retryAfterSeconds,
+      );
+
+      return NextResponse.json(
+        { success: false, message: 'Espera antes de solicitar otro correo.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      );
     }
 
-    if (password !== confirmPassword) {
-      return NextResponse.json({ success: false, message: 'Las contraseñas no coinciden.' }, { status: 400 });
-    }
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        emailVerified: true,
+        accounts: { select: { id: true }, take: 1 },
+      },
+    });
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
+    if (existingUser?.emailVerified || existingUser?.accounts.length) {
       return NextResponse.json({ success: false, message: 'Ya existe una cuenta con ese email.' }, { status: 409 });
     }
 
@@ -58,42 +83,65 @@ export async function POST(request: Request) {
     verificationUrl.searchParams.set('email', email);
     verificationUrl.searchParams.set('token', token);
 
-    await prisma.$transaction([
-      prisma.user.create({
-        data: {
-          name,
-          email,
-          passwordHash: await hash(password, 12),
-        },
-      }),
-      prisma.verificationToken.deleteMany({ where: { identifier } }),
-      prisma.verificationToken.create({
-        data: {
-          identifier,
-          token: hashedToken,
-          expires,
-        },
-      }),
-    ]);
+    if (existingUser) {
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { id: existingUser.id },
+          data: { passwordHash: null, sessionVersion: { increment: 1 } },
+        }),
+        prisma.verificationToken.deleteMany({ where: { identifier } }),
+        prisma.verificationToken.create({
+          data: { identifier, token: hashedToken, expires },
+        }),
+      ]);
+    } else {
+      await prisma.$transaction([
+        prisma.user.create({
+          data: {
+            name,
+            email,
+          },
+        }),
+        prisma.verificationToken.deleteMany({ where: { identifier } }),
+        prisma.verificationToken.create({
+          data: { identifier, token: hashedToken, expires },
+        }),
+      ]);
+    }
 
     let emailSent = false;
 
     try {
       emailSent = await sendVerificationEmail({
         to: email,
-        name,
+        name: existingUser?.name ?? name,
         verificationUrl: verificationUrl.toString(),
       });
     } catch (emailError) {
       console.error('Register verification email error:', emailError);
     }
 
+    if (!emailSent) {
+      const isDevelopment = process.env.NODE_ENV !== 'production';
+
+      return NextResponse.json(
+        {
+          success: isDevelopment,
+          emailSent: false,
+          message: isDevelopment
+            ? 'Cuenta pendiente. Abre el enlace mostrado en la consola local.'
+            : 'No pudimos enviar la verificacion. Reintenta cuando el correo este disponible.',
+        },
+        { status: isDevelopment ? 200 : 503 },
+      );
+    }
+
     return NextResponse.json({
       success: true,
-      emailSent,
-      message: emailSent
-        ? 'Cuenta creada. Te enviamos un correo de verificacion.'
-        : 'Cuenta creada. No pudimos enviar la verificacion automaticamente.',
+      emailSent: true,
+      message: existingUser
+        ? 'Te enviamos un nuevo correo de verificacion.'
+        : 'Cuenta creada. Verifica tu correo para elegir una contrasena.',
     });
   } catch (error) {
     console.error('Register error:', error);

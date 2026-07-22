@@ -18,7 +18,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const hasActiveSession = Boolean(session?.user?.id && session.user.isActive);
+  const isAdmin = hasActiveSession && session?.user?.role === 'ADMIN';
   const userName = session?.user?.name?.split(' ')[0] ?? 'Atleta';
   const userInitial = userName.charAt(0).toUpperCase();
 
@@ -92,7 +93,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-3">
             <div className="hidden lg:flex items-center gap-2">
-              {session?.user ? (
+              {hasActiveSession && session?.user ? (
                 <div ref={profileMenuRef} className="relative">
                   <button
                     type="button"
@@ -184,7 +185,7 @@ export default function Navbar() {
             </Link>
           )}
           <div className="pt-2" onClick={() => setIsMobileMenuOpen(false)}>
-            {session?.user ? (
+            {hasActiveSession && session?.user ? (
               <div className="space-y-2 rounded-xl bg-white/10 p-3">
                 <div className="flex min-w-0 items-center gap-3 px-1 py-1 text-white">
                   <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue">

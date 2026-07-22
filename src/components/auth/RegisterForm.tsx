@@ -2,20 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Button from '@/components/ui/Button';
 import GoogleLogo from '@/components/auth/GoogleLogo';
+import { getSafeCallbackUrl } from '@/lib/safe-callback-url';
 
 export default function RegisterForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/planes';
+  const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'));
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    confirmPassword: '',
   });
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
@@ -61,23 +59,9 @@ export default function RegisterForm() {
         return;
       }
 
-      setLoadingMessage('Iniciando sesion...');
-      const signInResponse = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-        callbackUrl,
-      });
-
-      if (signInResponse?.error) {
-        setIsError(false);
-        setMessage('Cuenta creada. Ahora inicia sesion con tus datos.');
-        router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
-        return;
-      }
-
-      setLoadingMessage('Preparando tu cuenta...');
-      router.replace(callbackUrl);
+      setIsError(false);
+      setMessage(data.message ?? 'Cuenta creada. Revisa tu correo para elegir una contrasena.');
+      setLoadingMessage('');
     } catch {
       setIsError(true);
       setMessage('No pudimos crear la cuenta. Intentalo nuevamente.');
@@ -105,7 +89,7 @@ export default function RegisterForm() {
 
       <div className="mb-6 flex items-center gap-3 text-xs text-text-muted">
         <span className="h-px flex-1 bg-border-subtle" />
-        <span>o crea tu cuenta con email</span>
+        <span>o verifica tu email</span>
         <span className="h-px flex-1 bg-border-subtle" />
       </div>
 
@@ -140,36 +124,6 @@ export default function RegisterForm() {
             className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
             autoComplete="email"
             disabled={isSubmitting}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-semibold text-text-primary">Contrasena</label>
-          <input
-            id="password"
-            type="password"
-            value={formData.password}
-            onChange={(event) => updateField('password', event.target.value)}
-            className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
-            autoComplete="new-password"
-            disabled={isSubmitting}
-            minLength={8}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="confirmPassword" className="mb-1 block text-sm font-semibold text-text-primary">Confirmar contrasena</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={(event) => updateField('confirmPassword', event.target.value)}
-            className="w-full rounded-lg border border-border-subtle px-4 py-3 outline-none transition-colors focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 disabled:cursor-not-allowed disabled:bg-slate-50 sm:rounded-xl"
-            autoComplete="new-password"
-            disabled={isSubmitting}
-            minLength={8}
             required
           />
         </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import PasswordInput from '@/components/auth/PasswordInput';
 import { requestPasswordReset, resetPassword } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +16,13 @@ const inputClasses =
 export default async function RecoverPasswordPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string; token?: string; sent?: string; error?: string }>;
+  searchParams: Promise<{
+    email?: string;
+    token?: string;
+    sent?: string;
+    error?: string;
+    verification?: string;
+  }>;
 }) {
   const params = await searchParams;
   const email = String(params.email ?? '').trim();
@@ -48,6 +55,12 @@ export default async function RecoverPasswordPage({
                 : 'Usa el mismo correo con el que creaste tu cuenta.'}
             </p>
           </div>
+
+          {params.verification === 'verified' && isResetMode && (
+            <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              Correo verificado. Ahora elige tu contrasena.
+            </p>
+          )}
 
           {!isResetMode ? (
             <form action={requestPasswordReset} className="space-y-4">
@@ -94,10 +107,9 @@ export default async function RecoverPasswordPage({
                 <label htmlFor="password" className="mb-1 block text-sm font-semibold text-text-primary">
                   Nueva contrasena
                 </label>
-                <input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
                   minLength={8}
                   className={inputClasses}
                   autoComplete="new-password"
@@ -108,10 +120,9 @@ export default async function RecoverPasswordPage({
                 <label htmlFor="confirmPassword" className="mb-1 block text-sm font-semibold text-text-primary">
                   Confirmar nueva contrasena
                 </label>
-                <input
+                <PasswordInput
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
                   minLength={8}
                   className={inputClasses}
                   autoComplete="new-password"
