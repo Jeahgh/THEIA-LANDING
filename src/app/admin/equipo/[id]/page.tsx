@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import AthleteForm from '@/components/admin/AthleteForm';
 import { updateAthlete } from '../actions';
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EditAthletePage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin('/admin/equipo');
   const { id } = await params;
   const athlete = await prisma.athlete.findUnique({ where: { id } });
 

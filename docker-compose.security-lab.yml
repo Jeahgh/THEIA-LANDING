@@ -1,0 +1,58 @@
+name: theia-security-lab
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+  DIRECT_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+  AUTH_SECRET: ${AUTH_SECRET}
+  AUTH_URL: ${AUTH_URL}
+  NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+  AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID:-lab-google-disabled}
+  AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET:-lab-google-disabled}
+  NEXT_TELEMETRY_DISABLED: "1"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${THEIA_LAB_BIND_IP:?Set THEIA_LAB_BIND_IP to the VirtualBox host-only address}:5433:5432"
+    volumes:
+      - theia-security-lab-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    image: theia-security-lab-migrator:local
+    build:
+      context: .
+      target: migrator
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    image: theia-security-lab-web:local
+    build:
+      context: .
+      target: runner
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "${THEIA_LAB_BIND_IP:?Set THEIA_LAB_BIND_IP to the VirtualBox host-only address}:3000:3000"
+    restart: unless-stopped
+
+volumes:
+  theia-security-lab-postgres:

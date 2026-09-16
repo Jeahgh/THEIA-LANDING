@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import RaceForm from '@/components/admin/RaceForm';
 import { updateRace } from '../actions';
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EditCompetitionPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin('/admin/competencias');
   const { id } = await params;
   const race = await prisma.race.findUnique({ where: { id } });
   if (!race) notFound();

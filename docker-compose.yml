@@ -1,11 +1,8 @@
 x-app-env: &app-env
   DATABASE_URL: postgresql://postgres:postgres@db:5432/theia?schema=public
   DIRECT_URL: postgresql://postgres:postgres@db:5432/theia?schema=public
-  AUTH_SECRET: theia-docker-local-secret-change-me-before-production
-  AUTH_URL: http://localhost:3001
-  NEXT_PUBLIC_APP_URL: http://localhost:3001
-  AUTH_GOOGLE_ID: docker-local-google-id
-  AUTH_GOOGLE_SECRET: docker-local-google-secret
+  AUTH_URL: http://localhost:3000
+  NEXT_PUBLIC_APP_URL: http://localhost:3000
   NEXT_TELEMETRY_DISABLED: "1"
 
 services:
@@ -16,7 +13,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - theia-postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -30,6 +27,8 @@ services:
     build:
       context: .
       target: migrator
+    env_file:
+      - .env.development.local
     environment: *app-env
     depends_on:
       db:
@@ -41,6 +40,8 @@ services:
     build:
       context: .
       target: runner
+    env_file:
+      - .env.development.local
     environment: *app-env
     depends_on:
       db:
@@ -48,7 +49,7 @@ services:
       migrate:
         condition: service_completed_successfully
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3000:3000"
 
 volumes:
   theia-postgres-data:

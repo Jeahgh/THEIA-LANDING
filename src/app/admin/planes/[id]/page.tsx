@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import PlanForm from '@/components/admin/PlanForm';
 import { updatePlan } from '../actions';
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin('/admin/planes');
   const { id } = await params;
   const plan = await prisma.plan.findUnique({
     where: { id },

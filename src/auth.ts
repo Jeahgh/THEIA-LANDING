@@ -10,6 +10,10 @@ import {
   refreshSessionFromLookup,
 } from '@/lib/auth-session-state';
 
+// Hash bcrypt de un valor ficticio, sin valor de autenticacion. Mantiene un
+// coste comparable cuando el email no existe o la cuenta solo usa OAuth.
+const DUMMY_PASSWORD_HASH = '$2b$12$Jwu5.ymPnL6.qAeTNfG2JOaT4402fItENgsAld174pGi1h4nkbsPy';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma as never),
   session: { strategy: 'jwt' },
@@ -51,23 +55,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!email || !password) return null;
 
-        const loginIdentifiers = [email, getClientAddress(request.headers)];
-        const attempt = consumeRateLimit({
-          scope: 'credentials-login',
-          identifiers: loginIdentifiers,
+        const clientAddress = getClientAddress(request.headers);
+        const accountAttempt = consumeRateLimit({
+          scope: 'credentials-login-account',
+          identifiers: [email],
           limit: 8,
           windowMs: 15 * 60 * 1_000,
         });
+        const addressAttempt = consumeRateLimit({
+          scope: 'credentials-login-address',
+          identifiers: [clientAddress],
+          limit: 50,
+          windowMs: 15 * 60 * 1_000,
+        });
 
-        if (!attempt.allowed) return null;
+        if (!accountAttempt.allowed || !addressAttempt.allowed) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user?.passwordHash || !user.emailVerified || !user.isActive) return null;
+        const isValidPassword = await compare(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+        if (!user?.passwordHash || !user.emailVerified || !user.isActive || !isValidPassword) return null;
 
-        const isValidPassword = await compare(password, user.passwordHash);
-        if (!isValidPassword) return null;
-
-        clearRateLimit('credentials-login', loginIdentifiers);
+        clearRateLimit('credentials-login-account', [email]);
 
         return {
           id: user.id,

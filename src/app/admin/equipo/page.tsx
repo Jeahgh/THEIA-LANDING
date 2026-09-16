@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import AthleteForm from '@/components/admin/AthleteForm';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
@@ -20,6 +21,7 @@ export default async function AdminTeamPage({
 }: {
   searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
+  await requireAdmin('/admin/equipo');
   const params = await searchParams;
   const athletes = await prisma.athlete.findMany({
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
@@ -41,7 +43,7 @@ export default async function AdminTeamPage({
       {athletes.length === 0 ? (
         <EmptyState tone="admin">No hay integrantes creados.</EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
+        <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Integrantes existentes</h2>
           </div>

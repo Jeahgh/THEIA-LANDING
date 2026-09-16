@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CLUB_INFO } from '@/lib/constants';
 import { sendEmail } from '@/lib/email-verification';
+import {
+  InvalidJsonBodyError,
+  readJsonBodyWithLimit,
+  RequestBodyTooLargeError,
+} from '@/lib/http-body';
+import { consumeRateLimit, getClientAddress } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_CONTACT_BODY_BYTES = 24 * 1024;
+const MAX_NAME_LENGTH = 80;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_MESSAGE_LENGTH = 5_000;
 
 function cleanField(value: unknown) {
   return String(value ?? '').trim();
@@ -25,7 +35,31 @@ function cleanSubjectValue(value: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    if (request.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() !== 'application/json') {
+      return NextResponse.json(
+        { success: false, message: 'El contenido debe enviarse como JSON.' },
+        { status: 415 },
+      );
+    }
+
+    const addressLimit = consumeRateLimit({
+      scope: 'address-contact',
+      identifiers: [getClientAddress(request.headers)],
+      limit: 5,
+      windowMs: 10 * 60 * 1_000,
+    });
+
+    if (!addressLimit.allowed) {
+      return NextResponse.json(
+        { success: false, message: 'Espera antes de enviar otro mensaje.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(addressLimit.retryAfterSeconds) },
+        },
+      );
+    }
+
+    const body = await readJsonBodyWithLimit(request, MAX_CONTACT_BODY_BYTES);
     const name = cleanField(body.name);
     const email = cleanField(body.email).toLowerCase();
     const message = cleanField(body.message);
@@ -41,6 +75,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: 'El formato del email no es valido.' },
         { status: 400 }
+      );
+    }
+
+    if (
+      name.length > MAX_NAME_LENGTH ||
+      email.length > MAX_EMAIL_LENGTH ||
+      message.length > MAX_MESSAGE_LENGTH
+    ) {
+      return NextResponse.json(
+        { success: false, message: 'Uno o mas campos superan el largo permitido.' },
+        { status: 400 },
       );
     }
 
@@ -79,7 +124,7 @@ export async function POST(request: NextRequest) {
       `,
       text: `Nuevo mensaje de contacto\n\nNombre: ${name}\nEmail: ${email}\n\nMensaje:\n${message}`,
       logLabel: 'contact-form',
-      devUrl: `Mensaje de ${name} <${email}>: ${message}`,
+      devUrl: 'Mensaje de contacto capturado en desarrollo (contenido redactado).',
     });
 
     if (!emailSent) {
@@ -91,6 +136,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Mensaje enviado con exito' }, { status: 200 });
   } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) {
+      return NextResponse.json(
+        { success: false, message: 'La solicitud es demasiado grande.' },
+        { status: 413 },
+      );
+    }
+
+    if (error instanceof InvalidJsonBodyError) {
+      return NextResponse.json(
+        { success: false, message: 'El cuerpo JSON no es valido.' },
+        { status: 400 },
+      );
+    }
+
     console.error('Error en /api/contact:', error);
     return NextResponse.json(
       { success: false, message: 'No pudimos enviar el mensaje. Intenta nuevamente.' },

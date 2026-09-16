@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import TestimonialForm from '@/components/admin/TestimonialForm';
 import { updateTestimonial } from '../actions';
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EditTestimonialPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin('/admin/testimonios');
   const { id } = await params;
   const testimonial = await prisma.testimonial.findUnique({ where: { id } });
 

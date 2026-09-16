@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
@@ -19,6 +20,7 @@ export default async function AdminNewsPage({
 }: {
   searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
+  await requireAdmin('/admin/noticias');
   const params = await searchParams;
   const posts = await prisma.newsPost.findMany({
     orderBy: [{ sortOrder: 'asc' }, { date: 'desc' }],
@@ -45,7 +47,7 @@ export default async function AdminNewsPage({
       {posts.length === 0 ? (
         <EmptyState tone="admin">No hay noticias creadas.</EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
+        <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Noticias existentes</h2>
           </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
@@ -24,6 +25,7 @@ export default async function AdminPlansPage({
 }: {
   searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
+  await requireAdmin('/admin/planes');
   const params = await searchParams;
   const plans = await prisma.plan.findMany({
     orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }],
@@ -50,7 +52,7 @@ export default async function AdminPlansPage({
       {plans.length === 0 ? (
         <EmptyState tone="admin">No hay planes creados.</EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg theia-card-glow">
+        <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Planes existentes</h2>
           </div>

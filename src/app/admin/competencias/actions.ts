@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { RaceStatus, RaceType } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
+import { getSafeExternalHttpsUrl } from '@/lib/external-url';
 import { prisma } from '@/lib/prisma';
 
 async function ensureAdmin() {
@@ -19,7 +20,7 @@ function readRaceData(formData: FormData) {
     status: String(formData.get('status') ?? 'UPCOMING') as RaceStatus,
     distance: String(formData.get('distance') ?? '').trim() || null,
     description: String(formData.get('description') ?? '').trim() || null,
-    registrationUrl: String(formData.get('registrationUrl') ?? '').trim() || null,
+    registrationUrl: getSafeExternalHttpsUrl(formData.get('registrationUrl')),
     isActive: formData.get('isActive') === 'on',
   };
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
@@ -20,6 +21,7 @@ export default async function AdminTestimonialsPage({
 }: {
   searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
+  await requireAdmin('/admin/testimonios');
   const params = await searchParams;
   const testimonials = await prisma.testimonial.findMany({
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
@@ -41,7 +43,7 @@ export default async function AdminTestimonialsPage({
       {testimonials.length === 0 ? (
         <EmptyState tone="admin">No hay testimonios creados.</EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
+        <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Testimonios existentes</h2>
           </div>

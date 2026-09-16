@@ -1,7 +1,34 @@
 import type { NextConfig } from "next";
 
+const contentSecurityPolicy = [
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+  },
+];
+
 const nextConfig: NextConfig = {
   output: 'standalone',
+  poweredByHeader: false,
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
+    ];
+  },
   async rewrites() {
     return {
       beforeFiles: [
@@ -17,6 +44,12 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [75, 90],
+    localPatterns: [
+      // Los assets locales normales no aceptan query strings. Los avatares
+      // administrados usan ?v= para invalidar la vista al reemplazar el archivo.
+      { pathname: '/**', search: '' },
+      { pathname: '/api/uploads/profiles/**' },
+    ],
     remotePatterns: [
       {
         protocol: 'https',

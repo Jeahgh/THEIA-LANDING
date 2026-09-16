@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Role } from '@/generated/prisma';
 import type { Prisma } from '@/generated/prisma';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import EmptyState from '@/components/ui/EmptyState';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
@@ -40,6 +41,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams?: Promise<{ q?: string; role?: string; status?: string; guardado?: string }>;
 }) {
+  await requireAdmin('/admin/usuarios');
   const params = await searchParams;
   const query = String(params?.q ?? '').trim();
   const role = readRoleFilter(params?.role);
@@ -147,7 +149,7 @@ export default async function AdminUsersPage({
           {hasFilters ? 'No hay usuarios que coincidan con esos filtros.' : 'No hay usuarios registrados.'}
         </EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
+        <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Usuarios</h2>
           </div>

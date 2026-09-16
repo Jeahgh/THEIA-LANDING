@@ -159,11 +159,57 @@ test('rate limits block excess attempts and reopen after their window', () => {
   clearRateLimit(scope, identifiers);
 });
 
-test('client address prefers the proxy-provided direct address', () => {
+test('client address uses the last valid forwarded address before x-real-ip', () => {
   const requestHeaders = new Headers({
     'x-forwarded-for': '198.51.100.10, 203.0.113.20',
     'x-real-ip': '192.0.2.30',
   });
 
-  assert.equal(getClientAddress(requestHeaders), '192.0.2.30');
+  assert.equal(getClientAddress(requestHeaders), '203.0.113.20');
+});
+
+test('rate-limit store pressure fails closed without unlocking an active key', () => {
+  const now = 10_000;
+  const windowMs = 60_000;
+  const protectedScope = `protected-${Date.now()}`;
+  const fillerScope = `filler-${Date.now()}`;
+  const protectedIdentifiers = ['protected-account'];
+  const fillerIdentifiers = [];
+
+  consumeRateLimit({ scope: protectedScope, identifiers: protectedIdentifiers, limit: 1, windowMs, now });
+  const initiallyBlocked = consumeRateLimit({
+    scope: protectedScope,
+    identifiers: protectedIdentifiers,
+    limit: 1,
+    windowMs,
+    now: now + 1,
+  });
+
+  for (let index = 0; index < 10_000; index += 1) {
+    const identifiers = [`key-${index}`];
+    fillerIdentifiers.push(identifiers);
+    consumeRateLimit({ scope: fillerScope, identifiers, limit: 1, windowMs, now });
+  }
+
+  const newKeyAtCapacity = consumeRateLimit({
+    scope: fillerScope,
+    identifiers: ['new-key-at-capacity'],
+    limit: 1,
+    windowMs,
+    now: now + 2,
+  });
+  const stillBlocked = consumeRateLimit({
+    scope: protectedScope,
+    identifiers: protectedIdentifiers,
+    limit: 1,
+    windowMs,
+    now: now + 3,
+  });
+
+  assert.equal(initiallyBlocked.allowed, false);
+  assert.equal(newKeyAtCapacity.allowed, false);
+  assert.equal(stillBlocked.allowed, false);
+
+  clearRateLimit(protectedScope, protectedIdentifiers);
+  for (const identifiers of fillerIdentifiers) clearRateLimit(fillerScope, identifiers);
 });

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
@@ -19,6 +20,7 @@ export default async function AdminCompetitionsPage({
 }: {
   searchParams: Promise<{ guardado?: string; eliminado?: string }>;
 }) {
+  await requireAdmin('/admin/competencias');
   const { guardado, eliminado } = await searchParams;
   const races = await prisma.race.findMany({
     orderBy: [{ date: 'asc' }, { sortOrder: 'asc' }],
@@ -40,7 +42,7 @@ export default async function AdminCompetitionsPage({
       {races.length === 0 ? (
         <EmptyState tone="admin">No hay competencias.</EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg theia-card-glow sm:rounded-2xl">
+        <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Competencias existentes</h2>
           </div>

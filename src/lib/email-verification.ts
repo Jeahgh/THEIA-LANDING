@@ -1,5 +1,7 @@
 import { createHash, randomBytes } from 'crypto';
-import nodemailer from 'nodemailer';
+// Auth.js todavia declara Nodemailer 8 como peer opcional. TheiaSport usa el
+// alias v9 corregido para su transporte SMTP sin dejar el arbol npm invalido.
+import nodemailer from 'nodemailer-v9';
 
 export function createVerificationToken() {
   return randomBytes(32).toString('hex');
@@ -60,13 +62,25 @@ export async function sendEmail({ to, subject, html, text, logLabel, devUrl, rep
       host: smtpHost,
       port: Number.isFinite(smtpPort) ? smtpPort : 587,
       secure: smtpSecure,
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
     });
 
-    await transporter.sendMail({ from, to, subject, html, text, replyTo });
+    await transporter.sendMail({
+      from,
+      to,
+      subject,
+      html,
+      text,
+      replyTo,
+      disableFileAccess: true,
+      disableUrlAccess: true,
+    });
     return true;
   }
 
@@ -78,6 +92,7 @@ export async function sendEmail({ to, subject, html, text, logLabel, devUrl, rep
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ from, to, subject, html, text, reply_to: replyTo }),
+      signal: AbortSignal.timeout(15_000),
     });
 
     if (!response.ok) {

@@ -16,7 +16,10 @@ export async function GET(
   return new Response(image.file, {
     headers: {
       'Content-Type': image.contentType,
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control':
+        folder === 'profiles'
+          ? 'private, no-store'
+          : 'public, max-age=31536000, immutable',
     },
   });
 }

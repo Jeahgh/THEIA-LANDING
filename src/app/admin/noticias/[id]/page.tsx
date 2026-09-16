@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import NewsForm from '@/components/admin/NewsForm';
 import { updateNewsPost } from '../actions';
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EditNewsPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin('/admin/noticias');
   const { id } = await params;
   const [post, athletes] = await Promise.all([
     prisma.newsPost.findUnique({
