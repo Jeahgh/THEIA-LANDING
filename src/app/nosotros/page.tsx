@@ -5,13 +5,16 @@ import { getActiveAthletes, getClubStats } from '@/lib/team';
 import SectionTitle from '@/components/ui/SectionTitle';
 import EmptyState from '@/components/ui/EmptyState';
 import TeamMemberGrid from '@/components/nosotros/TeamMemberGrid';
+import { createPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Nosotros',
-  description: 'Conoce la historia y equipo de Theia Triathlon Performance.',
-};
+export const metadata: Metadata = createPageMetadata({
+  title: 'Equipo de triatlón y running en Chile',
+  description:
+    'Conoce la historia, propósito, entrenadores y atletas de Theia, una comunidad de triatlón y running en Chile.',
+  path: '/nosotros',
+});
 
 export default async function NosotrosPage() {
   const [athletes, stats] = await Promise.all([getActiveAthletes(), getClubStats()]);
@@ -25,12 +28,12 @@ export default async function NosotrosPage() {
     <>
       <section className="relative overflow-hidden pt-16 lg:pt-20">
         <div className="relative h-[300px] sm:h-[400px]">
-          <Image src="/images/atletas-collage.jpg" alt="Equipo Theia en entrenamiento" fill className="object-cover" priority />
+          <Image src="/images/atletas-collage.jpg" alt="Equipo Theia en entrenamiento de triatlón y running" fill className="object-cover" sizes="100vw" preload />
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="accent-line mx-auto mb-6" />
-              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Nosotros</h1>
+              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Equipo y comunidad Theia</h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">Historia, proposito y comunidad deportiva Theia</p>
             </div>
           </div>

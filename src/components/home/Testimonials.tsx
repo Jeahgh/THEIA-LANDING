@@ -1,21 +1,10 @@
 import Image from 'next/image';
-import { prisma } from '@/lib/prisma';
+import { getActiveTestimonials } from '@/lib/testimonials';
 import SectionTitle from '@/components/ui/SectionTitle';
 import EmptyState from '@/components/ui/EmptyState';
 
-async function getTestimonials() {
-  try {
-    return await prisma.testimonial.findMany({
-      where: { isActive: true },
-      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-    });
-  } catch {
-    return [];
-  }
-}
-
 export default async function Testimonials() {
-  const testimonials = await getTestimonials();
+  const testimonials = await getActiveTestimonials();
   const carouselItems = testimonials.length > 1
     ? Array.from({ length: Math.max(4, testimonials.length) }, (_, index) => testimonials[index % testimonials.length])
     : testimonials;

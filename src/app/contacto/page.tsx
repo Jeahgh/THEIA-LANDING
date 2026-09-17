@@ -4,11 +4,13 @@ import { CLUB_INFO, SOCIAL_LINKS } from '@/lib/constants';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
 import ContactForm from '@/components/contact/ContactForm';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Contacto',
-  description: `Contáctanos para unirte a ${CLUB_INFO.name}.`,
-};
+export const metadata: Metadata = createPageMetadata({
+  title: 'Contacto y orientación deportiva',
+  description: `Contacta a ${CLUB_INFO.name} para consultar por planes de entrenamiento de triatlón y running o unirte a la comunidad.`,
+  path: '/contacto',
+});
 
 function WhatsAppIcon() {
   return (
@@ -45,12 +47,12 @@ export default function ContactoPage() {
     <>
       <section className="relative overflow-hidden pt-16 lg:pt-20">
         <div className="relative h-[300px] sm:h-[400px]">
-          <Image src="/images/atletas-collage.jpg" alt="Atletas Theia" fill className="object-cover" priority />
+          <Image src="/images/atletas-collage.jpg" alt="Atletas del equipo Theia en Chile" fill className="object-cover" sizes="100vw" preload />
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="px-6 text-center">
               <div className="accent-line mx-auto mb-6" />
-              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Contacto</h1>
+              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Contacto Theia</h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">
                 ¿Quieres unirte al club o tienes alguna pregunta? Escríbenos.
               </p>

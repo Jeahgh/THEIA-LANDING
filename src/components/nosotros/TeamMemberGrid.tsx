@@ -80,7 +80,6 @@ function MemberModal({ member, onClose }: { member: PublicAthlete; onClose: () =
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 52vw"
-              priority
             />
           ) : (
             <span className="text-8xl font-black text-brand-blue/60">{member.name.charAt(0)}</span>

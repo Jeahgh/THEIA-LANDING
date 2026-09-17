@@ -27,6 +27,29 @@ const nextConfig: NextConfig = {
         source: '/:path*',
         headers: securityHeaders,
       },
+      {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/images/theia-hero-collage.jpeg',
+        destination: '/images/theia-hero-collage.webp',
+        permanent: true,
+      },
+      {
+        source: '/images/equipo-noticias.jpg',
+        destination: '/images/equipo-noticias.webp',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
@@ -43,6 +66,7 @@ const nextConfig: NextConfig = {
     };
   },
   images: {
+    minimumCacheTTL: 86400,
     qualities: [75, 90],
     localPatterns: [
       // Los assets locales normales no aceptan query strings. Los avatares

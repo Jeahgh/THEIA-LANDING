@@ -1,10 +1,11 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { NewsCategory } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_CACHE_TAGS } from '@/lib/cache-tags';
 
 async function ensureAdmin() {
   await requireAdmin('/admin/noticias');
@@ -66,7 +67,9 @@ export async function createNewsPost(formData: FormData) {
     },
   });
   revalidatePath('/');
+  revalidatePath('/noticias');
   revalidatePath('/admin/noticias');
+  updateTag(PUBLIC_CACHE_TAGS.news);
   redirect('/admin/noticias?guardado=creado');
 }
 
@@ -84,7 +87,10 @@ export async function updateNewsPost(postId: string, formData: FormData) {
     },
   });
   revalidatePath('/');
+  revalidatePath('/noticias');
+  revalidatePath(`/noticias/${postId}`);
   revalidatePath('/admin/noticias');
+  updateTag(PUBLIC_CACHE_TAGS.news);
   redirect('/admin/noticias?guardado=actualizado');
 }
 
@@ -92,6 +98,8 @@ export async function deleteNewsPost(postId: string) {
   await ensureAdmin();
   await prisma.newsPost.delete({ where: { id: postId } });
   revalidatePath('/');
+  revalidatePath('/noticias');
   revalidatePath('/admin/noticias');
+  updateTag(PUBLIC_CACHE_TAGS.news);
   redirect('/admin/noticias?eliminado=1');
 }

@@ -4,11 +4,14 @@ import { getActiveRaces } from '@/lib/races';
 import SectionTitle from '@/components/ui/SectionTitle';
 import EventCard from '@/components/competencias/EventCard';
 import EmptyState from '@/components/ui/EmptyState';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Competencias',
-  description: 'Calendario de competencias de triatlón, duatlón, acuatlón y más con Theia Triathlon Performance.',
-};
+export const metadata: Metadata = createPageMetadata({
+  title: 'Competencias de triatlón y running en Chile',
+  description:
+    'Revisa el calendario de competencias de triatlón, duatlón, running, ciclismo y natación en las que participa la comunidad Theia.',
+  path: '/competencias',
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -20,12 +23,12 @@ export default async function CompetenciasPage() {
       {/* Hero — mismo estilo que Nosotros */}
       <section className="relative overflow-hidden pt-16 lg:pt-20">
         <div className="relative h-[300px] sm:h-[400px]">
-          <Image src="/images/atletas-collage.jpg" alt="Atletas en competencia" fill className="object-cover" priority />
+          <Image src="/images/atletas-collage.jpg" alt="Atletas Theia en una competencia deportiva" fill className="object-cover" sizes="100vw" preload />
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="accent-line mx-auto mb-6" />
-              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Competencias</h1>
+              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Competencias de triatlón y running</h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">Calendario completo de eventos de la temporada 2026</p>
             </div>
           </div>

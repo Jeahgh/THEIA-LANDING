@@ -67,7 +67,7 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between lg:h-20">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative h-9 w-9 shrink-0">
-              <Image src="/images/logo-theia-blanco.png" alt="Theia Logo" fill className="object-contain" sizes="36px" />
+              <Image src="/images/logo-theia-blanco.png" alt="Theia Triathlon Performance" fill className="object-contain" sizes="36px" />
             </div>
             <div className="flex min-w-0 flex-col">
               <span className="text-lg font-bold leading-tight tracking-[0.22em] text-white">THEIA</span>

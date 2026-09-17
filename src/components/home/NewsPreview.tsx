@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { SOCIAL_LINKS } from '@/lib/constants';
 import { getPublishedNews } from '@/lib/news';
 import NewsCards from '@/components/home/NewsCards';
@@ -26,14 +27,20 @@ export default async function NewsPreview() {
 
         <NewsCards articles={latestNews} />
 
-        <div className="mt-10 text-center sm:mt-12">
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center sm:mt-12 sm:flex-row">
+          <Link
+            href="/noticias"
+            className="inline-flex w-full items-center justify-center rounded-xl bg-brand-blue px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-brand-blue-vivid sm:w-auto sm:hover:-translate-y-0.5"
+          >
+            Ver todas las noticias
+          </Link>
           <a
             href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex w-full items-center justify-center rounded-xl border-2 border-brand-blue px-6 py-3 text-base font-semibold text-brand-blue transition-all duration-200 hover:bg-brand-blue hover:text-white sm:w-auto sm:hover:-translate-y-0.5"
           >
-            Ver más en Instagram
+            Seguir a Theia en Instagram
           </a>
         </div>
       </div>

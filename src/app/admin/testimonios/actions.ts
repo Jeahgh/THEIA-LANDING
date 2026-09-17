@@ -1,9 +1,10 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_CACHE_TAGS } from '@/lib/cache-tags';
 
 async function ensureAdmin() {
   await requireAdmin('/admin/testimonios');
@@ -38,6 +39,7 @@ export async function createTestimonial(formData: FormData) {
 
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
+  updateTag(PUBLIC_CACHE_TAGS.testimonials);
   redirect('/admin/testimonios?guardado=creado');
 }
 
@@ -51,6 +53,7 @@ export async function updateTestimonial(testimonialId: string, formData: FormDat
 
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
+  updateTag(PUBLIC_CACHE_TAGS.testimonials);
   redirect('/admin/testimonios?guardado=actualizado');
 }
 
@@ -61,5 +64,6 @@ export async function deleteTestimonial(testimonialId: string) {
 
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
+  updateTag(PUBLIC_CACHE_TAGS.testimonials);
   redirect('/admin/testimonios?eliminado=1');
 }

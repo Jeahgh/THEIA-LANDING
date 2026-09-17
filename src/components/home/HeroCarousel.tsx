@@ -7,8 +7,8 @@ export default function HeroCarousel() {
       <div className="relative min-h-[560px] overflow-hidden border-b border-white/10 sm:min-h-[calc(100svh-4rem)] lg:min-h-[calc(100svh-5rem)]">
         <div className="absolute inset-x-0 top-0 h-[58%] bg-brand-navy sm:inset-0 sm:h-auto">
           <Image
-            src="/images/theia-hero-collage.jpeg"
-            alt="Atletas Theia en triatlón"
+            src="/images/theia-hero-collage.webp"
+            alt="Equipo Theia entrenando triatlón y running en Chile"
             fill
             preload
             sizes="100vw"
@@ -23,11 +23,16 @@ export default function HeroCarousel() {
         <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(7,20,38,0.32)_0%,transparent_28%,transparent_72%,rgba(7,20,38,0.32)_100%)] sm:block" />
 
         <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-5 pb-10 text-center sm:bottom-[5%] sm:pb-0">
-          <h1 className="select-none text-7xl font-bold uppercase leading-[0.82] tracking-[0.05em] text-white drop-shadow-[0_14px_30px_rgba(7,20,38,0.95)] sm:text-8xl md:text-[8rem] lg:text-[10rem] xl:text-[12rem]">
-            THEIA
+          <h1 className="select-none text-white drop-shadow-[0_14px_30px_rgba(7,20,38,0.95)]">
+            <span className="block text-7xl font-bold uppercase leading-[0.82] tracking-[0.05em] sm:text-8xl md:text-[8rem] lg:text-[10rem] xl:text-[12rem]">
+              THEIA
+            </span>
+            <span className="mt-4 block text-xs font-bold uppercase tracking-[0.16em] text-white/85 sm:mt-5 sm:text-sm md:text-base lg:text-lg">
+              Entrenamiento de triatlón y running en Chile
+            </span>
           </h1>
-          <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-white/75 sm:mt-5 sm:text-sm md:text-base lg:text-lg">
-            Triathlon Performance
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/75 sm:text-base">
+            Planes para distintos niveles, acompañamiento deportivo y una comunidad que entrena para objetivos reales.
           </p>
           <Link
             href="/planes"

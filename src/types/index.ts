@@ -61,6 +61,7 @@ export interface NewsArticle {
   title: string;
   excerpt: string;         // Resumen breve del artículo
   date: string;            // Formato ISO: "2026-05-10"
+  updatedAt?: string;
   category: 'resultados' | 'noticias' | 'entrenamiento' | 'comunidad';
   imagePlaceholder?: string;
   imageUrl?: string;

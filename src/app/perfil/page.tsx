@@ -6,11 +6,13 @@ import PasswordInput from '@/components/auth/PasswordInput';
 import AvatarUpload from '@/components/profile/AvatarUpload';
 import ToastMessage from '@/components/ui/ToastMessage';
 import { requestEmailVerification, updatePassword, updateProfile } from './actions';
+import { PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Mi perfil',
+  robots: PRIVATE_ROBOTS,
 };
 
 export default async function ProfilePage({

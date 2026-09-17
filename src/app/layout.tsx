@@ -4,6 +4,15 @@ import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
+import JsonLd from '@/components/seo/JsonLd';
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+  websiteStructuredData,
+} from '@/lib/seo';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -18,34 +27,45 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Inicio | Theia',
+    default: 'Theia | Entrenamiento de triatlón y running en Chile',
     template: '%s | Theia',
   },
-  description:
-    'Theia Triathlon Performance: entrenamiento profesional de natacion, ciclismo y running para todos los niveles.',
-  keywords: [
-    'triatlon',
-    'club de triatlon',
-    'theia',
-    'triathlon performance',
-    'natacion',
-    'ciclismo',
-    'running',
-    'entrenamiento',
-    'competencias',
-    'chile',
-  ],
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  category: 'sports',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: 'Theia Triathlon Performance',
-    description: 'Nada. Pedalea. Corre.',
+    title: 'Theia | Entrenamiento de triatlón y running en Chile',
+    description: DEFAULT_DESCRIPTION,
+    url: '/',
+    siteName: SITE_NAME,
     type: 'website',
-    locale: 'es_CL',
+    locale: SITE_LOCALE,
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Equipo Theia de triatlón y running en Chile',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Theia | Entrenamiento de triatlón y running en Chile',
+    description: DEFAULT_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
   icons: {
-    icon: '/images/logo-theia-blanco.png',
-    shortcut: '/images/logo-theia-blanco.png',
-    apple: '/images/logo-theia-blanco.png',
+    icon: '/images/site-icon.png',
+    shortcut: '/images/site-icon.png',
+    apple: '/images/site-icon.png',
   },
 };
 
@@ -55,13 +75,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" data-scroll-behavior="smooth" className={`${montserrat.variable} ${nunito.variable}`}>
+    <html lang="es-CL" data-scroll-behavior="smooth" className={`${montserrat.variable} ${nunito.variable}`}>
       <body className="min-h-screen flex flex-col">
+        <JsonLd data={websiteStructuredData} />
         <AuthProvider>
           <Navbar />
-          <main className="flex-grow">{children}</main>
-          <Footer />
         </AuthProvider>
+        <main className="flex-grow">{children}</main>
+        <Footer />
       </body>
     </html>
   );

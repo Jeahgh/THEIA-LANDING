@@ -1,11 +1,12 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { RaceStatus, RaceType } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { getSafeExternalHttpsUrl } from '@/lib/external-url';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_CACHE_TAGS } from '@/lib/cache-tags';
 
 async function ensureAdmin() {
   await requireAdmin('/admin/competencias');
@@ -41,6 +42,7 @@ export async function createRace(formData: FormData) {
   revalidatePath('/');
   revalidatePath('/competencias');
   revalidatePath('/admin/competencias');
+  updateTag(PUBLIC_CACHE_TAGS.races);
   redirect('/admin/competencias?guardado=creado');
 }
 
@@ -53,6 +55,7 @@ export async function updateRace(raceId: string, formData: FormData) {
   revalidatePath('/');
   revalidatePath('/competencias');
   revalidatePath('/admin/competencias');
+  updateTag(PUBLIC_CACHE_TAGS.races);
   redirect('/admin/competencias?guardado=actualizado');
 }
 
@@ -62,5 +65,6 @@ export async function deleteRace(raceId: string) {
   revalidatePath('/');
   revalidatePath('/competencias');
   revalidatePath('/admin/competencias');
+  updateTag(PUBLIC_CACHE_TAGS.races);
   redirect('/admin/competencias?eliminado=1');
 }

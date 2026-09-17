@@ -12,6 +12,7 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Nosotros', href: '/nosotros' },
   { label: 'Planes', href: '/planes' },
   { label: 'Competencias', href: '/competencias' },
+  { label: 'Noticias', href: '/noticias' },
   { label: 'Contacto', href: '/contacto' },
 ];
 

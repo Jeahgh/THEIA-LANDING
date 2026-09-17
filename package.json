@@ -14,6 +14,7 @@
     "start": "node server.js",
     "lint": "eslint",
     "test:auth": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/auth-session-state.test.mjs",
+    "test:seo": "node --test tests/seo-config.test.mjs",
     "test:security": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/auth-session-state.test.mjs tests/admin-authorization.test.mjs tests/security-config.test.mjs tests/http-body.test.mjs tests/image-upload.test.mjs tests/external-url.test.mjs tests/email-transport.test.mjs",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import RegisterForm from '@/components/auth/RegisterForm';
+import { PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Crear cuenta',
   description: 'Crea tu cuenta en Theia Triathlon Performance para ver precios y contratar planes.',
+  robots: PRIVATE_ROBOTS,
 };
 
 export default function RegisterPage() {
@@ -13,7 +15,7 @@ export default function RegisterPage() {
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         <div className="max-w-xl text-center lg:text-left">
           <div className="accent-line mx-auto mb-6 lg:mx-0" />
-          <h2 className="text-3xl font-bold text-text-primary sm:text-5xl">Unete al club</h2>
+          <h1 className="text-3xl font-bold text-text-primary sm:text-5xl">Únete al club</h1>
           <p className="mt-4 text-base leading-relaxed text-text-secondary sm:mt-5 sm:text-lg">
             Crea tu perfil para acceder a precios, contratar planes y recibir informacion personalizada de entrenamiento.
           </p>

@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PasswordInput from '@/components/auth/PasswordInput';
 import { requestPasswordReset, resetPassword } from './actions';
+import { PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Recuperar contrasena',
   description: 'Solicita un enlace para restablecer tu contrasena de Theia.',
+  robots: PRIVATE_ROBOTS,
 };
 
 const inputClasses =

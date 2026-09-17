@@ -7,13 +7,16 @@ import type { TrainingPlan } from '@/types';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
+import { createPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Planes',
-  description: 'Planes de running y triatlon de Theia Triathlon Performance, con modalidad a distancia, base, performance y pro.',
-};
+export const metadata: Metadata = createPageMetadata({
+  title: 'Planes de entrenamiento de triatlón y running',
+  description:
+    'Compara los planes de entrenamiento de running y triatlón de Theia, con alternativas online, presenciales y de alto rendimiento en Chile.',
+  path: '/planes',
+});
 
 const planCategories = [
   {
@@ -124,12 +127,12 @@ export default async function PlanesPage() {
     <>
       <section className="relative overflow-hidden pt-20">
         <div className="relative h-[350px] sm:h-[400px]">
-          <Image src="/images/atletas-collage.jpg" alt="Atletas Theia en accion" fill className="object-cover" priority />
+          <Image src="/images/atletas-collage.jpg" alt="Atletas Theia en entrenamiento de running y triatlón" fill className="object-cover" sizes="100vw" preload />
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="accent-line mx-auto mb-6" />
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Planes</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Planes de entrenamiento de running y triatlón</h1>
               <p className="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto">Entrenamiento de running y triatlon para objetivos reales</p>
             </div>
           </div>

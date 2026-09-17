@@ -1,3 +1,5 @@
+import { unstable_cache } from 'next/cache';
+import { PUBLIC_CACHE_TAGS, PUBLIC_CONTENT_REVALIDATE_SECONDS } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
 
 export type PublicAthlete = {
@@ -15,8 +17,8 @@ export type ClubStats = {
   races: number;
 };
 
-export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]> {
-  try {
+const getCachedActiveAthletes = unstable_cache(
+  async () => {
     const members = await prisma.athlete.findMany({
       where: { isActive: true },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
@@ -36,6 +38,35 @@ export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]
       return firstPriority - secondPriority;
     });
 
+    return members;
+  },
+  ['active-athletes'],
+  {
+    tags: [PUBLIC_CACHE_TAGS.team],
+    revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+  },
+);
+
+const getCachedClubStats = unstable_cache(
+  async () => {
+    const [athletes, coaches, races] = await Promise.all([
+      prisma.athlete.count({ where: { isActive: true, role: 'Atleta' } }),
+      prisma.athlete.count({ where: { isActive: true, role: 'Entrenador' } }),
+      prisma.race.count({ where: { isActive: true } }),
+    ]);
+
+    return { athletes, coaches, races };
+  },
+  ['club-stats'],
+  {
+    tags: [PUBLIC_CACHE_TAGS.team, PUBLIC_CACHE_TAGS.races],
+    revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+  },
+);
+
+export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]> {
+  try {
+    const members = await getCachedActiveAthletes();
     return limit ? members.slice(0, limit) : members;
   } catch {
     return [];
@@ -44,13 +75,7 @@ export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]
 
 export async function getClubStats(): Promise<ClubStats> {
   try {
-    const [athletes, coaches, races] = await Promise.all([
-      prisma.athlete.count({ where: { isActive: true, role: 'Atleta' } }),
-      prisma.athlete.count({ where: { isActive: true, role: 'Entrenador' } }),
-      prisma.race.count({ where: { isActive: true } }),
-    ]);
-
-    return { athletes, coaches, races };
+    return await getCachedClubStats();
   } catch {
     return { athletes: 0, coaches: 0, races: 0 };
   }

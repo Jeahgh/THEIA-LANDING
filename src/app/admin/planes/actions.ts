@@ -1,10 +1,11 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { PlanCategory } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_CACHE_TAGS } from '@/lib/cache-tags';
 
 async function ensureAdmin() {
   await requireAdmin('/admin/planes');
@@ -95,6 +96,7 @@ export async function createPlan(formData: FormData) {
 
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
+  updateTag(PUBLIC_CACHE_TAGS.plans);
   redirect('/admin/planes?guardado=creado');
 }
 
@@ -136,6 +138,7 @@ export async function updatePlan(planId: string, formData: FormData) {
 
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
+  updateTag(PUBLIC_CACHE_TAGS.plans);
   redirect('/admin/planes?guardado=actualizado');
 }
 
@@ -144,5 +147,6 @@ export async function deletePlan(planId: string) {
   await prisma.plan.delete({ where: { id: planId } });
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
+  updateTag(PUBLIC_CACHE_TAGS.plans);
   redirect('/admin/planes?eliminado=1');
 }
