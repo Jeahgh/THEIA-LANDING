@@ -1,4 +1,8 @@
-# Auditoría integral de seguridad de TheiaSport
+# Auditoría integral de seguridad de TheiaSport (histórica)
+
+> Este documento conserva evidencia del despliegue anterior en cPanel. Sus
+> secciones de infraestructura y publicación ya no describen producción. Para
+> el flujo vigente consulta `docs/despliegue-servidor.md`.
 
 **Fecha de corte:** 2026-08-21  
 **Rama auditada:** `codex/admin-listas-sin-fondo`  

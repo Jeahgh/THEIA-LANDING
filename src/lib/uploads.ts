@@ -9,8 +9,7 @@ const contentTypes: Record<string, string> = {
 };
 
 export function uploadPublicUrl(folder: string, fileName: string) {
-  // Esta ruta siempre pasa por Passenger/Node. En cPanel Apache puede intentar
-  // servir /uploads directamente desde public_html, donde estos archivos no viven.
+  // La API valida el nombre y sirve los archivos desde el volumen persistente.
   return `/api/uploads/${folder}/${fileName}`;
 }
 

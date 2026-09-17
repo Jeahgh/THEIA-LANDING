@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'crypto';
-// Auth.js todavia declara Nodemailer 8 como peer opcional. TheiaSport usa el
-// alias v9 corregido para su transporte SMTP sin dejar el arbol npm invalido.
+// Auth.js declara Nodemailer 8 como peer opcional. El alias permite usar la
+// versión 9 para correo transaccional sin forzar un peer incompatible.
 import nodemailer from 'nodemailer-v9';
 
 export function createVerificationToken() {

@@ -1,5 +1,5 @@
 // =============================================================================
-// Club de Triatlón Thia — Tipos TypeScript Globales
+// THEIA Triathlon Performance — tipos compartidos
 // =============================================================================
 // Define las interfaces y tipos compartidos en toda la aplicación.
 // Mantener este archivo actualizado facilita la escalabilidad del proyecto.
@@ -28,31 +28,6 @@ export type RaceType = 'triatlon' | 'duatlon' | 'acuatlon' | 'running' | 'ciclis
 export type RaceStatus = 'upcoming' | 'registration_open' | 'registration_closed' | 'finished';
 
 /**
- * Testimonio de un miembro del club.
- * Se muestra en el carrusel de testimonios de la página de inicio.
- */
-export interface Testimonial {
-  id: string;
-  name: string;
-  role: string;          // Ej: "Miembro desde 2023", "Triatleta Elite"
-  quote: string;
-  imageUrl?: string;     // URL de la foto del miembro (opcional)
-}
-
-/**
- * Perfil de un entrenador del cuerpo técnico.
- * Se muestra en la página "Nosotros".
- */
-export interface CoachProfile {
-  id: string;
-  name: string;
-  role: string;          // Ej: "Entrenador de Natación"
-  bio: string;
-  imageUrl?: string;
-  specialties: string[];
-}
-
-/**
  * Artículo de noticias/blog del club.
  * Se muestra en la sección de noticias del Home y en la futura página de blog.
  */
@@ -63,7 +38,6 @@ export interface NewsArticle {
   date: string;            // Formato ISO: "2026-05-10"
   updatedAt?: string;
   category: 'resultados' | 'noticias' | 'entrenamiento' | 'comunidad';
-  imagePlaceholder?: string;
   imageUrl?: string;
   results?: NewsResult[];
 }
@@ -132,7 +106,3 @@ export interface SocialLink {
   url: string;
   label: string;
 }
-
-// === FASE 2: Tipos E-commerce ===
-// export interface SubscriptionPlan { ... }
-// export interface PaymentIntent { ... }

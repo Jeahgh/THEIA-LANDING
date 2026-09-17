@@ -1,4 +1,8 @@
-# Plan de hardening de TheiaSport
+# Plan de hardening de TheiaSport (histórico)
+
+> Este plan fue redactado para el despliegue anterior en cPanel. Se conserva
+> como registro de seguridad; las instrucciones de publicación vigentes están
+> en `docs/despliegue-servidor.md`.
 
 **Derivado de:** `SECURITY_AUDIT.md`  
 **Fecha:** 2026-08-21

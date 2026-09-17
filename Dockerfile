@@ -34,13 +34,7 @@ RUN mkdir -p .next/standalone/public \
   && cp -R public/. .next/standalone/public/ \
   && mkdir -p .next/standalone/.next \
   && cp -R .next/static .next/standalone/.next/static \
-  && find .next/standalone -maxdepth 1 -type f -name '.env*' -delete \
-  && mkdir -p /app/cpanel-artifact \
-  && cp -aL .next/standalone/. /app/cpanel-artifact/
-
-# Salida exportable con `docker build --target cpanel-artifact --output ...`.
-FROM scratch AS cpanel-artifact
-COPY --from=builder /app/cpanel-artifact/ /
+  && find .next/standalone -maxdepth 1 -type f -name '.env*' -delete
 
 FROM deps AS migrator
 

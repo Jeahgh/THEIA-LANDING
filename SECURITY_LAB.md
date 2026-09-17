@@ -2,7 +2,7 @@
 
 ## Objetivo y límites
 
-Este laboratorio permite estudiar TheiaSport desde Kali Linux sin tocar `theiasport.cl`, cPanel ni datos reales. Todos los ejercicios ofensivos deben apuntar únicamente a las IP privadas asignadas por usted al laboratorio.
+Este laboratorio permite estudiar TheiaSport desde Kali Linux sin tocar `theiasport.cl`, el servidor productivo ni datos reales. Todos los ejercicios ofensivos deben apuntar únicamente a las IP privadas asignadas por usted al laboratorio.
 
 ```text
 Kali Linux VM (192.168.56.10)

@@ -55,9 +55,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Conserva las URLs guardadas antes de usar /api/uploads. Tambien evita
-        // que Next intente tratarlas como archivos estaticos en un despliegue
-        // donde Apache tenga un public_html distinto al artefacto standalone.
+        // Conserva las URLs históricas y centraliza la lectura de uploads en
+        // Next.js, independientemente del reverse proxy usado por el servidor.
         {
           source: '/uploads/:folder/:fileName',
           destination: '/api/uploads/:folder/:fileName',
