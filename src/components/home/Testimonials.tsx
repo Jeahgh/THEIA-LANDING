@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { getActiveTestimonials } from '@/lib/testimonials';
 import SectionTitle from '@/components/ui/SectionTitle';
-import EmptyState from '@/components/ui/EmptyState';
 
 export default async function Testimonials() {
   const testimonials = await getActiveTestimonials();
@@ -12,13 +11,9 @@ export default async function Testimonials() {
   return (
     <section id="testimonials" className="section-padding theia-night-section">
       <div className="content-shell">
-        <SectionTitle title="Lo que dicen nuestros atletas" subtitle="Testimonios de quienes viven la experiencia Theia" dark />
+        <SectionTitle title="Lo que dicen nuestros atletas" dark />
 
-        {testimonials.length === 0 ? (
-          <EmptyState tone="dark" className="mx-auto max-w-3xl">
-            No hay testimonios activos por ahora.
-          </EmptyState>
-        ) : (
+        {testimonials.length > 0 && (
           <div className={`${testimonials.length > 1 ? 'testimonial-marquee -mx-4 overflow-hidden px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8' : ''}`}>
             <div className={`${testimonials.length > 1 ? 'testimonial-marquee-track flex w-max' : 'flex justify-center'} py-4`}>
               {[0, 1].map((copy) => (

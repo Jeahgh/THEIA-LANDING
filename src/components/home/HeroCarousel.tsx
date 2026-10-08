@@ -23,17 +23,16 @@ export default function HeroCarousel() {
         <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(7,20,38,0.32)_0%,transparent_28%,transparent_72%,rgba(7,20,38,0.32)_100%)] sm:block" />
 
         <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-5 pb-10 text-center sm:bottom-[5%] sm:pb-0">
-          <h1 className="select-none text-white drop-shadow-[0_14px_30px_rgba(7,20,38,0.95)]">
+          <h1 className="w-fit select-none text-white drop-shadow-[0_14px_30px_rgba(7,20,38,0.95)]">
             <span className="block text-7xl font-bold uppercase leading-[0.82] tracking-[0.05em] sm:text-8xl md:text-[8rem] lg:text-[10rem] xl:text-[12rem]">
               THEIA
             </span>
-            <span className="mt-4 block text-xs font-bold uppercase tracking-[0.16em] text-white/85 sm:mt-5 sm:text-sm md:text-base lg:text-lg">
-              Entrenamiento de triatlón y running en Chile
+            <span aria-label="Triatlón Performance" className="mt-4 flex w-full justify-between text-xs font-bold uppercase text-white/85 sm:mt-5 sm:text-sm md:text-base lg:text-lg">
+              {Array.from('Triatlón Performance').map((letter, index) => (
+                <span key={index} aria-hidden="true">{letter === ' ' ? '\u00a0' : letter}</span>
+              ))}
             </span>
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/75 sm:text-base">
-            Planes para distintos niveles, acompañamiento deportivo y una comunidad que entrena para objetivos reales.
-          </p>
           <Link
             href="/planes"
             className="mt-7 inline-flex w-full max-w-xs items-center justify-center rounded-full bg-brand-blue px-6 py-3.5 text-xs font-black uppercase tracking-wide text-white shadow-lg shadow-brand-blue/35 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-blue-vivid hover:shadow-xl hover:shadow-brand-blue/40 sm:mt-8 sm:min-w-60 sm:w-auto sm:px-8"

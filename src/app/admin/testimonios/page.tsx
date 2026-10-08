@@ -13,7 +13,7 @@ import { createTestimonial, deleteTestimonial } from './actions';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Testimonios',
+  title: 'Admin Atletas',
 };
 
 export default async function AdminTestimonialsPage({
@@ -30,22 +30,22 @@ export default async function AdminTestimonialsPage({
   return (
     <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
       <div className="text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Testimonios</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Lo que dicen nuestros atletas</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Atletas</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Atletas</h1>
       </div>
 
       <CreateContentPanel closedLabel="Agregar">
-        <TestimonialForm action={createTestimonial} submitLabel="Crear testimonio" />
+        <TestimonialForm action={createTestimonial} submitLabel="Crear atleta" />
       </CreateContentPanel>
 
       <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
 
       {testimonials.length === 0 ? (
-        <EmptyState tone="admin">No hay testimonios creados.</EmptyState>
+        <EmptyState tone="admin">No hay atletas creados.</EmptyState>
       ) : (
         <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
-            <h2 className="text-lg font-bold text-text-primary sm:text-xl">Testimonios existentes</h2>
+            <h2 className="text-lg font-bold text-text-primary sm:text-xl">Atletas existentes</h2>
           </div>
           <div className="divide-y divide-border-subtle">
             {testimonials.map((testimonial) => (
@@ -85,7 +85,7 @@ export default async function AdminTestimonialsPage({
                   </Link>
                   <ConfirmDeleteButton
                     action={deleteTestimonial.bind(null, testimonial.id)}
-                    itemName={`el testimonio de "${testimonial.name}"`}
+                    itemName={`al atleta "${testimonial.name}"`}
                   />
                 </div>
               </div>

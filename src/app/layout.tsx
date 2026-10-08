@@ -63,9 +63,9 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
   },
   icons: {
-    icon: '/images/site-icon.png',
-    shortcut: '/images/site-icon.png',
-    apple: '/images/site-icon.png',
+    icon: '/images/logo-theia-blanco.png',
+    shortcut: '/images/logo-theia-blanco.png',
+    apple: '/images/logo-theia-blanco.png',
   },
 };
 

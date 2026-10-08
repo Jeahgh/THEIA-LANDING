@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { auth } from '@/auth';
 import { getTrainingPlans } from '@/lib/training-plans';
 import type { TrainingPlan } from '@/types';
-import SectionTitle from '@/components/ui/SectionTitle';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPageMetadata } from '@/lib/seo';
@@ -12,7 +11,7 @@ import { createPageMetadata } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Planes de entrenamiento de triatlón y running',
+  title: 'Planes de entrenamiento',
   description:
     'Compara los planes de entrenamiento de running y triatlón de Theia, con alternativas online, presenciales y de alto rendimiento en Chile.',
   path: '/planes',
@@ -36,22 +35,6 @@ const getPriceLabel = (price: string) => {
 
 const getShortPlanName = (name: string) => name.replace(/^Plan\s+/i, '');
 
-const getIdealFor = (plan: TrainingPlan) => {
-  if (plan.idealFor?.trim()) return plan.idealFor.trim();
-
-  const key = `${plan.id} ${plan.name} ${plan.modality}`.toLowerCase();
-
-  if (key.includes('pro')) return 'Proyecto deportivo avanzado, temporada y competencias prioritarias.';
-  if (key.includes('performance') || key.includes('plus')) return 'Marca personal, 21K/42K, 70.3, Ironman o mejora competitiva.';
-  if (key.includes('base') || key.includes('presencial')) return 'Deportistas en desarrollo que quieren feedback y equipo.';
-  if (key.includes('distancia')) return 'Atletas autonomos que necesitan estructura profesional.';
-
-  if (key.includes('pro') || key.includes('rendimiento')) return 'Objetivos exigentes y calendario competitivo.';
-  if (key.includes('plus') || key.includes('mixto')) return 'Deportistas que buscan seguimiento más cercano.';
-  if (key.includes('presencial')) return 'Quienes quieren técnica, grupo y guía presencial.';
-  return 'Atletas autónomos que necesitan estructura.';
-};
-
 const isRecommendedPlan = (plan: TrainingPlan) =>
   Boolean(plan.highlighted) ||
   plan.name.toLowerCase().includes('performance') ||
@@ -62,59 +45,55 @@ function PlanCard({ plan, canViewPrice }: { plan: TrainingPlan; canViewPrice: bo
   const visibleFeatures = plan.features.slice(0, 4);
   const recommended = isRecommendedPlan(plan);
   const planHref = canViewPrice ? '/contacto' : '/login?callbackUrl=%2Fplanes';
+  const priceLabel = getPriceLabel(plan.price);
 
   return (
     <article
-      className={`relative flex h-full min-h-[340px] flex-col rounded-2xl border bg-white p-4 shadow-md shadow-brand-navy/6 transition-colors duration-200 sm:min-h-[360px] sm:p-5 lg:p-6 ${
+      className={`relative grid grid-rows-subgrid gap-y-6 rounded-xl border bg-white p-5 shadow-sm shadow-brand-navy/5 transition-colors duration-200 lg:p-7 ${canViewPrice ? 'row-span-5' : 'row-span-4'} ${
         recommended ? 'border-brand-blue-vivid ring-1 ring-brand-blue-vivid/25' : 'border-brand-navy/10 hover:border-brand-blue/35'
       }`}
       style={{ fontFamily: 'var(--font-montserrat), system-ui, sans-serif' }}
     >
-      {recommended && (
-        <span className="absolute right-4 top-4 inline-flex items-center rounded-full bg-brand-blue-vivid px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white">
-          Mejor valor
-        </span>
-      )}
-
-      <div className="flex flex-1 flex-col">
-        <h3 className={`max-w-[13rem] text-xl font-black uppercase leading-[0.95] text-brand-navy sm:text-2xl ${recommended ? 'pr-16' : ''}`}>
+      <div className="flex min-h-12 flex-wrap content-start items-start justify-between gap-2">
+        <h3 className="min-w-40 flex-1 text-center text-xl font-extrabold uppercase leading-tight text-brand-navy sm:text-2xl">
           {getShortPlanName(plan.name)}
         </h3>
-
-        <p className="mt-4 text-[15px] leading-relaxed text-text-secondary">{plan.excerpt}</p>
-
-        {canViewPrice && (
-          <div className="mt-5">
-            <p className="font-sans text-[2.15rem] font-black leading-none tracking-normal text-brand-blue-vivid sm:text-[2.45rem]">
-              {getPriceLabel(plan.price)}
-              <span className="ml-1 text-sm font-black uppercase tracking-normal text-brand-navy/65">/mes</span>
-            </p>
-          </div>
+        {recommended && (
+          <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-brand-blue-vivid px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white">
+            Mejor valor
+          </span>
         )}
-
-        {visibleFeatures.length > 0 && (
-          <ul className="mt-4 space-y-2 text-sm text-text-secondary">
-            {visibleFeatures.map((feature) => (
-              <li key={feature} className="flex gap-2.5">
-                <span className="mt-0.5 text-brand-blue-vivid">-</span>
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-auto pt-5">
-          <p className="mb-4 rounded-xl bg-brand-navy/5 px-4 py-3 text-xs leading-relaxed text-text-secondary">
-            <span className="font-black text-brand-navy">Ideal para:</span> {getIdealFor(plan)}
-          </p>
-          <Link
-            href={planHref}
-            className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-black uppercase tracking-tight text-white shadow-sm shadow-brand-navy/15 transition-colors duration-200 hover:bg-brand-blue-vivid"
-          >
-            {canViewPrice ? 'Contratar' : 'Cotizar plan'}
-          </Link>
-        </div>
       </div>
+
+      {canViewPrice && (
+        <div>
+          <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-brand-navy">
+            {priceLabel.startsWith('CLP') && <span className="text-sm font-semibold tracking-normal text-text-secondary">CLP</span>}
+            <span className="text-[2.5rem] font-semibold leading-none tracking-tight sm:text-[2.75rem]">
+              {priceLabel.replace(/^CLP\s*/, '')}
+            </span>
+            <span className="text-sm font-medium tracking-normal text-text-secondary">/mes</span>
+          </p>
+        </div>
+      )}
+
+      <p className="text-justify text-[15px] leading-relaxed text-text-secondary">{plan.excerpt}</p>
+
+      <ul className="space-y-3 text-sm leading-relaxed text-text-secondary">
+        {visibleFeatures.map((feature) => (
+          <li key={feature} className="flex gap-2.5">
+            <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-navy" />
+            <span className="min-w-0 flex-1 text-justify">{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <Link
+        href={planHref}
+        className="inline-flex w-full items-center justify-center self-end rounded-lg bg-brand-navy px-5 py-3 text-sm font-semibold uppercase text-white transition-colors duration-200 hover:bg-brand-blue-vivid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
+      >
+        {canViewPrice ? 'Contratar' : 'Cotizar plan'}
+      </Link>
     </article>
   );
 }
@@ -131,8 +110,7 @@ export default async function PlanesPage() {
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
-              <div className="accent-line mx-auto mb-6" />
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Planes de entrenamiento de running y triatlón</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Planes de entrenamiento</h1>
               <p className="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto">Entrenamiento de running y triatlon para objetivos reales</p>
             </div>
           </div>
@@ -147,7 +125,10 @@ export default async function PlanesPage() {
             className={`section-padding ${index % 2 === 0 ? 'bg-bg-warm' : 'bg-white'}`}
           >
             <div className="w-full px-6 sm:px-8 lg:px-12">
-              <SectionTitle title={category.title} gradient />
+              <div className="mb-8 text-center sm:mb-12">
+                <p className="mb-3 text-xs font-bold tracking-[0.45em] text-brand-navy sm:text-sm">THEIA</p>
+                <h2 className="text-4xl font-bold text-black sm:text-5xl lg:text-6xl">{category.title}</h2>
+              </div>
 
               {plans.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">

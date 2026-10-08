@@ -6,7 +6,8 @@ import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import EmptyState from '@/components/ui/EmptyState';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
-import { updateUserRole } from './actions';
+import UserControls from '@/components/admin/UserControls';
+import { deleteUser, updateUserRole } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,14 @@ const statusLabels = {
   inactivo: 'Inactivos',
 } as const;
 
+const errorMessages: Record<string, string> = {
+  'not-found': 'El usuario ya no existe.',
+  'self-admin': 'No puedes quitarte el acceso de administrador.',
+  'self-delete': 'No puedes borrar tu propia cuenta desde este panel.',
+  'last-admin': 'Debe quedar al menos un administrador habilitado.',
+  conflict: 'La cuenta cambió mientras la editabas. Revisa los datos e inténtalo de nuevo.',
+};
+
 const filterFieldClasses =
   'w-full rounded-lg border border-brand-blue/20 bg-white px-4 py-3 text-sm text-text-primary shadow-sm shadow-brand-blue/10 outline-none transition-colors placeholder:text-text-muted focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15 sm:rounded-xl';
 
@@ -39,9 +48,9 @@ function readStatusFilter(value: string | undefined) {
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; role?: string; status?: string; guardado?: string }>;
+  searchParams?: Promise<{ q?: string; role?: string; status?: string; guardado?: string; eliminado?: string; error?: string }>;
 }) {
-  await requireAdmin('/admin/usuarios');
+  const actor = await requireAdmin('/admin/usuarios');
   const params = await searchParams;
   const query = String(params?.q ?? '').trim();
   const role = readRoleFilter(params?.role);
@@ -88,7 +97,12 @@ export default async function AdminUsersPage({
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Usuarios y roles</h1>
       </div>
 
-      <AdminActionStatus saved={params?.guardado} />
+      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
+      {params?.error && errorMessages[params.error] && (
+        <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMessages[params.error]}
+        </p>
+      )}
 
       <form className="space-y-3" method="get">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_180px_180px_auto] lg:items-end">
@@ -155,31 +169,30 @@ export default async function AdminUsersPage({
           </div>
           <div className="divide-y divide-border-subtle">
             {users.map((user) => (
-              <form
+              <div
                 key={user.id}
-                action={updateUserRole.bind(null, user.id)}
-                className={`grid grid-cols-1 gap-4 px-4 py-5 transition-opacity sm:px-6 lg:grid-cols-[auto_1fr_180px_auto] lg:items-center ${
-                  user.isActive ? 'opacity-100' : 'opacity-60'
-                }`}
+                className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(180px,1fr)_auto] lg:items-center"
               >
-                <label className="flex items-center gap-2 text-sm font-semibold text-text-primary lg:justify-center">
-                  <input name="isActive" type="checkbox" defaultChecked={user.isActive} className="h-4 w-4 accent-brand-blue" />
-                  <span className="lg:hidden">Activo</span>
-                </label>
                 <div className="min-w-0">
-                  <p className="font-bold text-text-primary">{user.name ?? 'Sin nombre'}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-bold text-text-primary">{user.name ?? 'Sin nombre'}</p>
+                    <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">{roleLabels[user.role]}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${user.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                      {user.isActive ? 'Habilitado' : 'Deshabilitado'}
+                    </span>
+                  </div>
                   <p className="truncate text-sm text-text-secondary">{user.email}</p>
                   <p className="mt-1 text-xs text-text-muted">Creado: {user.createdAt.toLocaleDateString('es-CL')}</p>
                 </div>
-                <select name="role" defaultValue={user.role} className="rounded-lg border border-border-subtle px-4 py-2 sm:rounded-xl">
-                  <option value="MEMBER">Miembro</option>
-                  <option value="COACH">Coach</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-                <button className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue-vivid sm:rounded-xl">
-                  Guardar
-                </button>
-              </form>
+                <UserControls
+                  name={user.name ?? user.email ?? 'Sin nombre'}
+                  role={user.role}
+                  isActive={user.isActive}
+                  isCurrentUser={user.id === actor.id}
+                  updateAction={updateUserRole.bind(null, user.id)}
+                  deleteAction={deleteUser.bind(null, user.id)}
+                />
+              </div>
             ))}
           </div>
         </div>

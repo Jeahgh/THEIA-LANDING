@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'es-CL',
     icons: [
       {
-        src: '/images/site-icon.png',
-        sizes: '512x512',
+        src: '/images/logo-theia-blanco.png',
+        sizes: '150x150',
         type: 'image/png',
       },
     ],

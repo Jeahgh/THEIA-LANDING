@@ -19,8 +19,6 @@ export default function Footer() {
 
   return (
     <footer>
-      <div className="h-1.5 w-full bg-gradient-to-r from-brand-blue via-brand-blue-light via-50% to-swim" />
-
       <div className="bg-brand-navy text-white">
         <div className="w-full px-4 py-10 sm:px-6 sm:py-14 lg:px-12 lg:py-20">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-16">

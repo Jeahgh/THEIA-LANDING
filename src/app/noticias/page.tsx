@@ -23,8 +23,8 @@ export default async function NoticiasPage() {
       <section className="relative overflow-hidden pt-16 lg:pt-20">
         <div className="relative h-[300px] sm:h-[400px]">
           <Image
-            src="/images/equipo-noticias.webp"
-            alt="Integrantes de Theia compartiendo actividades deportivas"
+            src="/images/atletas-collage.jpg"
+            alt="Atletas del equipo Theia en Chile"
             fill
             className="object-cover"
             sizes="100vw"
@@ -33,7 +33,6 @@ export default async function NoticiasPage() {
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="px-6 text-center">
-              <div className="accent-line mx-auto mb-6" />
               <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Noticias de Theia</h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">
                 Entrenamientos, competencias, resultados y vida de equipo.

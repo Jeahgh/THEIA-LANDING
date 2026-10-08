@@ -15,10 +15,10 @@ export default function TestimonialForm({ action, testimonial, submitLabel }: Te
     <form action={action} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
       <div className="mb-5">
         <h2 className="text-lg font-bold text-text-primary">
-          {testimonial ? 'Editar testimonio' : 'Nuevo testimonio'}
+          {testimonial ? 'Editar atleta' : 'Nuevo atleta'}
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-          Estos textos se muestran en la seccion de testimonios de la pagina de inicio.
+          La foto y experiencia del atleta se muestran en la página de inicio.
         </p>
       </div>
 
@@ -62,7 +62,7 @@ export default function TestimonialForm({ action, testimonial, submitLabel }: Te
           defaultChecked={testimonial?.isActive ?? true}
           className="h-4 w-4 rounded border-border-subtle text-brand-blue"
         />
-        Mostrar testimonio en la web
+        Mostrar atleta en la web
       </label>
 
       <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-colors hover:bg-brand-blue-vivid sm:w-auto sm:rounded-xl">

@@ -19,7 +19,6 @@ export default async function VerifyEmailPage({
   return (
     <section className="theia-light-section min-h-screen px-4 pb-12 pt-24 sm:px-8 sm:pb-16 sm:pt-32">
       <div className="mx-auto max-w-md rounded-2xl p-6 text-center theia-card-glow sm:p-8">
-        <div className="accent-line mx-auto mb-5" />
         <h1 className="text-3xl font-bold text-text-primary">Confirma tu correo</h1>
         <p className="mt-3 text-text-secondary">
           {canConfirm
