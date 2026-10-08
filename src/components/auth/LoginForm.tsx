@@ -78,7 +78,6 @@ export default function LoginForm() {
     <div className="w-full max-w-md rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-8">
       {notice && <ToastMessage message={notice} tone={verification === 'expired' || verification === 'invalid' || authError ? 'error' : 'success'} />}
       <div className="mb-6 text-center sm:mb-8">
-        <div className="accent-line mx-auto mb-5" />
         <h2 className="text-2xl font-bold text-text-primary sm:text-3xl">Iniciar sesión</h2>
         <p className="mt-2 text-text-secondary">Entra para ver precios y contratar planes.</p>
       </div>

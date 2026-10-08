@@ -19,7 +19,7 @@ export const metadata: Metadata = createPageMetadata({
 export default async function NosotrosPage() {
   const [athletes, stats] = await Promise.all([getActiveAthletes(), getClubStats()]);
   const summary = [
-    { value: String(stats.athletes), label: 'Atletas activos' },
+    { value: String(stats.athletes), label: 'Atletas' },
     { value: String(stats.coaches), label: 'Entrenadores' },
     { value: String(stats.races), label: 'Competencias' },
   ];
@@ -32,7 +32,6 @@ export default async function NosotrosPage() {
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
-              <div className="accent-line mx-auto mb-6" />
               <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Equipo y comunidad Theia</h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">Historia, proposito y comunidad deportiva Theia</p>
             </div>
@@ -47,9 +46,8 @@ export default async function NosotrosPage() {
               <Image src="/images/equipo-running.jpg" alt="Equipo Theia despues de una competencia" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
             </div>
             <div className="order-1 lg:order-2">
-              <div className="accent-line mb-6" />
               <h2 className="mb-4 text-2xl font-bold leading-tight text-text-primary sm:mb-6 sm:text-4xl">Nuestra Historia</h2>
-              <p className="mb-6 text-base leading-relaxed text-text-secondary sm:mb-8 sm:text-lg">
+              <p className="mb-6 text-justify text-base leading-relaxed text-text-secondary sm:mb-8 sm:text-lg">
                 {CLUB_INFO.history}
               </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
@@ -67,25 +65,27 @@ export default async function NosotrosPage() {
 
       <section className="section-padding theia-night-section">
         <div className="content-shell">
-          <SectionTitle title="Mision y Vision" subtitle="El norte que guia cada proceso deportivo de Theia" dark />
+          <SectionTitle title="Mision y Vision" dark />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
             {[
               { title: 'Nuestra Mision', text: CLUB_INFO.mission },
               { title: 'Nuestra Vision', text: CLUB_INFO.vision },
             ].map((item) => (
               <div key={item.title} className="rounded-lg border border-white/15 bg-white/10 p-6 text-white shadow-xl shadow-black/15 backdrop-blur-sm sm:rounded-2xl sm:p-8">
-                <div className="w-12 h-1 bg-gradient-to-r from-brand-blue via-brand-blue-light to-white rounded-full mb-4" />
                 <h3 className="text-white font-bold text-xl mb-3">{item.title}</h3>
-                <p className="text-white/70 leading-relaxed">{item.text}</p>
+                <p className="text-justify text-white/70 leading-relaxed">{item.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-padding theia-light-section">
+      <section className="section-padding bg-[#F4F5F6]">
         <div className="content-shell">
-          <SectionTitle title="Equipo Theia" subtitle="Atletas y entrenadores publicados desde el panel de administración" gradient />
+          <div className="mb-8 text-center sm:mb-12">
+            <p className="mb-3 text-xs font-bold tracking-[0.45em] text-slate-900 sm:text-sm">THEIA</p>
+            <h2 className="text-4xl font-bold text-black sm:text-5xl lg:text-6xl">Nuestro equipo</h2>
+          </div>
           {athletes.length === 0 ? (
             <EmptyState>
               No hay integrantes publicados por ahora.

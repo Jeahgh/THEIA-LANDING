@@ -27,7 +27,6 @@ export default async function CompetenciasPage() {
           <div className="absolute inset-0 theia-hero-overlay" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-6">
-              <div className="accent-line mx-auto mb-6" />
               <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">Competencias de triatlón y running</h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-xl">Calendario completo de eventos de la temporada 2026</p>
             </div>

@@ -3,7 +3,6 @@ import { SOCIAL_LINKS } from '@/lib/constants';
 import { getPublishedNews } from '@/lib/news';
 import NewsCards from '@/components/home/NewsCards';
 import SectionTitle from '@/components/ui/SectionTitle';
-import EmptyState from '@/components/ui/EmptyState';
 
 export default async function NewsPreview() {
   const latestNews = await getPublishedNews();
@@ -13,8 +12,7 @@ export default async function NewsPreview() {
     return (
       <section id="noticias" className="section-padding theia-light-section">
         <div className="content-shell">
-          <SectionTitle title="Noticias del Equipo" subtitle="Pronto compartiremos nuevas historias del equipo" />
-          <EmptyState>No hay noticias publicadas por ahora.</EmptyState>
+          <SectionTitle title="Noticias del Equipo" />
         </div>
       </section>
     );
@@ -23,7 +21,7 @@ export default async function NewsPreview() {
   return (
     <section id="noticias" className="section-padding theia-light-section">
       <div className="content-shell">
-        <SectionTitle title="Noticias del Equipo" subtitle="Entrenamientos, carreras y vida de equipo" />
+        <SectionTitle title="Noticias del Equipo" />
 
         <NewsCards articles={latestNews} />
 

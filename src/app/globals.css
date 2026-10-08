@@ -85,7 +85,6 @@
 @layer utilities {
   .glass { @apply bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm; }
   .text-gradient { @apply bg-gradient-to-r from-brand-blue via-brand-blue-light to-swim bg-clip-text text-transparent; }
-  .accent-line { @apply w-16 h-1 bg-gradient-to-r from-brand-blue via-brand-blue-light to-swim rounded-full; }
   .section-padding { @apply px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24; }
   .content-shell { @apply mx-auto w-full max-w-7xl px-0 sm:px-2 lg:px-4; }
   .theia-light-section {

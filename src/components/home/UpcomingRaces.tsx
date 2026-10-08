@@ -32,8 +32,6 @@ export default async function UpcomingRaces() {
 
         {/* Encabezado con contraste máximo */}
         <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-12">
-          {/* Línea decorativa blanca */}
-          <div className="w-16 h-1 bg-gradient-to-r from-brand-blue via-brand-blue-light to-white rounded-full" />
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Próximas Competencias
           </h2>

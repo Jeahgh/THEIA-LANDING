@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { Role } from '@/generated/prisma';
+import { Prisma, Role } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 
@@ -53,4 +53,45 @@ export async function updateUserRole(userId: string, formData: FormData) {
 
   revalidatePath('/admin/usuarios');
   redirect('/admin/usuarios?guardado=actualizado');
+}
+
+export async function deleteUser(userId: string) {
+  const actor = await requireAdmin('/admin/usuarios');
+
+  if (userId === actor.id) {
+    redirect('/admin/usuarios?error=self-delete');
+  }
+
+  let error: string | null;
+  try {
+    error = await prisma.$transaction(async (transaction) => {
+      const target = await transaction.user.findUnique({
+        where: { id: userId },
+        select: { id: true, role: true, isActive: true },
+      });
+
+      if (!target) return 'not-found';
+
+      if (target.role === Role.ADMIN && target.isActive) {
+        const activeAdmins = await transaction.user.count({
+          where: { role: Role.ADMIN, isActive: true },
+        });
+        if (activeAdmins <= 1) return 'last-admin';
+      }
+
+      // Linked accounts and sessions are removed by the existing cascade relations.
+      await transaction.user.delete({ where: { id: userId } });
+      return null;
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  } catch (cause) {
+    if (cause instanceof Prisma.PrismaClientKnownRequestError && cause.code === 'P2034') {
+      redirect('/admin/usuarios?error=conflict');
+    }
+    throw cause;
+  }
+
+  if (error) redirect(`/admin/usuarios?error=${error}`);
+
+  revalidatePath('/admin/usuarios');
+  redirect('/admin/usuarios?eliminado=1');
 }

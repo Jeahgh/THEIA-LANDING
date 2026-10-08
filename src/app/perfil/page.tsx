@@ -69,7 +69,6 @@ export default async function ProfilePage({
       {toast && <ToastMessage message={toast.message} tone={toast.tone} />}
       <div className="mx-auto max-w-6xl">
         <div className="mb-10 text-center">
-          <div className="accent-line mx-auto mb-6" />
           <h1 className="text-4xl font-bold text-text-primary sm:text-5xl">Mi perfil</h1>
         </div>
 
