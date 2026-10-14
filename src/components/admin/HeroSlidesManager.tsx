@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
 import ImageUploadField from '@/components/admin/ImageUploadField';
+import AdminToggle from '@/components/admin/AdminToggle';
 import EmptyState from '@/components/ui/EmptyState';
 import {
   createHeroSlide,
@@ -100,10 +101,7 @@ function SlideFields({ slide }: { slide?: AdminHeroSlide }) {
         <TextField name="ctaHref" label="Destino del boton" defaultValue={slide?.ctaHref} placeholder="/registro" />
       </div>
 
-      <label className="flex w-fit items-center gap-2 text-sm font-semibold text-slate-700">
-        <input name="isActive" type="checkbox" defaultChecked={slide?.isActive ?? true} className="h-4 w-4 accent-brand-blue" />
-        Publicar en el inicio
-      </label>
+      <AdminToggle name="isActive" label="Publicar en el inicio" defaultChecked={slide?.isActive ?? true} />
     </div>
   );
 }
@@ -258,14 +256,13 @@ function HeroSlidesWorkspace({ slides }: { slides: AdminHeroSlide[] }) {
                   >
                     <GripIcon />
                   </span>
-                  <input
-                    type="checkbox"
+                  <AdminToggle
+                    name={`isActive-${slide.id}`}
+                    label={`Publicar ${slide.title} en Inicio`}
                     checked={slide.isActive}
                     onChange={(event) => toggleSlide(slide.id, event.currentTarget.checked)}
                     disabled={isPersisting}
-                    className="h-5 w-5 cursor-pointer rounded border-slate-300 accent-brand-blue"
-                    aria-label={slide.isActive ? 'Ocultar slide' : 'Publicar slide'}
-                    title={slide.isActive ? 'Visible en inicio' : 'Oculto en inicio'}
+                    compact
                   />
                 </div>
 

@@ -1,4 +1,6 @@
 import type { Athlete } from '@/generated/prisma';
+import AdminToggle from '@/components/admin/AdminToggle';
+import AdminForm, { AdminFormHeading } from '@/components/admin/AdminForm';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 interface AthleteFormProps {
@@ -12,13 +14,13 @@ const fieldClasses =
 
 export default function AthleteForm({ action, athlete, submitLabel }: AthleteFormProps) {
   return (
-    <form action={action} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
-      <div className="mb-5">
+    <AdminForm action={action} submitLabel={submitLabel}>
+      <AdminFormHeading><div className="mb-5">
         <h2 className="text-lg font-bold text-text-primary">{athlete ? 'Editar integrante' : 'Nuevo integrante'}</h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">
           Cada integrante se muestra con su fotografía, rol y descripción en el Equipo Theia.
         </p>
-      </div>
+      </div></AdminFormHeading>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
@@ -54,19 +56,8 @@ export default function AthleteForm({ action, athlete, submitLabel }: AthleteFor
         />
       </div>
 
-      <label className="mt-5 flex items-center gap-2 text-sm font-semibold text-text-primary">
-        <input
-          name="isActive"
-          type="checkbox"
-          defaultChecked={athlete?.isActive ?? true}
-          className="h-4 w-4 rounded border-border-subtle text-brand-blue"
-        />
-        Mostrar integrante en la web
-      </label>
+      <AdminToggle name="isActive" label="Mostrar integrante en la web" defaultChecked={athlete?.isActive ?? true} />
 
-      <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-colors hover:bg-brand-blue-vivid sm:w-auto sm:rounded-xl">
-        {submitLabel}
-      </button>
-    </form>
+    </AdminForm>
   );
 }

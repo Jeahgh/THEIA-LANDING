@@ -46,7 +46,7 @@ export async function createAthlete(formData: FormData) {
   revalidatePath('/nosotros');
   revalidatePath('/admin/equipo');
   updateTag(PUBLIC_CACHE_TAGS.team);
-  redirect('/admin/equipo?guardado=creado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/equipo?guardado=creado');
 }
 
 export async function updateAthlete(athleteId: string, formData: FormData) {
@@ -61,7 +61,7 @@ export async function updateAthlete(athleteId: string, formData: FormData) {
   revalidatePath('/nosotros');
   revalidatePath('/admin/equipo');
   updateTag(PUBLIC_CACHE_TAGS.team);
-  redirect('/admin/equipo?guardado=actualizado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/equipo?guardado=actualizado');
 }
 
 export async function deleteAthlete(athleteId: string) {

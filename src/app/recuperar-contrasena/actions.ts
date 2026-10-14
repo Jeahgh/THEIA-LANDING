@@ -4,15 +4,14 @@ import { hash } from 'bcryptjs';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import {
-  createVerificationToken,
   getEmailVerificationIdentifier,
   getPasswordResetIdentifier,
   getTrustedAppOrigin,
   hashVerificationToken,
-  sendPasswordResetEmail,
 } from '@/lib/email-verification';
 import { prisma } from '@/lib/prisma';
 import { consumeRateLimit, getClientAddress } from '@/lib/rate-limit';
+import { sendUserPasswordReset } from '@/lib/password-reset';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,30 +56,8 @@ export async function requestPasswordReset(formData: FormData) {
     redirect('/recuperar-contrasena?sent=1');
   }
 
-  const token = createVerificationToken();
-  const identifier = getPasswordResetIdentifier(user.email);
-  const hashedToken = hashVerificationToken(token);
-  const expires = new Date(Date.now() + 60 * 60 * 1000);
-  const resetUrl = new URL('/recuperar-contrasena', origin);
-
-  resetUrl.searchParams.set('email', user.email);
-  resetUrl.searchParams.set('token', token);
-
-  await prisma.verificationToken.deleteMany({ where: { identifier } });
-  await prisma.verificationToken.create({
-    data: {
-      identifier,
-      token: hashedToken,
-      expires,
-    },
-  });
-
   try {
-    await sendPasswordResetEmail({
-      to: user.email,
-      name: user.name,
-      resetUrl: resetUrl.toString(),
-    });
+    await sendUserPasswordReset({ email: user.email, name: user.name });
   } catch (error) {
     console.error('Password reset email error:', error);
     redirect('/recuperar-contrasena?error=send');

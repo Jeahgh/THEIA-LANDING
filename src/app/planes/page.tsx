@@ -11,7 +11,7 @@ import { createPageMetadata } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Planes de entrenamiento',
+  title: 'Planes',
   description:
     'Compara los planes de entrenamiento de running y triatlón de Theia, con alternativas online, presenciales y de alto rendimiento en Chile.',
   path: '/planes',
@@ -126,8 +126,8 @@ export default async function PlanesPage() {
           >
             <div className="w-full px-6 sm:px-8 lg:px-12">
               <div className="mb-8 text-center sm:mb-12">
-                <p className="mb-3 text-xs font-bold tracking-[0.45em] text-brand-navy sm:text-sm">THEIA</p>
-                <h2 className="text-4xl font-bold text-black sm:text-5xl lg:text-6xl">{category.title}</h2>
+                <p className={`mb-3 text-xs font-bold tracking-[0.45em] sm:text-sm ${category.id === 'running' ? 'text-brand-blue' : 'text-brand-navy'}`}>THEIA</p>
+                <h2 className={`text-4xl font-bold sm:text-5xl lg:text-6xl ${category.id === 'running' ? 'inline-block text-gradient' : 'text-black'}`}>{category.title}</h2>
               </div>
 
               {plans.length > 0 ? (

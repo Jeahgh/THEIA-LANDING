@@ -80,7 +80,7 @@ export async function createPlan(formData: FormData) {
       imageUrl: defaultPlanImage(category),
       imageAlt: `Imagen de ${name}`,
       sortOrder: (lastPlan?.sortOrder ?? 0) + 1,
-      isActive: true,
+      isActive: formData.get('isActive') === 'on',
       ...(features.length > 0
         ? {
             features: {
@@ -97,7 +97,7 @@ export async function createPlan(formData: FormData) {
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
   updateTag(PUBLIC_CACHE_TAGS.plans);
-  redirect('/admin/planes?guardado=creado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/planes?guardado=creado');
 }
 
 export async function updatePlan(planId: string, formData: FormData) {
@@ -120,6 +120,7 @@ export async function updatePlan(planId: string, formData: FormData) {
         idealFor: cleanText(formData.get('idealFor')) || null,
         price: parsePrice(formData.get('price')),
         imageAlt: `Imagen de ${name}`,
+        isActive: formData.get('isActive') === 'on',
       },
     });
 
@@ -139,7 +140,7 @@ export async function updatePlan(planId: string, formData: FormData) {
   revalidatePath('/planes');
   revalidatePath('/admin/planes');
   updateTag(PUBLIC_CACHE_TAGS.plans);
-  redirect('/admin/planes?guardado=actualizado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/planes?guardado=actualizado');
 }
 
 export async function deletePlan(planId: string) {

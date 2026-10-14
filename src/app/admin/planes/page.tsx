@@ -1,18 +1,17 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
-import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
+import ContentActions from '@/components/admin/ContentActions';
 import PlanForm from '@/components/admin/PlanForm';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
-import { createPlan, deletePlan } from './actions';
+import { createPlan, deletePlan, updatePlan } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Planes',
+  title: 'Planes',
 };
 
 const categoryLabels = {
@@ -73,15 +72,9 @@ export default async function AdminPlansPage({
                   )}
                   <p className="mt-1 text-xs text-text-muted">{plan.features.length} caracteristicas</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
-                  <Link
-                    href={`/admin/planes/${plan.id}`}
-                    className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
-                  >
-                    Editar
-                  </Link>
-                  <ConfirmDeleteButton action={deletePlan.bind(null, plan.id)} itemName={`el plan "${plan.name}"`} />
-                </div>
+                <ContentActions name={plan.name} title="Editar plan" deleteAction={deletePlan.bind(null, plan.id)}>
+                  <PlanForm action={updatePlan.bind(null, plan.id)} plan={plan} submitLabel="Guardar cambios" />
+                </ContentActions>
               </div>
             ))}
           </div>

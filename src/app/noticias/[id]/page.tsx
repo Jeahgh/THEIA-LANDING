@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
+import NewsResultsTable from '@/components/noticias/NewsResultsTable';
 import { formatNewsDate, getNewsCategory } from '@/components/home/NewsCards';
 import { getPublishedNewsPost } from '@/lib/news';
 import {
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
     alternates: { canonical: path },
     openGraph: {
       type: 'article',
-      title: `${article.title} | Theia`,
+      title: `Theia - ${article.title}`,
       description,
       url: path,
       siteName: SITE_NAME,
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${article.title} | Theia`,
+      title: `Theia - ${article.title}`,
       description,
       images: [image],
     },
@@ -134,37 +135,9 @@ export default async function NoticiaPage({ params }: NewsPageProps) {
           />
         </div>
 
-        <div className="rounded-2xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-brand-blue/10 sm:p-9">
+        <div>
           <p className="whitespace-pre-line text-base leading-8 text-text-secondary sm:text-lg">{article.excerpt}</p>
-
-          {(article.results?.length ?? 0) > 0 && (
-            <section aria-labelledby="resultados-heading" className="mt-10">
-              <h2 id="resultados-heading" className="text-2xl font-bold text-brand-navy">Resultados de atletas</h2>
-              <div className="mt-4 overflow-x-auto rounded-xl border border-brand-blue/15">
-                <table className="w-full min-w-[620px] border-collapse text-left">
-                  <caption className="sr-only">Resultados asociados a {article.title}</caption>
-                  <thead className="bg-brand-navy text-sm text-white">
-                    <tr>
-                      <th scope="col" className="px-4 py-3">Posición</th>
-                      <th scope="col" className="px-4 py-3">Atleta</th>
-                      <th scope="col" className="px-4 py-3">Distancia</th>
-                      <th scope="col" className="px-4 py-3">Tiempo</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-brand-blue/10 bg-white/70">
-                    {article.results?.map((result) => (
-                      <tr key={result.id}>
-                        <td className="px-4 py-3 font-bold text-brand-blue">{result.position}</td>
-                        <td className="px-4 py-3 font-semibold text-brand-navy">{result.athleteName}</td>
-                        <td className="px-4 py-3 text-text-secondary">{result.distance}</td>
-                        <td className="px-4 py-3 text-text-secondary">{result.time}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          )}
+          <NewsResultsTable title={article.title} results={article.results ?? []} />
         </div>
 
         <div className="mt-8">

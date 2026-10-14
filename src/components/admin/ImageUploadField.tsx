@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from 'react';
 import SquareImageCropper from '@/components/ui/SquareImageCropper';
+import { useAdminModal } from './AdminModal';
 
 interface ImageUploadFieldProps {
   name: string;
@@ -18,6 +19,7 @@ export default function ImageUploadField({
   defaultValue,
   helper,
 }: ImageUploadFieldProps) {
+  const modal = useAdminModal();
   const inputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(defaultValue ?? '');
@@ -82,7 +84,7 @@ export default function ImageUploadField({
       </label>
       <input name={name} type="hidden" value={value} />
 
-      <div className="grid grid-cols-[132px_1fr] gap-3 rounded-lg border border-white/70 bg-white/90 p-3 shadow-lg shadow-brand-blue/8 sm:grid-cols-[160px_1fr] sm:gap-4 sm:p-4">
+      <div className={`grid grid-cols-[132px_1fr] gap-3 sm:grid-cols-[160px_1fr] sm:gap-4 ${modal ? '' : 'rounded-lg border border-white/70 bg-white/90 p-3 shadow-lg shadow-brand-blue/8 sm:p-4'}`}>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}

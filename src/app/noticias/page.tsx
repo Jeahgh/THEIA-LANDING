@@ -9,7 +9,7 @@ import { createPageMetadata } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Noticias de triatlón, running y comunidad',
+  title: 'Noticias',
   description:
     'Noticias, resultados, entrenamientos y actividades de la comunidad Theia de triatlón y running en Chile.',
   path: '/noticias',

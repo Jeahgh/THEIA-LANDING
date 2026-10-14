@@ -1,19 +1,18 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
-import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
+import ContentActions from '@/components/admin/ContentActions';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import TestimonialForm from '@/components/admin/TestimonialForm';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
-import { createTestimonial, deleteTestimonial } from './actions';
+import { createTestimonial, deleteTestimonial, updateTestimonial } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Atletas',
+  title: 'Atletas',
 };
 
 export default async function AdminTestimonialsPage({
@@ -34,7 +33,7 @@ export default async function AdminTestimonialsPage({
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Atletas</h1>
       </div>
 
-      <CreateContentPanel closedLabel="Agregar">
+      <CreateContentPanel closedLabel="Agregar" title="Nuevo atleta">
         <TestimonialForm action={createTestimonial} submitLabel="Crear atleta" />
       </CreateContentPanel>
 
@@ -51,9 +50,9 @@ export default async function AdminTestimonialsPage({
             {testimonials.map((testimonial) => (
               <div
                 key={testimonial.id}
-                className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center"
+                className={`grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center ${testimonial.isActive ? '' : 'bg-slate-50/70'}`}
               >
-                <div className="flex min-w-0 gap-4">
+                <div className={`flex min-w-0 gap-4 transition-opacity ${testimonial.isActive ? '' : 'opacity-45 grayscale-[0.5]'}`}>
                   <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-blue-pale text-lg font-bold text-brand-blue">
                     {testimonial.imageUrl ? (
                       <Image src={testimonial.imageUrl} alt={testimonial.name} fill className="object-cover" sizes="64px" />
@@ -63,31 +62,16 @@ export default async function AdminTestimonialsPage({
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-text-primary">{testimonial.name}</h3>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${testimonial.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
-                          }`}
-                      >
-                        {testimonial.isActive ? 'Visible' : 'Oculto'}
-                      </span>
+                      <h3 className="font-bold text-text-primary">{testimonial.name}{!testimonial.isActive && <span className="sr-only"> (Oculto)</span>}</h3>
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-muted">
                       &ldquo;{testimonial.quote}&rdquo;
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
-                  <Link
-                    href={`/admin/testimonios/${testimonial.id}`}
-                    className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
-                  >
-                    Editar
-                  </Link>
-                  <ConfirmDeleteButton
-                    action={deleteTestimonial.bind(null, testimonial.id)}
-                    itemName={`al atleta "${testimonial.name}"`}
-                  />
-                </div>
+                <ContentActions name={testimonial.name} title="Editar atleta" deleteAction={deleteTestimonial.bind(null, testimonial.id)}>
+                  <TestimonialForm action={updateTestimonial.bind(null, testimonial.id)} testimonial={testimonial} submitLabel="Guardar cambios" />
+                </ContentActions>
               </div>
             ))}
           </div>

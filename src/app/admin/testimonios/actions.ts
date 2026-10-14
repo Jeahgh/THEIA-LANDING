@@ -40,7 +40,7 @@ export async function createTestimonial(formData: FormData) {
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
   updateTag(PUBLIC_CACHE_TAGS.testimonials);
-  redirect('/admin/testimonios?guardado=creado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/testimonios?guardado=creado');
 }
 
 export async function updateTestimonial(testimonialId: string, formData: FormData) {
@@ -54,7 +54,7 @@ export async function updateTestimonial(testimonialId: string, formData: FormDat
   revalidatePath('/');
   revalidatePath('/admin/testimonios');
   updateTag(PUBLIC_CACHE_TAGS.testimonials);
-  redirect('/admin/testimonios?guardado=actualizado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/testimonios?guardado=actualizado');
 }
 
 export async function deleteTestimonial(testimonialId: string) {

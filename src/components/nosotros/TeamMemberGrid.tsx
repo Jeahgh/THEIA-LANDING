@@ -13,34 +13,40 @@ const filters = [
 
 type TeamFilter = (typeof filters)[number]['id'];
 
+function RoleBadge({ role }: { role: string }) {
+  const isCoach = role === 'Entrenador';
+
+  return (
+    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${isCoach ? 'bg-brand-navy text-white' : 'bg-brand-blue/10 text-brand-blue'}`}>
+      {role}
+    </span>
+  );
+}
+
 function MemberCard({ member, onOpen }: { member: PublicAthlete; onOpen: () => void }) {
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-label={`Ver información de ${member.name}`}
-      className="group h-full w-full cursor-pointer overflow-hidden rounded-lg border border-slate-200 bg-white text-left shadow-sm transition-shadow hover:shadow-lg hover:shadow-slate-900/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
+      className="group h-full w-full cursor-pointer rounded-lg border border-brand-blue/15 bg-brand-blue-pale/70 p-4 text-center shadow-lg shadow-brand-blue/10 transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/30 hover:bg-brand-blue-pale hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-4 sm:rounded-2xl sm:p-6"
     >
-      <div className="relative flex aspect-[6/5] items-center justify-center overflow-hidden bg-slate-200 text-5xl font-bold text-slate-500">
+      <div className="relative mx-auto mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-white/70 text-2xl font-bold text-brand-blue ring-4 ring-brand-blue/10 ring-offset-4 ring-offset-brand-blue-pale transition-transform duration-300 group-hover:scale-105">
         {member.imageUrl ? (
           <Image
             src={member.imageUrl}
             alt={member.imageAlt ?? member.name}
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            sizes="112px"
           />
         ) : (
           member.name.charAt(0)
         )}
       </div>
-      <div className="flex items-center justify-between gap-3 p-5">
-        <div className="min-w-0">
-          <h3 className="break-words text-xl font-bold text-slate-950">{member.name}</h3>
-          <p className="mt-1 text-sm text-slate-500">{member.role}</p>
-        </div>
-        <span aria-hidden="true" className="shrink-0 text-xl text-slate-700">→</span>
-      </div>
+      <h3 className="mb-2 break-words text-lg font-bold text-text-primary">{member.name}</h3>
+      <RoleBadge role={member.role} />
+      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-text-secondary">{member.bio}</p>
     </button>
   );
 }
@@ -142,9 +148,11 @@ export default function TeamMemberGrid({ members }: { members: PublicAthlete[] }
       </div>
 
       {filteredMembers.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-wrap justify-center gap-6">
           {filteredMembers.slice(0, visibleCount).map((member) => (
-            <MemberCard key={member.id} member={member} onOpen={() => setSelectedMember(member)} />
+            <div key={member.id} className="w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]">
+              <MemberCard member={member} onOpen={() => setSelectedMember(member)} />
+            </div>
           ))}
         </div>
       ) : (

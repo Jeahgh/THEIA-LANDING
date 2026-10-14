@@ -35,9 +35,13 @@ export const CLUB_INFO = {
   description:
     'Somos un club de triatlón comprometido con el desarrollo deportivo y personal de nuestros miembros. Desde principiantes hasta atletas de élite, en Theia encontrarás un espacio para crecer, competir y disfrutar del deporte.',
   mission:
-    'Fomentar la práctica del triatlón como herramienta de desarrollo integral, formando deportistas con valores de disciplina, perseverancia y compañerismo.',
+    'Acercar a las personas al deporte y acompañarlas en su desarrollo mediante un entrenamiento personalizado, basado en la ciencia y adaptado a su realidad. En THEIA SPORT ayudamos a cada deportista a disfrutar del proceso, mejorar su rendimiento y construir hábitos duraderos, fortaleciendo su confianza y autonomía dentro de una comunidad que comparte el compromiso de superarse.',
   vision:
-    'Ser el club de triatlón referente en Chile, reconocido por la formación de atletas integrales y por construir una comunidad deportiva inclusiva y de excelencia.',
-  history:
-    'Theia Triathlon Performance nació con un grupo de amigos apasionados por el deporte multidisciplinario. Lo que comenzó como sesiones de entrenamiento informales se transformó rápidamente en una comunidad organizada con cuerpo técnico profesional, programas de entrenamiento estructurados y participación activa en competencias nacionales e internacionales. Hoy somos una comunidad de triatletas activos, desde principiantes que descubren el deporte hasta atletas que compiten en circuitos internacionales como Ironman.',
+    'Ser un referente en entrenamiento de resistencia en Chile, reconocido por la calidad de nuestros procesos y la cercanía con nuestros deportistas. Aspiramos a que personas con distintos niveles y objetivos encuentren en THEIA SPORT una comunidad donde crecer, alcanzar nuevos desafíos y hacer del deporte una parte duradera de sus vidas.',
+  history: [
+    'THEIA SPORT nace de una filosofía que entiende el deporte como una forma de transformar la vida de las personas. Para nuestro fundador, Miguel Ángel Brito, esa transformación es parte de su propia historia.',
+    'Después de años entrenando, compitiendo y acompañando a otros deportistas, Miguel Ángel encontró en el deporte herramientas para afrontar desafíos, construir disciplina y descubrir sus capacidades. THEIA nace de su deseo de compartir ese aprendizaje y devolver, como entrenador, parte de lo que el deporte le ha entregado.',
+    'Desde el comienzo, ponemos a la persona en el centro. Escuchamos su historia, comprendemos su realidad y acompañamos sus objetivos, integrando la ciencia del entrenamiento con la vida cotidiana. Así hemos construido una comunidad de running y triatlón donde conviven quienes comienzan y quienes buscan nuevos desafíos competitivos.',
+    'Nuestra historia sigue escribiéndose en cada entrenamiento, en cada competencia y en la confianza que cada deportista va construyendo. Nos une la alegría de vernos crecer y descubrir, juntos, lo que podemos lograr.',
+  ].join('\n\n'),
 } as const;

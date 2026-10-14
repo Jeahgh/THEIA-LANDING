@@ -4,7 +4,7 @@ import AdminSidebar from '@/components/admin/AdminSidebar';
 import { PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Administración',
+  title: { default: 'Administración', template: 'Theia - Administración - %s' },
   robots: PRIVATE_ROBOTS,
 };
 

@@ -35,10 +35,10 @@ export function createPageMetadata({
   path: string;
   image?: string;
 }): Metadata {
-  const socialTitle = title.includes('Theia') ? title : `${title} | Theia`;
+  const socialTitle = `Theia - ${title}`;
 
   return {
-    title,
+    title: { absolute: socialTitle },
     description,
     alternates: {
       canonical: path,

@@ -1,4 +1,6 @@
 import type { Plan, PlanFeature } from '@/generated/prisma';
+import AdminToggle from '@/components/admin/AdminToggle';
+import AdminForm, { AdminFormHeading } from '@/components/admin/AdminForm';
 
 type EditablePlan = Plan & {
   features?: Pick<PlanFeature, 'text' | 'sortOrder'>[];
@@ -22,13 +24,13 @@ export default function PlanForm({ action, plan, submitLabel }: PlanFormProps) {
       .join('\n') ?? '';
 
   return (
-    <form action={action} className="rounded-lg p-4 theia-card-glow sm:p-6">
-      <div className="mb-5">
+    <AdminForm action={action} submitLabel={submitLabel}>
+      <AdminFormHeading><div className="mb-5">
         <h2 className="text-lg font-bold text-text-primary">{plan ? 'Editar plan' : 'Nuevo plan'}</h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-          Completa los datos principales del plan. El orden, estado y enlace interno se manejan automaticamente.
+          Completa los datos principales del plan. El orden y enlace interno se manejan automáticamente.
         </p>
-      </div>
+      </div></AdminFormHeading>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
@@ -98,9 +100,7 @@ export default function PlanForm({ action, plan, submitLabel }: PlanFormProps) {
         <p className="mt-1.5 text-xs text-text-muted">Escribe una caracteristica por linea.</p>
       </div>
 
-      <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-colors hover:bg-brand-blue-vivid sm:w-auto">
-        {submitLabel}
-      </button>
-    </form>
+      <AdminToggle name="isActive" label="Mostrar plan en la web" defaultChecked={plan?.isActive ?? true} />
+    </AdminForm>
   );
 }

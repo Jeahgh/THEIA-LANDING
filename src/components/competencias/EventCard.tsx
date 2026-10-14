@@ -1,68 +1,41 @@
-// =============================================================================
-// EventCard — Tema Race Night
-// =============================================================================
+import Image from 'next/image';
+import { getCompactRaceName, getRaceDaysRemaining } from '@/lib/race-schedule';
+import { getSafeExternalHttpsUrl } from '@/lib/external-url';
+import type { Race, RaceType } from '@/types';
 
-import type { Race, RaceStatus, RaceType } from '@/types';
+const photos: Record<RaceType, string[]> = {
+  triatlon: ['/images/hero-bike-team.jpg', '/images/hero-team-finish.jpg', '/images/equipo-running.jpg'],
+  duatlon: ['/images/hero-bike-team.jpg', '/images/hero-running-pack.jpg'],
+  acuatlon: ['/images/hero-team-finish.jpg'], running: ['/images/hero-running-pack.jpg', '/images/equipo-running.jpg'],
+  ciclismo: ['/images/hero-bike-team.jpg'], natacion: ['/images/hero-team-finish.jpg'],
+};
+const monthLabels = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
-function getStatusBadge(status: RaceStatus) {
-  const badges: Record<RaceStatus, { text: string; className: string }> = {
-    upcoming: { text: 'Próximamente', className: 'bg-brand-blue-pale text-brand-blue' },
-    registration_open: { text: 'Inscripciones abiertas', className: 'bg-brand-blue text-white border border-brand-blue' },
-    registration_closed: { text: 'Inscripciones cerradas', className: 'bg-swim-light text-brand-navy border border-brand-blue-soft' },
-    finished: { text: 'Finalizado', className: 'bg-bg-section text-text-muted' },
-  };
-  return badges[status];
-}
+export default function EventCard({ race, today }: { race: Race; today: string }) {
+  const [year, month, day] = race.date.split('-');
+  const url = race.status !== 'finished' ? getSafeExternalHttpsUrl(race.registrationUrl) : null;
+  const title = getCompactRaceName(race);
+  const daysRemaining = getRaceDaysRemaining(race.date, today);
+  const photoIndex = [...`${race.id}${race.date}`].reduce((value, character) => value + character.charCodeAt(0), 0) % photos[race.type].length;
 
-function getRaceTypeLabel(type: RaceType): string {
-  const labels: Record<RaceType, string> = {
-    triatlon: 'Triatlón', duatlon: 'Duatlón', acuatlon: 'Acuatlón',
-    running: 'Running', ciclismo: 'Ciclismo', natacion: 'Natación',
-  };
-  return labels[type];
-}
-
-export default function EventCard({ race }: { race: Race }) {
-  const date = new Date(race.date + 'T12:00:00');
-  const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  const badge = getStatusBadge(race.status);
-  const className = 'group block border-b border-brand-blue/15 py-6 transition-colors first:pt-0 last:border-b-0 last:pb-0';
-
-  const content = (
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {/* Date */}
-        <div className="flex items-center justify-center rounded-xl bg-brand-blue-pale px-4 py-3 transition-colors duration-300 group-hover:bg-brand-blue sm:min-w-[80px] sm:flex-col">
-          <span className="mr-2 text-3xl font-bold leading-none text-brand-blue transition-colors group-hover:text-white sm:mr-0">{date.getDate()}</span>
-          <div className="flex flex-col items-center">
-            <span className="text-brand-blue/60 group-hover:text-white/70 text-xs font-semibold tracking-wider uppercase transition-colors">{months[date.getMonth()].slice(0, 3)}</span>
-            <span className="text-text-muted group-hover:text-white/50 text-xs transition-colors">{date.getFullYear()}</span>
-          </div>
-        </div>
-
-        <div className="flex-1">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full ${badge.className}`}>{badge.text}</span>
-            <span className="text-xs text-brand-blue bg-brand-blue-pale px-2 py-0.5 rounded-full">{getRaceTypeLabel(race.type)}</span>
-          </div>
-          <h3 className="mb-2 text-lg font-bold leading-tight text-text-primary transition-colors group-hover:text-brand-blue sm:text-xl">{race.name}</h3>
-          <p className="text-text-muted text-sm mb-2">{race.location}</p>
-          {race.distance && <span className="inline-block text-xs text-brand-blue bg-brand-blue-pale px-2 py-0.5 rounded mb-3">{race.distance}</span>}
-          {race.description && <p className="text-text-secondary text-sm leading-relaxed">{race.description}</p>}
-        </div>
+  return (
+    <article className="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-4 py-3 sm:grid-cols-[160px_minmax(0,1fr)] sm:gap-6 xl:grid-cols-[180px_minmax(0,1fr)]">
+      <div className="relative aspect-square overflow-hidden rounded-xl">
+        <Image src={photos[race.type][photoIndex]} alt="Equipo Theia en actividades deportivas del club" fill sizes="(min-width: 1280px) 180px, (min-width: 640px) 160px, 96px" className="object-cover" />
       </div>
-  );
-
-  return race.registrationUrl ? (
-    <a
-      href={race.registrationUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`Ir a la inscripción de ${race.name}`}
-      className={`${className} cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-4`}
-    >
-      {content}
-    </a>
-  ) : (
-    <article className={className}>{content}</article>
+      <div className="min-w-0">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <time dateTime={race.date} aria-label={`${day} de ${monthLabels[Number(month) - 1]} de ${year}`} className="text-sm font-semibold text-[#42627b]">{Number(day)} de {monthLabels[Number(month) - 1]}</time>
+          {race.status !== 'finished' && daysRemaining >= 0 && <span className="rounded-full bg-[#e6eef4] px-3 py-1.5 text-xs font-bold text-[#42627b] tabular-nums">{daysRemaining === 0 ? 'Hoy es la competencia' : `Falta${daysRemaining === 1 ? '' : 'n'} ${daysRemaining} día${daysRemaining === 1 ? '' : 's'}`}</span>}
+        </div>
+          <h3 className="text-xl font-bold leading-tight text-brand-navy sm:text-2xl">{title}</h3>
+          {race.description && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-text-secondary">{race.description}</p>}
+          {url && (
+            <a href={url} target="_blank" rel="noopener noreferrer" aria-label={`Ver ${title} (abre otra pestaña)`} className="mt-3 inline-flex items-center gap-3 rounded text-sm font-bold text-brand-navy hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue">
+              Ver competencia
+            </a>
+          )}
+      </div>
+    </article>
   );
 }

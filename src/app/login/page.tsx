@@ -4,7 +4,7 @@ import LoginForm from '@/components/auth/LoginForm';
 import { PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Iniciar sesion',
+  title: 'Iniciar sesión',
   description: 'Inicia sesion en Theia Triathlon Performance para ver precios y contratar planes.',
   robots: PRIVATE_ROBOTS,
 };

@@ -1,4 +1,6 @@
 import type { Race } from '@/generated/prisma';
+import AdminToggle from '@/components/admin/AdminToggle';
+import AdminForm, { AdminFormHeading } from '@/components/admin/AdminForm';
 
 interface RaceFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -12,8 +14,8 @@ export default function RaceForm({ action, race, submitLabel }: RaceFormProps) {
   const date = race?.date.toISOString().slice(0, 10) ?? '';
 
   return (
-    <form action={action} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
-      <h2 className="text-lg font-bold text-text-primary sm:text-xl">{race ? 'Editar competencia' : 'Nueva competencia'}</h2>
+    <AdminForm action={action} submitLabel={submitLabel}>
+      <AdminFormHeading><h2 className="text-lg font-bold text-text-primary sm:text-xl">{race ? 'Editar competencia' : 'Nueva competencia'}</h2></AdminFormHeading>
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-semibold text-text-primary">Nombre</label>
@@ -60,13 +62,7 @@ export default function RaceForm({ action, race, submitLabel }: RaceFormProps) {
         <label className="mb-1 block text-sm font-semibold text-text-primary">Descripción</label>
         <textarea name="description" defaultValue={race?.description ?? ''} placeholder="Información importante sobre la competencia" className={`${fieldClasses} min-h-28 resize-y`} />
       </div>
-      <label className="mt-5 flex items-center gap-2 text-sm font-semibold text-text-primary">
-        <input name="isActive" type="checkbox" defaultChecked={race?.isActive ?? true} className="h-4 w-4 rounded border-border-subtle text-brand-blue" />
-        Mostrar competencia en la web
-      </label>
-      <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-blue-vivid sm:w-auto sm:rounded-xl">
-        {submitLabel}
-      </button>
-    </form>
+      <AdminToggle name="isActive" label="Mostrar competencia en la web" defaultChecked={race?.isActive ?? true} />
+    </AdminForm>
   );
 }

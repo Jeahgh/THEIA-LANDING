@@ -29,8 +29,8 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Theia | Entrenamiento de triatlón y running en Chile',
-    template: '%s | Theia',
+    default: 'Theia - Inicio',
+    template: 'Theia - %s',
   },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: 'Theia | Entrenamiento de triatlón y running en Chile',
+    title: 'Theia - Inicio',
     description: DEFAULT_DESCRIPTION,
     url: '/',
     siteName: SITE_NAME,
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Theia | Entrenamiento de triatlón y running en Chile',
+    title: 'Theia - Inicio',
     description: DEFAULT_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },

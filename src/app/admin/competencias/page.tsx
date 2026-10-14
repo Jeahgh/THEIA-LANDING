@@ -1,18 +1,17 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
-import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
+import ContentActions from '@/components/admin/ContentActions';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
 import RaceForm from '@/components/admin/RaceForm';
-import { createRace, deleteRace } from './actions';
+import { createRace, deleteRace, updateRace } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Competencias',
+  title: 'Competencias',
 };
 
 export default async function AdminCompetitionsPage({
@@ -53,12 +52,9 @@ export default async function AdminCompetitionsPage({
                   <h3 className="font-bold text-text-primary">{race.name}</h3>
                   <p className="text-sm text-text-secondary">{race.location} - {race.date.toLocaleDateString('es-CL')}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
-                  <Link href={`/admin/competencias/${race.id}`} className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white">
-                    Editar
-                  </Link>
-                  <ConfirmDeleteButton action={deleteRace.bind(null, race.id)} itemName={`la competencia "${race.name}"`} />
-                </div>
+                <ContentActions name={race.name} title="Editar competencia" deleteAction={deleteRace.bind(null, race.id)}>
+                  <RaceForm action={updateRace.bind(null, race.id)} race={race} submitLabel="Guardar cambios" />
+                </ContentActions>
               </div>
             ))}
           </div>

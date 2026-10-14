@@ -7,7 +7,7 @@ import ContactForm from '@/components/contact/ContactForm';
 import { createPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Contacto y orientación deportiva',
+  title: 'Contacto',
   description: `Contacta a ${CLUB_INFO.name} para consultar por planes de entrenamiento de triatlón y running o unirte a la comunidad.`,
   path: '/contacto',
 });

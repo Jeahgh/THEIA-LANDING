@@ -1,19 +1,18 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import AthleteForm from '@/components/admin/AthleteForm';
-import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
+import ContentActions from '@/components/admin/ContentActions';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
-import { createAthlete, deleteAthlete } from './actions';
+import { createAthlete, deleteAthlete, updateAthlete } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Equipo Theia',
+  title: 'Equipo',
 };
 
 export default async function AdminTeamPage({
@@ -34,7 +33,7 @@ export default async function AdminTeamPage({
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Integrantes publicados</h1>
       </div>
 
-      <CreateContentPanel closedLabel="Agregar">
+      <CreateContentPanel closedLabel="Agregar" title="Nuevo integrante">
         <AthleteForm action={createAthlete} submitLabel="Crear integrante" />
       </CreateContentPanel>
 
@@ -49,8 +48,8 @@ export default async function AdminTeamPage({
           </div>
           <div className="divide-y divide-border-subtle">
             {athletes.map((athlete) => (
-              <div key={athlete.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
-                <div className="flex min-w-0 gap-4">
+              <div key={athlete.id} className={`grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center ${athlete.isActive ? '' : 'bg-slate-50/70'}`}>
+                <div className={`flex min-w-0 gap-4 transition-opacity ${athlete.isActive ? '' : 'opacity-45 grayscale-[0.5]'}`}>
                   <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-blue-pale text-lg font-bold text-brand-blue">
                     {athlete.imageUrl ? (
                       <Image src={athlete.imageUrl} alt={athlete.imageAlt ?? athlete.name} fill className="object-cover" sizes="64px" />
@@ -60,23 +59,14 @@ export default async function AdminTeamPage({
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-text-primary">{athlete.name}</h3>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${athlete.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {athlete.isActive ? 'Visible' : 'Oculto'}
-                      </span>
+                      <h3 className="font-bold text-text-primary">{athlete.name}{!athlete.isActive && <span className="sr-only"> (Oculto)</span>}</h3>
                     </div>
                     <p className="mt-1 line-clamp-1 text-sm text-text-muted">{athlete.bio}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
-                  <Link
-                    href={`/admin/equipo/${athlete.id}`}
-                    className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
-                  >
-                    Editar
-                  </Link>
-                  <ConfirmDeleteButton action={deleteAthlete.bind(null, athlete.id)} itemName={`el integrante "${athlete.name}"`} />
-                </div>
+                <ContentActions name={athlete.name} title="Editar integrante" deleteAction={deleteAthlete.bind(null, athlete.id)}>
+                  <AthleteForm action={updateAthlete.bind(null, athlete.id)} athlete={athlete} submitLabel="Guardar cambios" />
+                </ContentActions>
               </div>
             ))}
           </div>

@@ -43,7 +43,7 @@ export async function createRace(formData: FormData) {
   revalidatePath('/competencias');
   revalidatePath('/admin/competencias');
   updateTag(PUBLIC_CACHE_TAGS.races);
-  redirect('/admin/competencias?guardado=creado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/competencias?guardado=creado');
 }
 
 export async function updateRace(raceId: string, formData: FormData) {
@@ -56,7 +56,7 @@ export async function updateRace(raceId: string, formData: FormData) {
   revalidatePath('/competencias');
   revalidatePath('/admin/competencias');
   updateTag(PUBLIC_CACHE_TAGS.races);
-  redirect('/admin/competencias?guardado=actualizado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/competencias?guardado=actualizado');
 }
 
 export async function deleteRace(raceId: string) {

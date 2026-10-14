@@ -10,7 +10,7 @@ import { createPageMetadata } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Equipo de triatlón y running en Chile',
+  title: 'Nosotros',
   description:
     'Conoce la historia, propósito, entrenadores y atletas de Theia, una comunidad de triatlón y running en Chile.',
   path: '/nosotros',
@@ -46,10 +46,12 @@ export default async function NosotrosPage() {
               <Image src="/images/equipo-running.jpg" alt="Equipo Theia despues de una competencia" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
             </div>
             <div className="order-1 lg:order-2">
-              <h2 className="mb-4 text-2xl font-bold leading-tight text-text-primary sm:mb-6 sm:text-4xl">Nuestra Historia</h2>
-              <p className="mb-6 text-justify text-base leading-relaxed text-text-secondary sm:mb-8 sm:text-lg">
-                {CLUB_INFO.history}
-              </p>
+              <h2 className="mb-4 text-2xl font-bold leading-tight text-text-primary sm:mb-6 sm:text-4xl">Nuestra historia</h2>
+              <div className="mb-6 space-y-4 text-justify text-base leading-relaxed text-text-secondary sm:mb-8 sm:text-lg">
+                {CLUB_INFO.history.split('\n\n').map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
                 {summary.map((item) => (
                   <div key={item.label} className="rounded-xl border border-white/70 bg-white/85 p-4 text-center shadow-lg shadow-brand-blue/8">
@@ -65,11 +67,11 @@ export default async function NosotrosPage() {
 
       <section className="section-padding theia-night-section">
         <div className="content-shell">
-          <SectionTitle title="Mision y Vision" dark />
+          <SectionTitle title="Misión y Visión" dark />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
             {[
-              { title: 'Nuestra Mision', text: CLUB_INFO.mission },
-              { title: 'Nuestra Vision', text: CLUB_INFO.vision },
+              { title: 'Nuestra Misión', text: CLUB_INFO.mission },
+              { title: 'Nuestra Visión', text: CLUB_INFO.vision },
             ].map((item) => (
               <div key={item.title} className="rounded-lg border border-white/15 bg-white/10 p-6 text-white shadow-xl shadow-black/15 backdrop-blur-sm sm:rounded-2xl sm:p-8">
                 <h3 className="text-white font-bold text-xl mb-3">{item.title}</h3>
@@ -80,7 +82,7 @@ export default async function NosotrosPage() {
         </div>
       </section>
 
-      <section className="section-padding bg-[#F4F5F6]">
+      <section className="section-padding theia-light-section">
         <div className="content-shell">
           <div className="mb-8 text-center sm:mb-12">
             <p className="mb-3 text-xs font-bold tracking-[0.45em] text-slate-900 sm:text-sm">THEIA</p>

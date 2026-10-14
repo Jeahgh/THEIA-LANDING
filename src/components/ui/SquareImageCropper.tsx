@@ -11,6 +11,7 @@ interface SquareImageCropperProps {
 const outputSize = 1000;
 
 export default function SquareImageCropper({ file, onCancel, onConfirm }: SquareImageCropperProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const cropAreaRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ pointerId: number; x: number; y: number } | null>(null);
@@ -27,12 +28,15 @@ export default function SquareImageCropper({ file, onCancel, onConfirm }: Square
     return () => reader.abort();
   }, [file]);
   useEffect(() => {
+    const dialog = dialogRef.current;
     const previousBodyOverflow = document.body.style.overflow;
     const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
+    dialog?.showModal();
 
     return () => {
+      dialog?.close();
       document.body.style.overflow = previousBodyOverflow;
       document.documentElement.style.overflow = previousHtmlOverflow;
     };
@@ -105,7 +109,7 @@ export default function SquareImageCropper({ file, onCancel, onConfirm }: Square
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex overscroll-none items-center justify-center overflow-y-auto bg-slate-950/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Ajustar imagen">
+    <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); onCancel(); }} className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto overscroll-contain rounded-2xl border-0 bg-transparent p-0 backdrop:bg-slate-950/80 backdrop:backdrop-blur-sm" aria-label="Ajustar imagen">
       <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
         <h2 className="text-xl font-bold text-text-primary">Ajusta la foto</h2>
         <p className="mt-1 text-sm text-text-secondary">Arrastra la foto para moverla y usa la rueda del mouse para acercar o alejar.</p>
@@ -176,6 +180,6 @@ export default function SquareImageCropper({ file, onCancel, onConfirm }: Square
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

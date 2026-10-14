@@ -14,7 +14,17 @@ class DatabaseConflict extends Error {
   code = 'P2034';
 }
 
-function loadActions({ target = { id: 'target', role: 'MEMBER', isActive: true }, admins = 2, denied = false, conflict = false } = {}) {
+const defaultTarget = { id: 'target', name: 'Atleta', email: 'athlete@example.test', role: 'MEMBER', isActive: true };
+
+function userForm(values = {}) {
+  const form = new FormData();
+  for (const [key, value] of Object.entries({ role: 'MEMBER', isActive: 'on', ...values })) {
+    if (value !== null) form.set(key, value);
+  }
+  return form;
+}
+
+function loadActions({ target = defaultTarget, admins = 2, denied = false, conflict = false, limited = false, delivery = true, deliveryError = false } = {}) {
   const calls = [];
   const user = {
     findUnique: async () => target,
@@ -27,7 +37,10 @@ function loadActions({ target = { id: 'target', role: 'MEMBER', isActive: true }
     $transaction: async (callback, options) => {
       calls.push(['isolation', options.isolationLevel]);
       if (conflict) throw new DatabaseConflict();
-      return callback({ user });
+      return callback({ user,
+        verificationToken: { deleteMany: async () => calls.push(['clear-tokens']) },
+        account: { deleteMany: async () => calls.push(['unlink-google']) },
+      });
     },
   };
   const modules = {
@@ -43,6 +56,16 @@ function loadActions({ target = { id: 'target', role: 'MEMBER', isActive: true }
       return { id: 'actor' };
     } },
     '@/lib/prisma': { prisma },
+    '@/lib/email-verification': {
+      getEmailVerificationIdentifier: (email) => `email-verification:${email}`,
+      getPasswordResetIdentifier: (email) => `password-reset:${email}`,
+    },
+    '@/lib/rate-limit': { consumeRateLimit: () => ({ allowed: !limited }) },
+    '@/lib/password-reset': { sendUserPasswordReset: async (user) => {
+      calls.push(['send-recovery', user.email]);
+      if (deliveryError) throw new Error('SMTP failed');
+      return delivery;
+    } },
   };
   const exports = {};
   vm.runInNewContext(compiled, { exports, require: (name) => {
@@ -99,9 +122,7 @@ test('a transaction conflict reports a retry message without deleting a user', a
 
 test('disabling an account through the switch revokes its existing sessions', async () => {
   const actions = loadActions();
-  const form = new FormData();
-  form.set('role', 'MEMBER');
-  await assert.rejects(actions.updateUserRole('target', form), /guardado=actualizado/);
+  assert.ok((await actions.updateUser('target', {}, userForm({ isActive: null }))).success);
   const update = actions.calls.find(([type]) => type === 'update')[1];
   assert.equal(update.isActive, false);
   assert.equal(update.sessionVersion.increment, 1);
@@ -109,11 +130,83 @@ test('disabling an account through the switch revokes its existing sessions', as
 
 test('saving an unchanged enabled account keeps its session version', async () => {
   const actions = loadActions();
-  const form = new FormData();
-  form.set('role', 'MEMBER');
-  form.set('isActive', 'on');
-  await assert.rejects(actions.updateUserRole('target', form), /guardado=actualizado/);
+  assert.ok((await actions.updateUser('target', {}, userForm())).success);
   const update = actions.calls.find(([type]) => type === 'update')[1];
   assert.equal(update.isActive, true);
   assert.equal(update.sessionVersion, undefined);
+});
+
+test('editing and recovery actions authorize before touching any account', async () => {
+  for (const run of [
+    (actions) => actions.updateUser('target', {}, userForm()),
+    (actions) => actions.sendUserRecoveryEmail('target', {}),
+  ]) {
+    const actions = loadActions({ denied: true });
+    await assert.rejects(run(actions), /Unauthorized/);
+    assert.deepEqual(actions.calls, [['authorize']]);
+  }
+});
+
+test('invalid or missing roles leave the account unchanged', async () => {
+  for (const values of [{ role: 'INVALID' }, { role: null }]) {
+    const actions = loadActions();
+    assert.ok((await actions.updateUser('target', {}, userForm(values))).error);
+    assert.deepEqual(actions.calls, [['authorize']]);
+  }
+});
+
+test('the last administrator cannot be disabled or demoted; administrators cannot demote themselves', async () => {
+  for (const settings of [
+    { target: { ...defaultTarget, role: 'ADMIN' }, admins: 1 },
+    { target: { ...defaultTarget, id: 'actor', role: 'ADMIN' } },
+  ]) {
+    for (const changes of [{ role: 'MEMBER' }, { role: 'ADMIN', isActive: null }]) {
+      const actions = loadActions(settings);
+      assert.ok((await actions.updateUser(settings.target.id, {}, userForm(changes))).error);
+      assert.equal(actions.calls.some(([type]) => type === 'update'), false);
+    }
+  }
+});
+
+test('profile fields submitted outside the permitted controls are ignored', async () => {
+  const actions = loadActions();
+  assert.ok((await actions.updateUser('target', {}, userForm({
+    email: 'new@example.test', name: 'Nuevo nombre', phone: '123456789',
+    image: '/changed-avatar.jpg', createdAt: '2000-01-01', passwordHash: 'forged', sessionVersion: '999',
+  }))).success);
+  const update = actions.calls.find(([type]) => type === 'update')[1];
+  assert.deepEqual(Object.keys(update).sort(), ['isActive', 'role']);
+  assert.equal(update.role, 'MEMBER');
+  assert.equal(update.isActive, true);
+  assert.equal(actions.calls.some(([type]) => type === 'clear-tokens' || type === 'unlink-google'), false);
+});
+
+test('a changed role revokes existing sessions', async () => {
+  const actions = loadActions();
+  assert.ok((await actions.updateUser('target', {}, userForm({ role: 'COACH' }))).success);
+  const update = actions.calls.find(([type]) => type === 'update')[1];
+  assert.equal(update.role, 'COACH');
+  assert.equal(update.sessionVersion.increment, 1);
+});
+
+test('concurrent edits and missing accounts return an error without updating the account', async () => {
+  for (const settings of [{ conflict: true }, { target: null }]) {
+    const actions = loadActions(settings);
+    assert.ok((await actions.updateUser('target', {}, userForm())).error);
+    assert.equal(actions.calls.some(([type]) => type === 'update'), false);
+  }
+});
+
+test('admin recovery sends the existing recovery flow to the saved account email', async () => {
+  const actions = loadActions();
+  assert.match((await actions.sendUserRecoveryEmail('target', {})).success, /athlete@example.test/);
+  assert.deepEqual(actions.calls, [['authorize'], ['send-recovery', 'athlete@example.test']]);
+});
+
+test('recovery refuses missing, disabled or rate-limited accounts and reports failed delivery accurately', async () => {
+  for (const settings of [{ target: null }, { target: { ...defaultTarget, isActive: false } }, { limited: true }, { delivery: false }, { deliveryError: true }]) {
+    const actions = loadActions(settings);
+    assert.ok((await actions.sendUserRecoveryEmail('target', {})).error);
+    if (!('delivery' in settings) && !('deliveryError' in settings)) assert.equal(actions.calls.some(([type]) => type === 'send-recovery'), false);
+  }
 });

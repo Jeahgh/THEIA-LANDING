@@ -70,7 +70,7 @@ export async function createNewsPost(formData: FormData) {
   revalidatePath('/noticias');
   revalidatePath('/admin/noticias');
   updateTag(PUBLIC_CACHE_TAGS.news);
-  redirect('/admin/noticias?guardado=creado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/noticias?guardado=creado');
 }
 
 export async function updateNewsPost(postId: string, formData: FormData) {
@@ -91,7 +91,16 @@ export async function updateNewsPost(postId: string, formData: FormData) {
   revalidatePath(`/noticias/${postId}`);
   revalidatePath('/admin/noticias');
   updateTag(PUBLIC_CACHE_TAGS.news);
-  redirect('/admin/noticias?guardado=actualizado');
+  if (formData.get('_dialog') !== 'on') redirect('/admin/noticias?guardado=actualizado');
+}
+
+export async function setNewsPostPinned(postId: string, pinned: boolean) {
+  await ensureAdmin();
+  if (typeof pinned !== 'boolean') throw new Error('Selecciona un estado válido para la noticia.');
+  await prisma.newsPost.update({ where: { id: postId }, data: { pinned } });
+  revalidatePath('/');
+  revalidatePath('/admin/noticias');
+  updateTag(PUBLIC_CACHE_TAGS.news);
 }
 
 export async function deleteNewsPost(postId: string) {

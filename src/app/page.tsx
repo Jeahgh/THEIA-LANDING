@@ -12,7 +12,7 @@ import { createPageMetadata } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Theia | Entrenamiento de triatlón y running en Chile',
+  title: 'Inicio',
   description:
     'Entrena triatlón y running con Theia en Chile. Conoce nuestros planes, equipo deportivo, competencias y comunidad para distintos niveles.',
   path: '/',

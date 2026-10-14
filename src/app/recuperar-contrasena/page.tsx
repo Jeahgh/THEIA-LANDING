@@ -7,7 +7,7 @@ import { PRIVATE_ROBOTS } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Recuperar contrasena',
+  title: 'Recuperar contraseña',
   description: 'Solicita un enlace para restablecer tu contrasena de Theia.',
   robots: PRIVATE_ROBOTS,
 };

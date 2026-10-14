@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
-import ConfirmDeleteButton from '@/components/admin/ConfirmDeleteButton';
+import NewsPinButton from '@/components/admin/NewsPinButton';
+import ContentActions from '@/components/admin/ContentActions';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import NewsForm from '@/components/admin/NewsForm';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
-import { createNewsPost, deleteNewsPost } from './actions';
+import { createNewsPost, deleteNewsPost, updateNewsPost, setNewsPostPinned } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Noticias',
+  title: 'Noticias',
 };
 
 export default async function AdminNewsPage({
@@ -23,7 +23,8 @@ export default async function AdminNewsPage({
   await requireAdmin('/admin/noticias');
   const params = await searchParams;
   const posts = await prisma.newsPost.findMany({
-    orderBy: [{ sortOrder: 'asc' }, { date: 'desc' }],
+    orderBy: [{ pinned: 'desc' }, { sortOrder: 'asc' }, { date: 'desc' }],
+    include: { results: { orderBy: { sortOrder: 'asc' } } },
   });
   const athletes = await prisma.athlete.findMany({
     where: { isActive: true, role: 'Atleta' },
@@ -56,17 +57,15 @@ export default async function AdminNewsPage({
               <div key={post.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
+                    <NewsPinButton pinned={post.pinned} title={post.title} action={setNewsPostPinned.bind(null, post.id, !post.pinned)} />
                     <h3 className="font-bold text-text-primary">{post.title}</h3>
-                    <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">{post.category}</span>
+                    <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">{{ RESULTADOS: 'Resultados', NOTICIAS: 'Noticias', ENTRENAMIENTO: 'Entrenamiento', COMUNIDAD: 'Comunidad' }[post.category]}</span>
                   </div>
                   <p className="mt-1 text-sm text-text-secondary">{post.date.toLocaleDateString('es-CL')}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex">
-                  <Link href={`/admin/noticias/${post.id}`} className="rounded-lg border border-brand-blue px-4 py-2 text-center text-sm font-semibold text-brand-blue hover:bg-brand-blue hover:text-white">
-                    Editar
-                  </Link>
-                  <ConfirmDeleteButton action={deleteNewsPost.bind(null, post.id)} itemName={`la noticia "${post.title}"`} />
-                </div>
+                <ContentActions name={post.title} title="Editar noticia" deleteAction={deleteNewsPost.bind(null, post.id)}>
+                  <NewsForm action={updateNewsPost.bind(null, post.id)} post={post} athleteOptions={athletes.map((athlete) => athlete.name)} submitLabel="Guardar cambios" />
+                </ContentActions>
               </div>
             ))}
           </div>

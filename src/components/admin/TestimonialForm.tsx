@@ -1,4 +1,6 @@
 import type { Testimonial } from '@/generated/prisma';
+import AdminToggle from '@/components/admin/AdminToggle';
+import AdminForm, { AdminFormHeading } from '@/components/admin/AdminForm';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 interface TestimonialFormProps {
@@ -12,15 +14,15 @@ const fieldClasses =
 
 export default function TestimonialForm({ action, testimonial, submitLabel }: TestimonialFormProps) {
   return (
-    <form action={action} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
-      <div className="mb-5">
+    <AdminForm action={action} submitLabel={submitLabel}>
+      <AdminFormHeading><div className="mb-5">
         <h2 className="text-lg font-bold text-text-primary">
           {testimonial ? 'Editar atleta' : 'Nuevo atleta'}
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-text-secondary">
           La foto y experiencia del atleta se muestran en la página de inicio.
         </p>
-      </div>
+      </div></AdminFormHeading>
 
       <div className="grid grid-cols-1 gap-4">
         <div>
@@ -55,19 +57,8 @@ export default function TestimonialForm({ action, testimonial, submitLabel }: Te
         />
       </div>
 
-      <label className="mt-5 flex items-center gap-2 text-sm font-semibold text-text-primary">
-        <input
-          name="isActive"
-          type="checkbox"
-          defaultChecked={testimonial?.isActive ?? true}
-          className="h-4 w-4 rounded border-border-subtle text-brand-blue"
-        />
-        Mostrar atleta en la web
-      </label>
+      <AdminToggle name="isActive" label="Mostrar atleta en la web" defaultChecked={testimonial?.isActive ?? true} />
 
-      <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-colors hover:bg-brand-blue-vivid sm:w-auto sm:rounded-xl">
-        {submitLabel}
-      </button>
-    </form>
+    </AdminForm>
   );
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import AdminForm from '@/components/admin/AdminForm';
 import type { NewsPost, NewsResult } from '@/generated/prisma';
+import { deleteIconButtonClass, TrashIcon } from './AdminActionIcons';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 type EditableNewsPost = NewsPost & { results?: NewsResult[] };
@@ -45,7 +47,7 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
   }
 
   return (
-    <form action={action} className="rounded-lg p-4 theia-card-glow sm:rounded-2xl sm:p-6">
+    <AdminForm action={action} submitLabel={submitLabel}>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-semibold text-text-primary">Título</label>
@@ -90,11 +92,10 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
       </div>
 
       {category === 'RESULTADOS' && (
-        <section className="mt-6 rounded-xl border border-brand-blue/15 bg-brand-blue-pale/45 p-4 sm:p-5">
+        <section className="mt-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="font-bold text-text-primary">Resultados de atletas</h3>
-              <p className="text-sm text-text-muted">Agrega una fila por cada atleta que participó.</p>
             </div>
             <button
               type="button"
@@ -105,10 +106,10 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
             </button>
           </div>
 
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 space-y-4">
             {results.map((result, index) => (
-              <div key={result.key} className="grid grid-cols-1 gap-3 rounded-xl border border-brand-blue/10 bg-white/75 p-3 md:grid-cols-[1fr_0.5fr_0.6fr_0.65fr_auto] md:items-end">
-                <div>
+              <div key={result.key} className="grid grid-cols-2 gap-3 md:grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_auto] md:items-end">
+                <div className="col-span-2 min-w-0 md:col-span-1">
                   <label className="mb-1 block text-xs font-semibold text-text-secondary">Atleta</label>
                   <select
                     name="resultAthlete"
@@ -136,10 +137,10 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
                 <button
                   type="button"
                   onClick={() => setResults((current) => current.filter((row) => row.key !== result.key))}
-                  className="rounded-lg border border-red-200 px-3 py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+                  className={`${deleteIconButtonClass} self-end justify-self-end`}
                   aria-label={`Quitar resultado ${index + 1}`}
                 >
-                  Quitar
+                  <TrashIcon />
                 </button>
               </div>
             ))}
@@ -147,9 +148,6 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
         </section>
       )}
 
-      <button className="mt-6 w-full rounded-lg bg-brand-navy px-6 py-3 font-semibold text-white shadow-md shadow-brand-blue/20 transition-colors hover:bg-brand-blue-vivid sm:w-auto sm:rounded-xl">
-        {submitLabel}
-      </button>
-    </form>
+    </AdminForm>
   );
 }

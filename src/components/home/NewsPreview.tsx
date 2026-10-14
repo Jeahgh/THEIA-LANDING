@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import { SOCIAL_LINKS } from '@/lib/constants';
-import { getPublishedNews } from '@/lib/news';
+import { getPinnedPublishedNews } from '@/lib/news';
 import NewsCards from '@/components/home/NewsCards';
 import SectionTitle from '@/components/ui/SectionTitle';
 
 export default async function NewsPreview() {
-  const latestNews = await getPublishedNews();
+  const pinnedNews = await getPinnedPublishedNews();
   const instagramUrl = SOCIAL_LINKS.find((social) => social.platform === 'instagram')?.url ?? 'https://www.instagram.com/teamtheia/';
 
-  if (latestNews.length === 0) {
+  if (pinnedNews.length === 0) {
     return (
       <section id="noticias" className="section-padding theia-light-section">
         <div className="content-shell">
@@ -23,7 +23,7 @@ export default async function NewsPreview() {
       <div className="content-shell">
         <SectionTitle title="Noticias del Equipo" />
 
-        <NewsCards articles={latestNews} />
+        <NewsCards articles={pinnedNews} />
 
         <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center sm:mt-12 sm:flex-row">
           <Link

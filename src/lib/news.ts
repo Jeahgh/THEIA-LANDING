@@ -31,11 +31,10 @@ const publicNewsSelect = {
   },
 } as const;
 
-async function queryPublishedNews(take?: number) {
+async function queryPublishedNews(pinnedOnly = false) {
   return prisma.newsPost.findMany({
-    where: { published: true },
+    where: { published: true, ...(pinnedOnly ? { pinned: true } : {}) },
     orderBy: [{ sortOrder: 'asc' }, { date: 'desc' }],
-    ...(take ? { take } : {}),
     select: publicNewsSelect,
   });
 }
@@ -60,9 +59,9 @@ function mapNewsPost(post: PublicNewsRecord): NewsArticle {
   };
 }
 
-const getCachedLatestNews = unstable_cache(
-  async () => (await queryPublishedNews(4)).map(mapNewsPost),
-  ['latest-published-news'],
+const getCachedPinnedNews = unstable_cache(
+  async () => (await queryPublishedNews(true)).map(mapNewsPost),
+  ['pinned-published-news'],
   {
     tags: [PUBLIC_CACHE_TAGS.news],
     revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
@@ -108,9 +107,9 @@ const getCachedNewsSitemapEntries = unstable_cache(
   },
 );
 
-export async function getPublishedNews(): Promise<NewsArticle[]> {
+export async function getPinnedPublishedNews(): Promise<NewsArticle[]> {
   try {
-    return await getCachedLatestNews();
+    return await getCachedPinnedNews();
   } catch {
     return [];
   }
