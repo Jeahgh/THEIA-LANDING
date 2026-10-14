@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Montserrat, Nunito } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -14,14 +14,18 @@ import {
   websiteStructuredData,
 } from '@/lib/seo';
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
+const montserrat = localFont({
+  src: '../assets/fonts/Montserrat-Latin-Variable.woff2',
+  weight: '100 900',
+  style: 'normal',
   variable: '--font-montserrat',
   display: 'swap',
 });
 
-const nunito = Nunito({
-  subsets: ['latin'],
+const nunito = localFont({
+  src: '../assets/fonts/Nunito-Latin-Variable.woff2',
+  weight: '200 900',
+  style: 'normal',
   variable: '--font-nunito',
   display: 'swap',
 });

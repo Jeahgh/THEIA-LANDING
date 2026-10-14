@@ -75,7 +75,8 @@ Comandos principales:
 El `Dockerfile` incluye:
 
 - `runner`: imagen standalone para la aplicación;
-- `migrator`: migraciones y seed dentro de la red Docker;
+- `migrator`: solo migraciones; no contiene el archivo del seed;
+- `seeder`: imagen opcional para seed manual con `--confirm-seed`;
 - `builder`: etapa interna de compilación.
 
 `docker-compose.yml` es para desarrollo local. La configuración productiva de
@@ -84,6 +85,11 @@ se versiona en este repositorio.
 
 Consulta [docs/despliegue-servidor.md](docs/despliegue-servidor.md) antes de
 publicar.
+
+El seed nunca forma parte de un despliegue normal. El build usa fuentes locales
+y compila sin acceso a la red; la instalación de dependencias sí necesita red.
+La comparación de compiladores y sus límites está en
+[docs/auditoria-build-docker.md](docs/auditoria-build-docker.md).
 
 ## Uploads
 

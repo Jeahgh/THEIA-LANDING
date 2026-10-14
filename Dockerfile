@@ -27,7 +27,9 @@ ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public
 ENV THEIA_CONTAINER_CONTEXT=1
 
 RUN npm run db:generate
-RUN npm run build:container -- --webpack
+# La compilación no necesita PostgreSQL, Google Fonts ni otros servicios.
+# Si vuelve a introducirse una dependencia externa, debe fallar aquí.
+RUN --network=none npm run build:container
 
 # El servidor standalone no copia estos directorios por defecto.
 RUN mkdir -p .next/standalone/public \
@@ -38,15 +40,24 @@ RUN mkdir -p .next/standalone/public \
 
 FROM deps AS migrator
 
-COPY prisma ./prisma
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY prisma/migrations ./prisma/migrations
 COPY prisma.config.ts ./prisma.config.ts
 COPY scripts/container-tools.cjs ./scripts/container-tools.cjs
 
-ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public
 ENV THEIA_CONTAINER_CONTEXT=1
-RUN npm run db:generate
+RUN DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build?schema=public npm run db:generate
 
-CMD ["sh", "-c", "npm run db:deploy:container && npm run db:seed:container"]
+# Esta imagen ni siquiera contiene el archivo del seed.
+CMD ["npm", "run", "db:deploy:container"]
+
+# Target opcional: no participa en el build ni arranque de runner/migrator.
+# Su ejecución requiere además --confirm-seed; ver docs/despliegue-servidor.md.
+FROM migrator AS seeder
+
+COPY prisma/seed.mjs ./prisma/seed.mjs
+
+CMD ["npm", "run", "db:seed:container"]
 
 FROM node:22-bookworm-slim AS runner
 

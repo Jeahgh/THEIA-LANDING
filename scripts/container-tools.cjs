@@ -35,6 +35,12 @@ switch (action) {
     args = [prismaCli, 'migrate', 'deploy'];
     break;
   case 'db:seed': {
+    if (!forwardedArgs.includes('--confirm-seed')) {
+      fail('El seed es manual. Repite el comando con: -- --confirm-seed');
+    }
+    if (!fs.existsSync(path.join(projectRoot, 'prisma', 'seed.mjs'))) {
+      fail('Esta imagen no contiene seed. Usa el target seeder explícitamente.');
+    }
     const seedResult = spawnSync(process.execPath, ['prisma/seed.mjs'], {
       cwd: projectRoot,
       env: childEnvironment,
