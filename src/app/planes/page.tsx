@@ -161,6 +161,19 @@ export default async function PlanesPage() {
           </section>
         );
       })}
+
+      <section id="bases-planes" aria-labelledby="bases-planes-heading" className="bg-white px-6 py-10 text-center sm:px-8 sm:py-12 lg:px-12">
+        <h2 id="bases-planes-heading" className="text-lg font-normal text-text-secondary">
+          <a
+            href="/documentos/bases-theia-2026-2027.pdf"
+            download="Bases-THEIA-2026-2027.pdf"
+            type="application/pdf"
+            className="underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            Consulta las bases y condiciones aquí
+          </a>
+        </h2>
+      </section>
     </>
   );
 }
