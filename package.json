@@ -15,7 +15,7 @@
     "test:auth": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/auth-session-state.test.mjs",
     "test:seo": "node --test tests/seo-config.test.mjs",
     "test:deployment": "node --test tests/container-deployment.test.mjs",
-    "test:security": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/auth-session-state.test.mjs tests/admin-authorization.test.mjs tests/admin-users-actions.test.mjs tests/admin-content-actions.test.mjs tests/password-reset.test.mjs tests/security-config.test.mjs tests/http-body.test.mjs tests/image-upload.test.mjs tests/external-url.test.mjs tests/email-transport.test.mjs",
+    "test:security": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/auth-session-state.test.mjs tests/admin-authorization.test.mjs tests/admin-users-actions.test.mjs tests/admin-content-actions.test.mjs tests/password-reset.test.mjs tests/profile-actions.test.mjs tests/image-crop.test.mjs tests/security-config.test.mjs tests/http-body.test.mjs tests/image-upload.test.mjs tests/external-url.test.mjs tests/email-transport.test.mjs",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:up": "node scripts/local-tools.cjs db:up",

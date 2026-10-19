@@ -12,6 +12,9 @@ export interface SessionUserSnapshot {
   role: string;
   isActive: boolean;
   sessionVersion: number;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
 }
 
 type TokenWithSessionState<T extends Record<string, unknown>> = T & SessionTokenState;
@@ -55,6 +58,9 @@ export function reconcileSessionUser<T extends Record<string, unknown>>(
   return {
     ...token,
     id: user.id,
+    ...(user.name !== undefined ? { name: user.name } : {}),
+    ...(user.email !== undefined ? { email: user.email } : {}),
+    ...(user.image !== undefined ? { picture: user.image } : {}),
     role: user.role,
     isActive: true,
     sessionVersion: user.sessionVersion,

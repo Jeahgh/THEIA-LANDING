@@ -116,7 +116,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           () =>
             prisma.user.findUnique({
               where: { id: userId },
-              select: { id: true, role: true, isActive: true, sessionVersion: true },
+              select: { id: true, role: true, isActive: true, sessionVersion: true, name: true, email: true, image: true },
             }),
           (error) => {
             console.error('[auth] No se pudo validar temporalmente la sesión en la base de datos.', error);

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import ToastMessage from '@/components/ui/ToastMessage';
 import SquareImageCropper from '@/components/ui/SquareImageCropper';
 
@@ -14,8 +15,10 @@ export default function AvatarUpload({
   name?: string | null;
 }) {
   const router = useRouter();
+  const { update: updateSession } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState(image ?? '');
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const preview = uploadedImage ?? image ?? '';
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState<'success' | 'error'>('success');
   const [messageKey, setMessageKey] = useState(0);
@@ -30,26 +33,30 @@ export default function AvatarUpload({
     const formData = new FormData();
     formData.append('avatar', file);
 
-    const response = await fetch('/api/profile/avatar', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch('/api/profile/avatar', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
 
-    setIsUploading(false);
+      if (!response.ok || !data.success || !data.imageUrl) {
+        throw new Error(data.message ?? 'No pudimos subir la imagen.');
+      }
 
-    if (!response.ok) {
+      setUploadedImage(data.imageUrl);
+      setMessageTone('success');
+      setMessage('Foto actualizada.');
+      // La sesión vuelve a leer el perfil de la base; no confía en datos del cliente.
+      await updateSession().catch(() => undefined);
+      router.refresh();
+    } catch (error) {
       setMessageTone('error');
-      setMessage(data.message ?? 'No pudimos subir la imagen.');
+      setMessage(error instanceof Error ? error.message : 'No pudimos subir la imagen.');
+    } finally {
+      setIsUploading(false);
       setMessageKey((current) => current + 1);
-      return;
     }
-
-    setPreview(data.imageUrl);
-    setMessageTone('success');
-    setMessage('Foto actualizada.');
-    setMessageKey((current) => current + 1);
-    router.refresh();
   };
 
   return (
@@ -76,7 +83,7 @@ export default function AvatarUpload({
           aria-label="Cambiar foto de perfil"
         >
           {preview ? (
-            <Image src={preview} alt={name ?? 'Perfil'} fill className="object-cover" sizes="112px" />
+            <Image src={preview} alt={name ?? 'Perfil'} fill unoptimized className="object-cover" sizes="112px" />
           ) : (
             initial
           )}

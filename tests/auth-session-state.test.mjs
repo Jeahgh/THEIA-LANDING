@@ -19,6 +19,17 @@ const activeUser = {
   sessionVersion: 4,
 };
 
+test('profile refresh replaces the old session photo and name from the database', async () => {
+  const token = await refreshSessionFromLookup(
+    { id: 'user-1', sessionVersion: 4, picture: '/old.webp', name: 'Anterior' },
+    async () => ({ ...activeUser, image: '/api/uploads/profiles/user-1.webp?v=2', name: 'Actualizado' }),
+  );
+  assert.equal(token.picture, '/api/uploads/profiles/user-1.webp?v=2');
+  assert.equal(token.name, 'Actualizado');
+  const cleared = await refreshSessionFromLookup(token, async () => ({ ...activeUser, image: null }));
+  assert.equal(cleared.picture, null);
+});
+
 test('a lookup error closes access without permanently revoking the token', async () => {
   const lookupError = new Error('database temporarily unavailable');
   let reportedError;

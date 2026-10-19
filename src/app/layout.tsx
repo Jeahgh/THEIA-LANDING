@@ -84,8 +84,8 @@ export default function RootLayout({
         <JsonLd data={websiteStructuredData} />
         <AuthProvider>
           <Navbar />
+          <main className="flex-grow">{children}</main>
         </AuthProvider>
-        <main className="flex-grow">{children}</main>
         <Footer />
       </body>
     </html>

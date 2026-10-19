@@ -105,7 +105,7 @@ export default function Navbar() {
                     <span>Hola, {userName}</span>
                     <span className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue ring-2 ring-white/35">
                       {session.user.image ? (
-                        <Image src={session.user.image} alt={session.user.name ?? 'Perfil'} fill className="object-cover" sizes="36px" />
+                        <Image src={session.user.image} alt={session.user.name ?? 'Perfil'} fill unoptimized className="object-cover" sizes="36px" />
                       ) : (
                         userInitial
                       )}
@@ -190,7 +190,7 @@ export default function Navbar() {
                 <div className="flex min-w-0 items-center gap-3 px-1 py-1 text-white">
                   <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue">
                     {session.user.image ? (
-                      <Image src={session.user.image} alt={session.user.name ?? 'Perfil'} fill className="object-cover" sizes="40px" />
+                      <Image src={session.user.image} alt={session.user.name ?? 'Perfil'} fill unoptimized className="object-cover" sizes="40px" />
                     ) : (
                       userInitial
                     )}
