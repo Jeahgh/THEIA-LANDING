@@ -16,3 +16,13 @@ tmp
 *.tsbuildinfo
 Dockerfile
 docker-compose*.yml
+.codex
+.agents
+.aws
+.vscode
+.idea
+.npmrc
+tests
+docs
+*.md
+# Las bases descargables de public/documentos son parte de la aplicación.

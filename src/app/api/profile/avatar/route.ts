@@ -6,6 +6,7 @@ import { InvalidImageUploadError, validateImageUpload } from '@/lib/image-upload
 import { prisma } from '@/lib/prisma';
 import { consumeRateLimit } from '@/lib/rate-limit';
 import { uploadPublicUrl } from '@/lib/uploads';
+import { InvalidFormDataBodyError, readFormDataWithLimit, RequestBodyTooLargeError } from '@/lib/http-body';
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 const MAX_MULTIPART_BYTES = MAX_AVATAR_BYTES + 64 * 1024;
@@ -36,7 +37,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await readFormDataWithLimit(request, MAX_MULTIPART_BYTES);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) {
+      return NextResponse.json({ success: false, message: 'La solicitud es demasiado grande.' }, { status: 413 });
+    }
+    if (error instanceof InvalidFormDataBodyError) {
+      return NextResponse.json({ success: false, message: 'La solicitud de imagen no es válida.' }, { status: 400 });
+    }
+    throw error;
+  }
   const file = formData.get('avatar');
 
   if (!(file instanceof File)) {

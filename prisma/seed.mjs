@@ -6,6 +6,11 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const { loadEnvConfig } = nextEnv;
 const { PrismaClient } = prismaClientPkg;
 
+// También protege la ejecución directa y el comando local. No altera contenido.
+if (!process.argv.includes('--confirm-seed')) {
+  throw new Error('El seed es manual y puede sobrescribir contenido. Usa --confirm-seed para ejecutarlo.');
+}
+
 const databaseTarget = process.env.THEIA_DATABASE_TARGET ?? 'local';
 
 if (databaseTarget === 'local') {

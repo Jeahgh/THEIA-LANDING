@@ -63,9 +63,10 @@ Comandos principales:
 | `npm run db:stop` | Detiene PostgreSQL local sin borrar datos |
 | `npm run db:status` | Consulta migraciones locales |
 | `npm run db:migrate` | Crea o aplica migraciones de desarrollo |
-| `npm run db:seed` | Carga datos iniciales locales |
+| `npm run db:seed -- --confirm-seed` | Carga manualmente datos iniciales locales; puede sobrescribir contenido |
 | `npm run db:studio` | Abre Prisma Studio |
 | `npm run lint` | Ejecuta ESLint |
+| `npm test` | Ejecuta todas las pruebas automáticas |
 | `npm run test:security` | Ejecuta pruebas de seguridad |
 | `npm run test:seo` | Ejecuta comprobaciones SEO |
 | `npm run build` | Verifica el build local |
@@ -90,6 +91,11 @@ El seed nunca forma parte de un despliegue normal. El build usa fuentes locales
 y compila sin acceso a la red; la instalación de dependencias sí necesita red.
 La comparación de compiladores y sus límites está en
 [docs/auditoria-build-docker.md](docs/auditoria-build-docker.md).
+
+La revisión de rendimiento, limpieza y riesgos pendientes está en
+[docs/auditoria-optimizacion-seguridad.md](docs/auditoria-optimizacion-seguridad.md).
+Los archivos de `public/uploads` son datos persistentes: no se versionan ni se
+copian a la imagen; deben conservarse y respaldarse en su volumen.
 
 ## Uploads
 

@@ -12,6 +12,7 @@
     "build:container": "node scripts/container-tools.cjs build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/*.test.mjs",
     "test:auth": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test tests/auth-session-state.test.mjs",
     "test:seo": "node --test tests/seo-config.test.mjs",
     "test:deployment": "node --test tests/container-deployment.test.mjs",
@@ -31,10 +32,10 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "2.11.3",
-    "@prisma/adapter-pg": "7.9.1",
-    "@prisma/client": "7.9.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
     "bcryptjs": "^3.0.3",
-    "next": "16.3.2",
+    "next": "16.3.8",
     "next-auth": "5.0.0-beta.32",
     "nodemailer": "8.0.11",
     "nodemailer-v9": "npm:nodemailer@9.0.5",
@@ -43,7 +44,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@next/env": "16.3.2",
+    "@next/env": "16.3.8",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.1",
@@ -51,8 +52,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.2",
-    "prisma": "7.9.1",
+    "eslint-config-next": "16.3.8",
+    "prisma": "7.10.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

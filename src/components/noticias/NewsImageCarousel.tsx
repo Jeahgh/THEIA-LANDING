@@ -31,11 +31,12 @@ export default function NewsImageCarousel({ images, title, variant = 'article', 
     let timer: ReturnType<typeof setInterval> | undefined;
     function configure() {
       clearInterval(timer);
-      if (!motion.matches) timer = setInterval(() => { if (!document.hidden) setIndex((current) => (current + 1) % count); }, 3500);
+      if (!motion.matches && !document.hidden) timer = setInterval(() => setIndex((current) => (current + 1) % count), 3500);
     }
     configure();
     motion.addEventListener('change', configure);
-    return () => { clearInterval(timer); motion.removeEventListener('change', configure); };
+    document.addEventListener('visibilitychange', configure);
+    return () => { clearInterval(timer); motion.removeEventListener('change', configure); document.removeEventListener('visibilitychange', configure); };
   }, [count, visible, hovered, focused, active]);
 
   function move(delta: number) {
@@ -49,9 +50,9 @@ export default function NewsImageCarousel({ images, title, variant = 'article', 
   const buttonClass = 'flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-sm transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#42627b]';
   const slides = images.map((image, item) => <div key={`${image}-${item}`} role="group" aria-roledescription="diapositiva" aria-label={`Foto ${item + 1} de ${count}`} aria-hidden={item !== active} aria-live={focused ? 'polite' : 'off'}
     className={`pointer-events-none absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none ${item === active ? 'opacity-100' : 'opacity-0'}`}>
-    <Image src={image} alt={count > 1 ? `${title}, foto ${item + 1} de ${count}` : title} fill
+    {(item === active || (visible && (item === (active + 1) % count || item === (active + count - 1) % count))) && <Image src={image} alt={count > 1 ? `${title}, foto ${item + 1} de ${count}` : title} fill
       sizes={variant === 'article' ? '(max-width: 896px) 100vw, 896px' : compact ? '(max-width: 640px) 100vw, 160px' : '(max-width: 1024px) 100vw, 50vw'}
-      className={article ? 'object-contain' : 'object-cover'} preload={article && item === 0} />
+      className={article ? 'object-contain' : 'object-cover'} preload={article && item === 0} />}
   </div>);
   return (
     <section ref={container} aria-label={`Fotos de ${title}`} aria-roledescription="carrusel"

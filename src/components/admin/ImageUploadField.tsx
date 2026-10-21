@@ -1,8 +1,10 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
-import SquareImageCropper from '@/components/ui/SquareImageCropper';
+import dynamic from 'next/dynamic';
 import { useAdminModal } from './AdminModal';
+
+const SquareImageCropper = dynamic(() => import('@/components/ui/SquareImageCropper'));
 
 interface ImageUploadFieldProps {
   name: string;

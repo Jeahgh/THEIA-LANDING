@@ -15,11 +15,17 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 FROM deps AS builder
 
-COPY . .
+# Solo las entradas del build: documentos, pruebas y herramientas locales no
+# invalidan esta capa ni pueden terminar en el artefacto por accidente.
+COPY next.config.ts tsconfig.json postcss.config.mjs prisma.config.ts ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY scripts/container-tools.cjs ./scripts/container-tools.cjs
+COPY src ./src
+COPY public ./public
 
 # Prisma exige una URL al cargar prisma.config.ts, aunque `generate` y el build
 # no se conectan a esta base ficticia. El valor no se copia al artefacto final.

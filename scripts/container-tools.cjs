@@ -41,7 +41,7 @@ switch (action) {
     if (!fs.existsSync(path.join(projectRoot, 'prisma', 'seed.mjs'))) {
       fail('Esta imagen no contiene seed. Usa el target seeder explícitamente.');
     }
-    const seedResult = spawnSync(process.execPath, ['prisma/seed.mjs'], {
+    const seedResult = spawnSync(process.execPath, ['prisma/seed.mjs', '--confirm-seed'], {
       cwd: projectRoot,
       env: childEnvironment,
       stdio: 'inherit',

@@ -82,7 +82,9 @@ Estos dos comandos requieren el archivo operativo existente
 
 ## Seed manual y excepcional
 
-En desarrollo sigue disponible `npm run db:seed`. En Docker es necesario
+En desarrollo sigue disponible `npm run db:seed -- --confirm-seed`. El seed
+directo también exige `--confirm-seed`; puede sobrescribir planes y noticias.
+En Docker es necesario
 construir **otro target**, `seeder`, y confirmar su ejecución:
 
 ```bash

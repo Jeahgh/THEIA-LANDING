@@ -1,11 +1,13 @@
 'use client';
 
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import ToastMessage from '@/components/ui/ToastMessage';
-import SquareImageCropper from '@/components/ui/SquareImageCropper';
+
+const SquareImageCropper = dynamic(() => import('@/components/ui/SquareImageCropper'));
 
 export default function AvatarUpload({
   image,

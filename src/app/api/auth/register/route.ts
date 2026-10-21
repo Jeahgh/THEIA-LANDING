@@ -8,12 +8,16 @@ import {
 } from '@/lib/email-verification';
 import { prisma } from '@/lib/prisma';
 import { consumeRateLimit, getClientAddress } from '@/lib/rate-limit';
+import { InvalidJsonBodyError, readJsonBodyWithLimit, RequestBodyTooLargeError } from '@/lib/http-body';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    if (request.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() !== 'application/json') {
+      return NextResponse.json({ success: false, message: 'El contenido debe enviarse como JSON.' }, { status: 415 });
+    }
+    const body = await readJsonBodyWithLimit(request, 8 * 1024);
     const name = String(body.name ?? '').trim();
     const email = String(body.email ?? '').toLowerCase().trim();
 
@@ -21,7 +25,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Ingresa tu nombre.' }, { status: 400 });
     }
 
-    if (!emailRegex.test(email)) {
+    if (email.length > 254 || !emailRegex.test(email)) {
       return NextResponse.json({ success: false, message: 'Ingresa un email valido.' }, { status: 400 });
     }
 
@@ -144,6 +148,12 @@ export async function POST(request: Request) {
         : 'Cuenta creada. Verifica tu correo para elegir una contrasena.',
     });
   } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) {
+      return NextResponse.json({ success: false, message: 'La solicitud es demasiado grande.' }, { status: 413 });
+    }
+    if (error instanceof InvalidJsonBodyError) {
+      return NextResponse.json({ success: false, message: 'El cuerpo JSON no es válido.' }, { status: 400 });
+    }
     console.error('Register error:', error);
     return NextResponse.json(
       { success: false, message: 'No pudimos crear la cuenta. Revisa la conexion a PostgreSQL.' },

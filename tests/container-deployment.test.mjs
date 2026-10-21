@@ -59,7 +59,7 @@ test('explicit seeder execution starts the seed and propagates its exit status',
   for (const childStatus of [0, 1]) {
     const result = invoke('db:seed', ['--confirm-seed'], { seedExists: true, childStatus });
     assert.equal(result.exitCode, childStatus);
-    assert.deepEqual(Array.from(result.calls[0].args), ['prisma/seed.mjs']);
+    assert.deepEqual(Array.from(result.calls[0].args), ['prisma/seed.mjs', '--confirm-seed']);
   }
 });
 
