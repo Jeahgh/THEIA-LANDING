@@ -2,6 +2,7 @@ import type { Race } from '@/types';
 import { unstable_cache } from 'next/cache';
 import { PUBLIC_CACHE_TAGS, PUBLIC_CONTENT_REVALIDATE_SECONDS } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
+import { getClubDate, getRaceStatus } from '@/lib/race-schedule';
 
 const typeMap = {
   TRIATLON: 'triatlon',
@@ -10,13 +11,6 @@ const typeMap = {
   RUNNING: 'running',
   CICLISMO: 'ciclismo',
   NATACION: 'natacion',
-} as const;
-
-const statusMap = {
-  UPCOMING: 'upcoming',
-  REGISTRATION_OPEN: 'registration_open',
-  REGISTRATION_CLOSED: 'registration_closed',
-  FINISHED: 'finished',
 } as const;
 
 const getCachedActiveRaces = unstable_cache(
@@ -33,7 +27,8 @@ const getCachedActiveRaces = unstable_cache(
         distance: true,
         description: true,
         registrationUrl: true,
-        status: true,
+        imageUrl: true,
+        season: true,
       },
     });
 
@@ -46,7 +41,8 @@ const getCachedActiveRaces = unstable_cache(
       distance: race.distance ?? undefined,
       description: race.description ?? undefined,
       registrationUrl: race.registrationUrl ?? undefined,
-      status: statusMap[race.status],
+      imageUrl: race.imageUrl ?? undefined,
+      season: race.season ?? race.date.getUTCFullYear(),
     }));
   },
   ['active-races'],
@@ -58,7 +54,9 @@ const getCachedActiveRaces = unstable_cache(
 
 export async function getActiveRaces(): Promise<Race[]> {
   try {
-    return await getCachedActiveRaces();
+    const today = getClubDate();
+    // Calculate after reading cached records so midnight never leaves a stale state.
+    return (await getCachedActiveRaces()).map((race) => ({ ...race, status: getRaceStatus(race.date, today) }));
   } catch {
     return [];
   }

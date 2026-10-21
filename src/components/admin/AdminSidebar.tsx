@@ -23,7 +23,7 @@ export default function AdminSidebar({ email }: { email?: string | null }) {
           <h1 className="mt-1 text-xl font-bold text-white lg:mt-2 lg:text-2xl">Centro de gestión</h1>
         </div>
 
-        <nav className="flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible lg:pb-0">
+        <nav aria-label="Secciones de gestión" className="flex min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:overflow-visible lg:pb-0">
           {adminLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(`${link.href}/`));
 

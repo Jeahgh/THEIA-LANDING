@@ -1,6 +1,8 @@
 import type { Race } from '@/generated/prisma';
 import AdminToggle from '@/components/admin/AdminToggle';
 import AdminForm, { AdminFormHeading } from '@/components/admin/AdminForm';
+import ImageUploadField from '@/components/admin/ImageUploadField';
+import { getClubDate } from '@/lib/race-schedule';
 
 interface RaceFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -30,6 +32,10 @@ export default function RaceForm({ action, race, submitLabel }: RaceFormProps) {
           <input name="date" type="date" defaultValue={date} className={fieldClasses} required />
         </div>
         <div>
+          <label htmlFor="race-season" className="mb-1 block text-sm font-semibold text-text-primary">Temporada</label>
+          <input id="race-season" name="season" type="number" min="1000" max="9999" step="1" defaultValue={race?.season ?? Number((date || getClubDate()).slice(0, 4))} className={fieldClasses} required />
+        </div>
+        <div>
           <label className="mb-1 block text-sm font-semibold text-text-primary">Distancia</label>
           <input name="distance" defaultValue={race?.distance ?? ''} placeholder="Ej: 51.50 km" className={fieldClasses} />
         </div>
@@ -44,19 +50,13 @@ export default function RaceForm({ action, race, submitLabel }: RaceFormProps) {
             <option value="NATACION">Natación</option>
           </select>
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-semibold text-text-primary">Estado</label>
-          <select name="status" defaultValue={race?.status ?? 'UPCOMING'} className={fieldClasses}>
-            <option value="UPCOMING">Próximamente</option>
-            <option value="REGISTRATION_OPEN">Inscripciones abiertas</option>
-            <option value="REGISTRATION_CLOSED">Inscripciones cerradas</option>
-            <option value="FINISHED">Finalizada</option>
-          </select>
-        </div>
         <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-semibold text-text-primary">Enlace de inscripción</label>
-          <input name="registrationUrl" type="url" defaultValue={race?.registrationUrl ?? ''} placeholder="https://..." className={fieldClasses} />
+          <label htmlFor="race-url" className="mb-1 block text-sm font-semibold text-text-primary">Enlace de la competencia</label>
+          <input id="race-url" name="registrationUrl" type="url" defaultValue={race?.registrationUrl ?? ''} placeholder="https://..." className={fieldClasses} />
         </div>
+      </div>
+      <div className="mt-4">
+        <ImageUploadField name="imageUrl" label="Imagen de la competencia" folder="competitions" defaultValue={race?.imageUrl} helper="Selecciona una imagen relacionada con esta competencia." />
       </div>
       <div className="mt-4">
         <label className="mb-1 block text-sm font-semibold text-text-primary">Descripción</label>

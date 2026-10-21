@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import * as newsImages from '../src/lib/news-images.ts';
 
 async function compile(path) {
   return ts.transpileModule(await readFile(new URL(path, import.meta.url), 'utf8'), {
@@ -44,6 +45,7 @@ function setup({ denied = false } = {}) {
     updateTag: (tag) => calls.push(`invalidate:${tag}`),
   };
   const shared = {
+    '@/lib/news-images': newsImages,
     'next/cache': cache,
     '@/lib/prisma': { prisma },
     '@/lib/cache-tags': { PUBLIC_CACHE_TAGS: { news: 'public-news' }, PUBLIC_CONTENT_REVALIDATE_SECONDS: 300 },

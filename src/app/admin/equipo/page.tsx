@@ -7,6 +7,8 @@ import ContentActions from '@/components/admin/ContentActions';
 import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
+import ContentFilters from '@/components/admin/ContentFilters';
+import { filterAdminItems, readAdminFilters, type AdminSearchParams, type AdminFilterField } from '@/lib/admin-filters';
 import { createAthlete, deleteAthlete, updateAthlete } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -18,13 +20,18 @@ export const metadata: Metadata = {
 export default async function AdminTeamPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
+  searchParams?: Promise<AdminSearchParams>;
 }) {
   await requireAdmin('/admin/equipo');
   const params = await searchParams;
   const athletes = await prisma.athlete.findMany({
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
   });
+  const fields: AdminFilterField[] = [
+    { name: 'role', label: 'Rol', allLabel: 'Todos los roles', options: [{ value: 'Entrenador', label: 'Entrenadores' }, { value: 'Atleta', label: 'Atletas' }] },
+  ];
+  const filters = readAdminFilters(params, fields);
+  const visibleAthletes = filterAdminItems(athletes, filters, (athlete) => ({ text: athlete.name, values: { role: athlete.role } }));
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
@@ -37,17 +44,18 @@ export default async function AdminTeamPage({
         <AthleteForm action={createAthlete} submitLabel="Crear integrante" />
       </CreateContentPanel>
 
-      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
+      <AdminActionStatus saved={typeof params?.guardado === 'string' ? params.guardado : undefined} deleted={typeof params?.eliminado === 'string' ? params.eliminado : undefined} />
+      <ContentFilters label="equipo" placeholder="Nombre del integrante" fields={fields} {...filters} />
 
-      {athletes.length === 0 ? (
-        <EmptyState tone="admin">No hay integrantes creados.</EmptyState>
+      {visibleAthletes.length === 0 ? (
+        <EmptyState tone="admin">{athletes.length ? 'No hay integrantes que coincidan con los filtros.' : 'No hay integrantes creados.'}</EmptyState>
       ) : (
         <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Integrantes existentes</h2>
           </div>
           <div className="divide-y divide-border-subtle">
-            {athletes.map((athlete) => (
+            {visibleAthletes.map((athlete) => (
               <div key={athlete.id} className={`grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center ${athlete.isActive ? '' : 'bg-slate-50/70'}`}>
                 <div className={`flex min-w-0 gap-4 transition-opacity ${athlete.isActive ? '' : 'opacity-45 grayscale-[0.5]'}`}>
                   <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-blue-pale text-lg font-bold text-brand-blue">

@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { PUBLIC_CACHE_TAGS, PUBLIC_CONTENT_REVALIDATE_SECONDS } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
+import { sortTeamMembers } from '@/lib/team-order';
 
 export type PublicAthlete = {
   id: string;
@@ -21,7 +22,6 @@ const getCachedActiveAthletes = unstable_cache(
   async () => {
     const members = await prisma.athlete.findMany({
       where: { isActive: true },
-      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
       select: {
         id: true,
         name: true,
@@ -30,12 +30,6 @@ const getCachedActiveAthletes = unstable_cache(
         imageUrl: true,
         imageAlt: true,
       },
-    });
-
-    members.sort((first, second) => {
-      const firstPriority = first.role === 'Entrenador' ? 0 : 1;
-      const secondPriority = second.role === 'Entrenador' ? 0 : 1;
-      return firstPriority - secondPriority;
     });
 
     return members;
@@ -66,7 +60,7 @@ const getCachedClubStats = unstable_cache(
 
 export async function getActiveAthletes(limit?: number): Promise<PublicAthlete[]> {
   try {
-    const members = await getCachedActiveAthletes();
+    const members = sortTeamMembers(await getCachedActiveAthletes());
     return limit ? members.slice(0, limit) : members;
   } catch {
     return [];

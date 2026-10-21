@@ -25,7 +25,7 @@ export default function PasswordResetButton() {
       >
         {pending ? 'Enviando correo...' : 'Cambiar contraseña'}
       </button>
-      {notice && <ToastMessage key={notice.key} message={notice.message} tone={notice.tone} duration={9000} />}
+      {notice && <ToastMessage key={notice.key} message={notice.message} tone={notice.tone} duration={3500} />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { NewsArticle } from '@/types';
+import NewsImageCarousel from '@/components/noticias/NewsImageCarousel';
+import { getNewsImages } from '@/lib/news-images';
 
 const fallbackImage = '/images/equipo-running.jpg';
 
@@ -45,48 +46,29 @@ export default function NewsCards({ articles }: { articles: NewsArticle[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
-      <Link
-        href={`/noticias/${featured.id}`}
-        className="group self-start overflow-hidden rounded-lg border border-white/70 bg-white/90 text-left shadow-xl shadow-brand-blue/10 ring-1 ring-brand-blue/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 active:scale-[0.99] motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue sm:rounded-2xl"
+      <article
+        className="group self-start overflow-hidden rounded-lg border border-white/70 bg-white/90 text-left shadow-xl shadow-brand-blue/10 ring-1 ring-brand-blue/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl motion-reduce:transform-none focus-within:ring-2 focus-within:ring-brand-blue sm:rounded-2xl"
       >
-        <article>
-          <div className="relative aspect-[16/10] overflow-hidden">
-            <Image
-              src={featured.imageUrl ?? fallbackImage}
-              alt={featured.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transform-none"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </div>
-          <div className="p-5 sm:p-6">
+          <NewsImageCarousel images={getNewsImages(featured).length ? getNewsImages(featured) : [fallbackImage]} title={featured.title} variant="featured" href={`/noticias/${featured.id}`} />
+          <Link href={`/noticias/${featured.id}`} className="block p-5 outline-none sm:p-6">
             <NewsMeta article={featured} />
             <h3 className="mt-3 break-words text-lg font-bold leading-tight text-text-primary sm:text-xl lg:text-2xl">
               {featured.title}
             </h3>
             <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-text-secondary">{featured.excerpt}</p>
-          </div>
-        </article>
-      </Link>
+          </Link>
+      </article>
 
       <div className="flex flex-col gap-4 sm:gap-6">
         {rest.map((article) => (
-          <Link
+          <article
             key={article.id}
-            href={`/noticias/${article.id}`}
-            className="group overflow-hidden rounded-lg border border-white/70 bg-white/90 text-left shadow-xl shadow-brand-blue/10 ring-1 ring-brand-blue/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 active:scale-[0.99] motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue sm:rounded-2xl"
+            className="group flex w-full flex-col self-start overflow-hidden rounded-lg border border-white/70 bg-white/90 text-left shadow-xl shadow-brand-blue/10 ring-1 ring-brand-blue/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl motion-reduce:transform-none focus-within:ring-2 focus-within:ring-brand-blue sm:min-h-40 sm:flex-row sm:rounded-2xl"
           >
-            <article className="flex flex-col sm:flex-row">
-              <div className="relative aspect-video overflow-hidden sm:aspect-square sm:w-40 sm:min-w-[160px]">
-                <Image
-                  src={article.imageUrl ?? fallbackImage}
-                  alt={article.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transform-none"
-                  sizes="(max-width: 640px) 100vw, 160px"
-                />
+              <div className="relative w-full min-w-0 sm:w-40 sm:shrink-0">
+                <NewsImageCarousel images={getNewsImages(article).length ? getNewsImages(article) : [fallbackImage]} title={article.title} variant="compact" href={`/noticias/${article.id}`} />
               </div>
-              <div className="min-w-0 flex-1 p-4 sm:p-5">
+              <Link href={`/noticias/${article.id}`} className="block min-w-0 flex-1 p-4 outline-none sm:p-5">
                 <NewsMeta article={article} includeDate={false} />
                 <h3 className="mb-2 mt-3 break-words text-base font-bold leading-tight text-text-primary">
                   {article.title}
@@ -94,9 +76,8 @@ export default function NewsCards({ articles }: { articles: NewsArticle[] }) {
                 <time dateTime={article.date} className="text-xs text-text-muted">
                   {formatNewsDate(article.date)}
                 </time>
-              </div>
-            </article>
-          </Link>
+              </Link>
+          </article>
         ))}
       </div>
     </div>

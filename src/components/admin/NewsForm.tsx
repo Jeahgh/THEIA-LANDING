@@ -4,7 +4,8 @@ import { useState } from 'react';
 import AdminForm from '@/components/admin/AdminForm';
 import type { NewsPost, NewsResult } from '@/generated/prisma';
 import { deleteIconButtonClass, TrashIcon } from './AdminActionIcons';
-import ImageUploadField from '@/components/admin/ImageUploadField';
+import NewsImageGalleryField from '@/components/admin/NewsImageGalleryField';
+import { getNewsImages } from '@/lib/news-images';
 
 type EditableNewsPost = NewsPost & { results?: NewsResult[] };
 
@@ -32,6 +33,7 @@ function emptyResult(): ResultRow {
 export default function NewsForm({ action, post, submitLabel, athleteOptions }: NewsFormProps) {
   const date = post?.date ? post.date.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
   const [category, setCategory] = useState(post?.category ?? 'NOTICIAS');
+  const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<ResultRow[]>(
     post?.results?.map((result) => ({
       key: result.id,
@@ -47,7 +49,7 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
   }
 
   return (
-    <AdminForm action={action} submitLabel={submitLabel}>
+    <AdminForm action={action} submitLabel={submitLabel} busy={uploading}>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-semibold text-text-primary">Título</label>
@@ -76,13 +78,7 @@ export default function NewsForm({ action, post, submitLabel, athleteOptions }: 
           </select>
         </div>
         <div className="md:col-span-2">
-          <ImageUploadField
-            name="imageUrl"
-            label="Imagen de la noticia"
-            folder="news"
-            defaultValue={post?.imageUrl ?? ''}
-            helper="Puedes subir una imagen desde tu PC. Si la noticia no necesita imagen, puedes dejar este campo vacío."
-          />
+          <NewsImageGalleryField defaultImages={post ? getNewsImages(post) : []} onBusyChange={setUploading} />
         </div>
       </div>
 

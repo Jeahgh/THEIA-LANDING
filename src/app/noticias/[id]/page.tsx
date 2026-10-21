@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import NewsResultsTable from '@/components/noticias/NewsResultsTable';
+import NewsImageCarousel from '@/components/noticias/NewsImageCarousel';
 import { formatNewsDate, getNewsCategory } from '@/components/home/NewsCards';
 import { getPublishedNewsPost } from '@/lib/news';
+import { getNewsImages } from '@/lib/news-images';
 import {
   DEFAULT_OG_IMAGE,
   PRIVATE_ROBOTS,
@@ -72,6 +73,7 @@ export default async function NoticiaPage({ params }: NewsPageProps) {
   const category = getNewsCategory(article.category);
   const articlePath = `/noticias/${article.id}`;
   const image = article.imageUrl ?? DEFAULT_OG_IMAGE;
+  const images = getNewsImages(article);
   const articleStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -124,16 +126,7 @@ export default async function NoticiaPage({ params }: NewsPageProps) {
           <h1 className="text-3xl font-black leading-tight text-brand-navy sm:text-5xl">{article.title}</h1>
         </header>
 
-        <div className="relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl bg-brand-blue/10 shadow-xl shadow-brand-blue/10">
-          <Image
-            src={image}
-            alt={article.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 896px) 100vw, 896px"
-            preload
-          />
-        </div>
+        <NewsImageCarousel images={images.length ? images : [image]} title={article.title} />
 
         <div>
           <p className="whitespace-pre-line text-base leading-8 text-text-secondary sm:text-lg">{article.excerpt}</p>

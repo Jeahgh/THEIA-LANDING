@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import EventCard from './EventCard';
-import { getClubDate, getCompactRaceName, getRaceDaysRemaining } from '@/lib/race-schedule';
+import { getClubDate, getCompactRaceName, getRaceDaysRemaining, getRaceStatus } from '@/lib/race-schedule';
 import type { Race } from '@/types';
 
 const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -15,15 +15,16 @@ export default function CompetitionCalendar({ races: initialRaces, today: initia
     const timer = window.setInterval(() => setToday(getClubDate()), 60_000);
     return () => window.clearInterval(timer);
   }, []);
-  const races = initialRaces.map((race): Race => race.date < today ? { ...race, status: 'finished' } : race);
+  const races = initialRaces.map((race): Race => ({ ...race, status: getRaceStatus(race.date, today) }));
   const nextRace = races.find((race) => race.status !== 'finished');
   const [month, setMonth] = useState(initialToday.slice(0, 7));
+  const [season, setSeason] = useState(Number(initialToday.slice(0, 4)));
   const [view, setView] = useState<View>(nextRace ? 'upcoming' : races.length ? 'finished' : 'upcoming');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [limit, setLimit] = useState(pageSize);
   const [year, monthNumber] = month.split('-').map(Number);
-  const years = [...new Set([Number(today.slice(0, 4)), ...races.map((race) => Number(race.date.slice(0, 4)))])].sort((a, b) => a - b);
-  const seasonRaces = races.filter((race) => race.date.startsWith(String(year)));
+  const years = [...new Set([Number(today.slice(0, 4)), ...races.map((race) => race.season ?? Number(race.date.slice(0, 4)))])].sort((a, b) => a - b);
+  const seasonRaces = races.filter((race) => (race.season ?? Number(race.date.slice(0, 4))) === season);
   const nextSeasonRace = seasonRaces.find((race) => race.status !== 'finished');
   const todayLabel = new Intl.DateTimeFormat('es-CL', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(`${today}T12:00:00Z`)).replace(',', '');
   const filtered = seasonRaces.filter((race) => (
@@ -77,7 +78,6 @@ export default function CompetitionCalendar({ races: initialRaces, today: initia
             })}</tr>
           ))}</tbody>
         </table>
-        <p className="mt-3 text-xs leading-relaxed text-text-secondary">Selecciona un día resaltado para ver sus competencias.</p>
         <button type="button" onClick={() => { setView('all'); setSelectedDate(null); setLimit(pageSize); }} className="mt-4 rounded py-2 text-sm font-bold text-[#215b87] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue">Ver toda la temporada</button>
         {nextSeasonRace && <div className="mt-6 rounded-xl bg-white/70 p-4">
           <p className="text-xs font-bold uppercase tracking-widest text-[#42627b]">El próximo desafío</p>
@@ -90,15 +90,23 @@ export default function CompetitionCalendar({ races: initialRaces, today: initia
         <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2" aria-label="Estado de las competencias">
             {([{ key: 'upcoming', text: 'Próximas' }, { key: 'finished', text: 'Finalizadas' }] as const).map((item) => (
-              <button key={item.key} type="button" aria-pressed={view === item.key} onClick={() => { setView(item.key); if (item.key === 'upcoming') setMonth(today.slice(0, 7)); setSelectedDate(null); setLimit(pageSize); }} className={`${controlClass} focus-visible:outline-slate-500 ${view === item.key ? 'bg-slate-200 text-slate-800' : 'text-text-secondary hover:bg-gray-100'}`}>{item.text}</button>
+              <button key={item.key} type="button" aria-pressed={view === item.key} onClick={() => { setView(item.key); if (item.key === 'upcoming') setMonth(season === Number(today.slice(0, 4)) ? today.slice(0, 7) : (nextSeasonRace?.date ?? `${season}-01-01`).slice(0, 7)); setSelectedDate(null); setLimit(pageSize); }} className={`${controlClass} focus-visible:outline-slate-500 ${view === item.key ? 'bg-slate-200 text-slate-800' : 'text-text-secondary hover:bg-gray-100'}`}>{item.text}</button>
             ))}
           </div>
-          <select aria-label="Temporada de competencias" value={year} onChange={(event) => { setMonth(`${event.target.value}-${String(monthNumber).padStart(2, '0')}`); setSelectedDate(null); setLimit(pageSize); }} className="rounded-lg bg-[#f3f4f5] px-4 py-2 text-sm font-semibold text-brand-navy focus-visible:outline-2 focus-visible:outline-brand-blue">{[...new Set([...years, year])].sort((a, b) => a - b).map((item) => <option key={item} value={item}>Temporada {item}</option>)}</select>
+          <select aria-label="Temporada de competencias" value={season} onChange={(event) => {
+            const nextSeason = Number(event.target.value);
+            const matches = races.filter((race) => (race.season ?? Number(race.date.slice(0, 4))) === nextSeason);
+            const first = matches.find((race) => race.status !== 'finished') ?? matches[0];
+            setSeason(nextSeason);
+            setMonth(first?.date.slice(0, 7) ?? `${nextSeason}-${String(monthNumber).padStart(2, '0')}`);
+            setSelectedDate(null);
+            setLimit(pageSize);
+          }} className="rounded-lg bg-[#f3f4f5] px-4 py-2 text-sm font-semibold text-brand-navy focus-visible:outline-2 focus-visible:outline-brand-blue">{years.map((item) => <option key={item} value={item}>Temporada {item}</option>)}</select>
         </div>
         <div aria-live="polite">
           {view === 'all' && <p className="mb-5 text-sm font-semibold text-text-secondary">Todas las competencias de la temporada</p>}
           {visible.length > 0 ? [...groups].map(([key, events]) => (
-            <section key={key} aria-label={`${months[Number(key.slice(5)) - 1]} ${year}`} className="mb-8 last:mb-0">
+            <section key={key} aria-label={`${months[Number(key.slice(5)) - 1]} ${key.slice(0, 4)}`} className="mb-8 last:mb-0">
               <h3 className="mb-4 text-lg font-bold text-text-secondary">{months[Number(key.slice(5)) - 1]}</h3>
               <div className="space-y-6">{events.map((race) => <EventCard key={race.id} race={race} today={today} />)}</div>
             </section>

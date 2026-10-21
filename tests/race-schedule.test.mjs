@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getRaceSchedule, getCompactRaceName, getRaceDaysRemaining } from '../src/lib/race-schedule.ts';
+import { getRaceSchedule, getCompactRaceName, getRaceDaysRemaining, getRaceStatus } from '../src/lib/race-schedule.ts';
 
 const race = (id, date, status = 'registration_open') => ({
   id, date, status, name: 'Coquimbo', location: 'Coquimbo, Chile', type: 'triatlon',
@@ -13,12 +13,23 @@ test('past races finish after midnight in Chile and no longer occupy the next th
   const after = getRaceSchedule(races, new Date('2026-11-06T03:00:00Z'));
   assert.deepEqual(after.upcoming.slice(0, 3).map(({ id }) => id), ['first', 'second', 'third']);
   assert.equal(after.all[0].status, 'finished');
-  assert.equal(after.all[0].registrationUrl, undefined);
+  assert.equal(after.all[0].registrationUrl, races[0].registrationUrl);
   assert.equal(races[0].status, 'registration_open');
 });
 
-test('manually finished races stay out of upcoming events even with a future date', () => {
-  assert.deepEqual(getRaceSchedule([race('finished', '2027-01-01', 'finished')], new Date('2026-10-08T12:00:00Z')).upcoming, []);
+test('dates determine state even when a legacy manual state disagrees', () => {
+  const now = new Date('2026-10-08T12:00:00Z');
+  const schedule = getRaceSchedule([race('future', '2027-01-01', 'finished'), race('past', '2026-10-07', 'upcoming')], now);
+  assert.deepEqual(schedule.upcoming.map((item) => item.id), ['future']);
+  assert.equal(schedule.all[0].status, 'finished');
+  assert.equal(schedule.all[1].status, 'upcoming');
+  assert.equal(getRaceStatus('2026-10-08', '2026-10-08'), 'upcoming');
+  assert.equal(getRaceStatus('2026-10-08', '2026-10-09'), 'finished');
+});
+
+test('rescheduling a completed competition to the future makes it upcoming again', () => {
+  const moved = { ...race('moved', '2026-10-01', 'finished'), date: '2026-11-29' };
+  assert.equal(getRaceSchedule([moved], new Date('2026-10-21T12:00:00Z')).upcoming[0].id, 'moved');
 });
 
 test('compact titles include distance without duplicating it when already named', () => {

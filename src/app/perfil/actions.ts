@@ -45,7 +45,7 @@ export async function requestProfilePasswordReset(): Promise<{
   try {
     const sent = await sendUserPasswordReset({ email: user.email, name: user.name });
     return sent
-      ? { success: true, message: 'Te enviamos un correo para cambiar tu contraseña. Abre el enlace y sigue las instrucciones. Si no lo encuentras, revisa la carpeta de spam.' }
+      ? { success: true, message: 'Te enviamos un correo para restablecer tu contraseña.' }
       : { message: 'El correo no se envió: no hay un proveedor configurado en este entorno local.', tone: 'info' };
   } catch {
     return { message: 'No pudimos enviar el correo. Inténtalo nuevamente en unos minutos.', tone: 'error' };

@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache';
 import type { NewsArticle } from '@/types';
 import { PUBLIC_CACHE_TAGS, PUBLIC_CONTENT_REVALIDATE_SECONDS } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
+import { getNewsImages } from '@/lib/news-images';
 
 const categoryMap = {
   RESULTADOS: 'resultados',
@@ -18,6 +19,7 @@ const publicNewsSelect = {
   date: true,
   category: true,
   imageUrl: true,
+  imageUrls: true,
   updatedAt: true,
   results: {
     orderBy: { sortOrder: 'asc' as const },
@@ -41,6 +43,7 @@ async function queryPublishedNews(pinnedOnly = false) {
 type PublicNewsRecord = Awaited<ReturnType<typeof queryPublishedNews>>[number];
 
 function mapNewsPost(post: PublicNewsRecord): NewsArticle {
+  const imageUrls = getNewsImages(post);
   return {
     id: post.id,
     title: post.title,
@@ -48,7 +51,8 @@ function mapNewsPost(post: PublicNewsRecord): NewsArticle {
     date: post.date.toISOString().slice(0, 10),
     updatedAt: post.updatedAt.toISOString(),
     category: categoryMap[post.category],
-    imageUrl: post.imageUrl ?? undefined,
+    imageUrl: imageUrls[0],
+    imageUrls,
     results: post.results.map((result) => ({
       id: result.id,
       athleteName: result.athleteName,

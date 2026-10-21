@@ -2,7 +2,7 @@
 
 import { revalidatePath, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
-import type { RaceStatus, RaceType } from '@/generated/prisma';
+import type { RaceType } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { getSafeExternalHttpsUrl } from '@/lib/external-url';
 import { prisma } from '@/lib/prisma';
@@ -13,12 +13,25 @@ async function ensureAdmin() {
 }
 
 function readRaceData(formData: FormData) {
+  const date = new Date(`${String(formData.get('date') ?? '').trim()}T12:00:00`);
+  const seasonValue = String(formData.get('season') ?? '').trim();
+  const season = seasonValue ? Number(seasonValue) : date.getFullYear();
+  const imageUrl = String(formData.get('imageUrl') ?? '').trim() || null;
+
+  if (!Number.isFinite(date.getTime()) || !Number.isInteger(season) || season < 1000 || season > 9999) {
+    throw new Error('Revisa la fecha y la temporada de la competencia.');
+  }
+  if (imageUrl && !/^\/(?:api\/)?uploads\/competitions\/[a-z0-9][a-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(imageUrl)) {
+    throw new Error('Selecciona una imagen de competencia válida.');
+  }
+
   return {
     name: String(formData.get('name') ?? '').trim(),
-    date: new Date(`${String(formData.get('date') ?? '').trim()}T12:00:00`),
+    date,
+    season,
+    imageUrl,
     location: String(formData.get('location') ?? '').trim(),
     type: String(formData.get('type') ?? 'TRIATLON') as RaceType,
-    status: String(formData.get('status') ?? 'UPCOMING') as RaceStatus,
     distance: String(formData.get('distance') ?? '').trim() || null,
     description: String(formData.get('description') ?? '').trim() || null,
     registrationUrl: getSafeExternalHttpsUrl(formData.get('registrationUrl')),

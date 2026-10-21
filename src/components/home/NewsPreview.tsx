@@ -3,6 +3,7 @@ import { SOCIAL_LINKS } from '@/lib/constants';
 import { getPinnedPublishedNews } from '@/lib/news';
 import NewsCards from '@/components/home/NewsCards';
 import SectionTitle from '@/components/ui/SectionTitle';
+import EmptyState from '@/components/ui/EmptyState';
 
 export default async function NewsPreview() {
   const pinnedNews = await getPinnedPublishedNews();
@@ -13,6 +14,7 @@ export default async function NewsPreview() {
       <section id="noticias" className="section-padding theia-light-section">
         <div className="content-shell">
           <SectionTitle title="Noticias del Equipo" />
+          <EmptyState>No hay noticias del equipo por el momento.</EmptyState>
         </div>
       </section>
     );

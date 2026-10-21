@@ -7,6 +7,8 @@ import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import TestimonialForm from '@/components/admin/TestimonialForm';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
+import ContentFilters from '@/components/admin/ContentFilters';
+import { filterAdminItems, readAdminFilters, visibilityFilter, type AdminSearchParams } from '@/lib/admin-filters';
 import { createTestimonial, deleteTestimonial, updateTestimonial } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -18,13 +20,16 @@ export const metadata: Metadata = {
 export default async function AdminTestimonialsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
+  searchParams?: Promise<AdminSearchParams>;
 }) {
   await requireAdmin('/admin/testimonios');
   const params = await searchParams;
   const testimonials = await prisma.testimonial.findMany({
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
   });
+  const fields = [visibilityFilter];
+  const filters = readAdminFilters(params, fields);
+  const visibleTestimonials = filterAdminItems(testimonials, filters, (athlete) => ({ text: `${athlete.name} ${athlete.quote}`, values: { visibility: athlete.isActive ? 'visible' : 'hidden' } }));
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
@@ -37,17 +42,18 @@ export default async function AdminTestimonialsPage({
         <TestimonialForm action={createTestimonial} submitLabel="Crear atleta" />
       </CreateContentPanel>
 
-      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
+      <AdminActionStatus saved={typeof params?.guardado === 'string' ? params.guardado : undefined} deleted={typeof params?.eliminado === 'string' ? params.eliminado : undefined} />
+      <ContentFilters label="atletas" placeholder="Nombre o testimonio" fields={fields} {...filters} />
 
-      {testimonials.length === 0 ? (
-        <EmptyState tone="admin">No hay atletas creados.</EmptyState>
+      {visibleTestimonials.length === 0 ? (
+        <EmptyState tone="admin">{testimonials.length ? 'No hay atletas que coincidan con los filtros.' : 'No hay atletas creados.'}</EmptyState>
       ) : (
         <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Atletas existentes</h2>
           </div>
           <div className="divide-y divide-border-subtle">
-            {testimonials.map((testimonial) => (
+            {visibleTestimonials.map((testimonial) => (
               <div
                 key={testimonial.id}
                 className={`grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center ${testimonial.isActive ? '' : 'bg-slate-50/70'}`}

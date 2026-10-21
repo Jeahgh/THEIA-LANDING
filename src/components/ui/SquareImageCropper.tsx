@@ -75,10 +75,6 @@ export default function SquareImageCropper({ file, onCancel, onConfirm }: Square
     return () => cropArea.removeEventListener('wheel', wheel);
   }, [cropSize, dimensions]);
 
-  function changeZoom(nextZoom: number) {
-    setTransform((current) => constrainCrop({ ...current, zoom: nextZoom }, geometry));
-  }
-
   async function confirmCrop() {
     const image = imageRef.current;
     if (!image || !dimensions.width || !dimensions.height) return;
@@ -168,8 +164,6 @@ export default function SquareImageCropper({ file, onCancel, onConfirm }: Square
           )}
           <div className="pointer-events-none absolute inset-0 rounded-xl border-2 border-white/90 shadow-[inset_0_0_0_1px_rgba(15,23,42,0.35)]" />
         </div>
-
-        <input type="range" min="1" max="3" step="0.01" value={zoom} onChange={(event) => changeZoom(Number(event.target.value))} aria-label="Zoom de la foto" className="mt-4 w-full accent-brand-blue" />
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <button type="button" onClick={onCancel} className="rounded-xl border border-border-subtle px-4 py-3 font-semibold text-text-secondary transition-colors hover:bg-slate-50">

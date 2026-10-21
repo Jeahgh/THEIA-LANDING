@@ -13,13 +13,17 @@ export function getRaceDaysRemaining(date: string, today: string) {
   return Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86_400_000);
 }
 
+export function getRaceStatus(date: string, today = getClubDate()) {
+  // A date-only event stays upcoming throughout its day in Chile.
+  return date < today ? 'finished' : 'upcoming';
+}
+
 export function getRaceSchedule(races: Race[], now = new Date()) {
   const today = getClubDate(now);
 
-  // Derive public state without changing the administrator's stored records.
-  const all = races.map((race): Race => (
-    race.date < today ? { ...race, status: 'finished', registrationUrl: undefined } : race
-  )).sort((a, b) => a.date.localeCompare(b.date));
+  const all = races.map((race): Race => ({
+    ...race, status: getRaceStatus(race.date, today),
+  })).sort((a, b) => a.date.localeCompare(b.date));
   return { today, all, upcoming: all.filter((race) => race.status !== 'finished') };
 }
 

@@ -29,9 +29,9 @@ function MemberCard({ member, onOpen }: { member: PublicAthlete; onOpen: () => v
       type="button"
       onClick={onOpen}
       aria-label={`Ver información de ${member.name}`}
-      className="group h-full w-full cursor-pointer rounded-lg border border-brand-blue/15 bg-brand-blue-pale/70 p-4 text-center shadow-lg shadow-brand-blue/10 transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/30 hover:bg-brand-blue-pale hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-4 sm:rounded-2xl sm:p-6"
+      className="group flex h-full w-full min-w-0 cursor-pointer flex-col items-center rounded-lg border border-brand-blue/15 bg-brand-blue-pale/70 p-4 text-center shadow-lg shadow-brand-blue/10 transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/30 hover:bg-brand-blue-pale hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-4 sm:rounded-2xl sm:p-6"
     >
-      <div className="relative mx-auto mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-white/70 text-2xl font-bold text-brand-blue ring-4 ring-brand-blue/10 ring-offset-4 ring-offset-brand-blue-pale transition-transform duration-300 group-hover:scale-105">
+      <div className="relative mx-auto mb-4 flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/70 text-2xl font-bold text-brand-blue ring-4 ring-brand-blue/10 ring-offset-4 ring-offset-brand-blue-pale transition-transform duration-300 group-hover:scale-105">
         {member.imageUrl ? (
           <Image
             src={member.imageUrl}
@@ -44,9 +44,8 @@ function MemberCard({ member, onOpen }: { member: PublicAthlete; onOpen: () => v
           member.name.charAt(0)
         )}
       </div>
-      <h3 className="mb-2 break-words text-lg font-bold text-text-primary">{member.name}</h3>
+      <h3 className="mb-2 w-full text-lg font-bold text-text-primary [overflow-wrap:anywhere]">{member.name}</h3>
       <RoleBadge role={member.role} />
-      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-text-secondary">{member.bio}</p>
     </button>
   );
 }
@@ -82,7 +81,7 @@ function MemberModal({ member, onClose }: { member: PublicAthlete; onClose: () =
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="relative grid max-h-[calc(100dvh-2rem)] w-full max-w-4xl overflow-y-auto rounded-xl bg-white shadow-2xl md:grid-cols-2">
+      <div className="relative grid h-[min(44rem,calc(100dvh-2rem))] w-full min-w-0 max-w-4xl grid-rows-[minmax(0,1fr)_minmax(0,1fr)] overflow-hidden rounded-xl bg-white shadow-2xl md:h-[min(28rem,calc(100dvh-2rem))] md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]">
         <button
           ref={closeButtonRef}
           type="button"
@@ -93,7 +92,7 @@ function MemberModal({ member, onClose }: { member: PublicAthlete; onClose: () =
           ×
         </button>
 
-        <div className="relative flex aspect-square items-center justify-center bg-slate-200">
+        <div className="relative flex h-full min-h-0 min-w-0 items-center justify-center bg-slate-200">
           {member.imageUrl ? (
             <Image
               src={member.imageUrl}
@@ -107,11 +106,18 @@ function MemberModal({ member, onClose }: { member: PublicAthlete; onClose: () =
           )}
         </div>
 
-        <div className="flex flex-col justify-center p-6 md:p-10 md:pt-16">
-          <p className="mb-4 text-xs font-bold tracking-[0.4em] text-slate-500">THEIA</p>
-          <h2 className="break-words text-3xl font-bold text-slate-950 sm:text-4xl">{member.name}</h2>
-          <p className="mt-2 text-sm font-medium text-slate-500">{member.role}</p>
-          <p className="mt-6 whitespace-pre-line text-justify text-base leading-relaxed text-slate-600">{member.bio}</p>
+        <div className="flex min-h-0 min-w-0 flex-col items-start justify-start p-6 md:p-10 md:pt-16">
+          <p className="mb-4 shrink-0 text-xs font-bold tracking-[0.4em] text-slate-500">THEIA</p>
+          <h2 className="w-full shrink-0 text-3xl font-bold text-slate-950 [overflow-wrap:anywhere] sm:text-4xl">{member.name}</h2>
+          <p className="mt-2 shrink-0 text-sm font-medium text-slate-500">{member.role}</p>
+          <p
+            role="region"
+            aria-label={`Descripción de ${member.name}`}
+            tabIndex={0}
+            className="mt-6 min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain whitespace-pre-line pr-2 text-justify text-base leading-relaxed text-slate-600 [overflow-wrap:anywhere] [scrollbar-width:thin] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
+          >
+            {member.bio}
+          </p>
         </div>
       </div>
     </div>
@@ -150,7 +156,7 @@ export default function TeamMemberGrid({ members }: { members: PublicAthlete[] }
       {filteredMembers.length > 0 ? (
         <div className="flex flex-wrap justify-center gap-6">
           {filteredMembers.slice(0, visibleCount).map((member) => (
-            <div key={member.id} className="w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]">
+            <div key={member.id} className="w-full min-w-0 sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]">
               <MemberCard member={member} onOpen={() => setSelectedMember(member)} />
             </div>
           ))}

@@ -1,0 +1,7 @@
+ALTER TABLE "Race"
+ADD COLUMN "imageUrl" TEXT,
+ADD COLUMN "season" INTEGER;
+
+UPDATE "Race"
+SET "season" = EXTRACT(YEAR FROM "date")::INTEGER
+WHERE "season" IS NULL;

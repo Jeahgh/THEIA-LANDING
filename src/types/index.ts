@@ -18,6 +18,8 @@ export interface Race {
   distance?: string;     // Ej: "Sprint", "Olímpico", "Ironman 70.3"
   description?: string;
   registrationUrl?: string;
+  imageUrl?: string;
+  season?: number;
   status: RaceStatus;
 }
 
@@ -39,6 +41,7 @@ export interface NewsArticle {
   updatedAt?: string;
   category: 'resultados' | 'noticias' | 'entrenamiento' | 'comunidad';
   imageUrl?: string;
+  imageUrls?: string[];
   results?: NewsResult[];
 }
 

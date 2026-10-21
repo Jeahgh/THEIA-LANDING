@@ -85,8 +85,8 @@ export default async function NosotrosPage() {
       <section className="section-padding theia-light-section">
         <div className="content-shell">
           <div className="mb-8 text-center sm:mb-12">
-            <p className="mb-3 text-xs font-bold tracking-[0.45em] text-slate-900 sm:text-sm">THEIA</p>
-            <h2 className="text-4xl font-bold text-black sm:text-5xl lg:text-6xl">Nuestro equipo</h2>
+            <p className="mb-3 text-xs font-bold tracking-[0.45em] text-brand-blue sm:text-sm">THEIA</p>
+            <h2 className="inline-block text-gradient text-4xl font-bold sm:text-5xl lg:text-6xl">Nuestro equipo</h2>
           </div>
           {athletes.length === 0 ? (
             <EmptyState>

@@ -7,6 +7,8 @@ import CreateContentPanel from '@/components/admin/CreateContentPanel';
 import NewsForm from '@/components/admin/NewsForm';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import EmptyState from '@/components/ui/EmptyState';
+import ContentFilters from '@/components/admin/ContentFilters';
+import { filterAdminItems, readAdminFilters, type AdminSearchParams, type AdminFilterField } from '@/lib/admin-filters';
 import { createNewsPost, deleteNewsPost, updateNewsPost, setNewsPostPinned } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
 export default async function AdminNewsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ guardado?: string; eliminado?: string }>;
+  searchParams?: Promise<AdminSearchParams>;
 }) {
   await requireAdmin('/admin/noticias');
   const params = await searchParams;
@@ -31,6 +33,12 @@ export default async function AdminNewsPage({
     orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     select: { name: true },
   });
+  const fields: AdminFilterField[] = [
+    { name: 'category', label: 'Categoría', allLabel: 'Todas', options: [{ value: 'RESULTADOS', label: 'Resultados' }, { value: 'NOTICIAS', label: 'Noticias' }, { value: 'ENTRENAMIENTO', label: 'Entrenamiento' }, { value: 'COMUNIDAD', label: 'Comunidad' }] },
+    { name: 'pinned', label: 'Inicio', allLabel: 'Todas', options: [{ value: 'yes', label: 'Fijadas' }, { value: 'no', label: 'Sin fijar' }] },
+  ];
+  const filters = readAdminFilters(params, fields);
+  const visiblePosts = filterAdminItems(posts, filters, (post) => ({ text: `${post.title} ${post.excerpt}`, values: { category: post.category, pinned: post.pinned ? 'yes' : 'no' } }));
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
@@ -43,17 +51,18 @@ export default async function AdminNewsPage({
         <NewsForm action={createNewsPost} submitLabel="Crear noticia" athleteOptions={athletes.map((athlete) => athlete.name)} />
       </CreateContentPanel>
 
-      <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
+      <AdminActionStatus saved={typeof params?.guardado === 'string' ? params.guardado : undefined} deleted={typeof params?.eliminado === 'string' ? params.eliminado : undefined} />
+      <ContentFilters label="noticias" placeholder="Título o contenido" fields={fields} {...filters} />
 
-      {posts.length === 0 ? (
-        <EmptyState tone="admin">No hay noticias creadas.</EmptyState>
+      {visiblePosts.length === 0 ? (
+        <EmptyState tone="admin">{posts.length ? 'No hay noticias que coincidan con los filtros.' : 'No hay noticias creadas.'}</EmptyState>
       ) : (
         <div className="overflow-hidden">
           <div className="border-b border-border-subtle px-4 py-4 sm:px-6">
             <h2 className="text-lg font-bold text-text-primary sm:text-xl">Noticias existentes</h2>
           </div>
           <div className="divide-y divide-border-subtle">
-            {posts.map((post) => (
+            {visiblePosts.map((post) => (
               <div key={post.id} className="grid grid-cols-1 gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">

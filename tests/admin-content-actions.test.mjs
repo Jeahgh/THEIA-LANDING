@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import * as newsImages from '../src/lib/news-images.ts';
 
 const sections = [
   ['competencias', 'Race', 'race'], ['equipo', 'Athlete', 'athlete'],
@@ -30,6 +31,7 @@ async function loadActions(section, { denied = false } = {}) {
     '@/lib/prisma': { prisma },
     '@/lib/cache-tags': { PUBLIC_CACHE_TAGS: { races: 'races', team: 'team', plans: 'plans', testimonials: 'testimonials', news: 'news' } },
     '@/lib/external-url': { getSafeExternalHttpsUrl: () => null },
+    '@/lib/news-images': newsImages,
   };
   const exports = {};
   vm.runInNewContext(compiled, { exports, require: (name) => { assert.ok(name in modules); return modules[name]; } });
@@ -91,5 +93,79 @@ test('plan creation and editing save the visibility switch in both positions', a
       else await actions.updatePlan('test-id', form);
       assert.equal(calls.find(([type]) => type === operation)[1].isActive, enabled);
     }
+  }
+});
+
+test('race creation and editing persist an uploaded image and the selected season independently of the date', async () => {
+  for (const operation of ['create', 'update']) {
+    const { actions, calls } = await loadActions('competencias');
+    const form = contentForm();
+    form.set('type', 'TRIATLON');
+    form.set('season', '2027');
+    form.set('imageUrl', '/api/uploads/competitions/coquimbo-123.webp');
+    if (operation === 'create') await actions.createRace(form);
+    else await actions.updateRace('test-id', form);
+    const data = calls.find(([type]) => type === operation)[1];
+    assert.equal(data.season, 2027);
+    assert.equal(data.date.getFullYear(), 2026);
+    assert.equal(data.imageUrl, '/api/uploads/competitions/coquimbo-123.webp');
+  }
+});
+
+test('race validation rejects invalid seasons and image paths before writing', async () => {
+  for (const [field, value] of [
+    ['season', '2026.5'], ['season', 'abc'], ['season', '99'],
+    ['imageUrl', 'https://example.com/photo.webp'],
+    ['imageUrl', '/api/uploads/competitions/../../private.webp'],
+  ]) {
+    const { actions, calls } = await loadActions('competencias');
+    const form = contentForm();
+    form.set(field, value);
+    await assert.rejects(actions.updateRace('test-id', form));
+    assert.ok(!calls.some(([type]) => type === 'update'));
+  }
+});
+
+test('legacy race submissions derive the season from the event date when no season is supplied', async () => {
+  const { actions, calls } = await loadActions('competencias');
+  await actions.createRace(contentForm());
+  assert.equal(calls.find(([type]) => type === 'create')[1].season, 2026);
+});
+
+test('news galleries save their order and cover on creation and editing, and can be cleared', async () => {
+  for (const operation of ['create', 'update']) {
+    for (const urls of [['/api/uploads/news/running-1.jpg', '/images/hero-bike-team.jpg'], []]) {
+      const { actions, calls } = await loadActions('noticias');
+      const form = contentForm();
+      form.set('_gallery', 'on');
+      for (const url of urls) form.append('imageUrls', url);
+      if (operation === 'create') await actions.createNewsPost(form);
+      else await actions.updateNewsPost('test-id', form);
+      const data = calls.find(([type]) => type === operation)[1];
+      assert.deepEqual(data.imageUrls, urls);
+      assert.equal(data.imageUrl, urls[0] ?? null);
+      assert.equal(data.pinned, undefined);
+    }
+  }
+});
+
+test('invalid gallery paths are rejected before writing', async () => {
+  const { actions, calls } = await loadActions('noticias');
+  const form = contentForm();
+  form.set('_gallery', 'on');
+  form.set('imageUrls', 'https://example.com/image.jpg');
+  await assert.rejects(actions.updateNewsPost('test-id', form));
+  assert.ok(!calls.some(([type]) => type === 'update'));
+});
+
+test('competition creation and editing ignore manual state submissions', async () => {
+  for (const operation of ['create', 'update']) {
+    const { actions, calls } = await loadActions('competencias');
+    const form = contentForm();
+    form.set('status', 'FINISHED');
+    if (operation === 'create') await actions.createRace(form);
+    else await actions.updateRace('test-id', form);
+    const data = calls.find(([type]) => type === operation)[1];
+    assert.equal(Object.hasOwn(data, 'status'), false);
   }
 });

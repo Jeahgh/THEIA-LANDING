@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { getActiveTestimonials } from '@/lib/testimonials';
 import SectionTitle from '@/components/ui/SectionTitle';
+import EmptyState from '@/components/ui/EmptyState';
 
 export default async function Testimonials() {
   const testimonials = await getActiveTestimonials();
@@ -13,7 +14,7 @@ export default async function Testimonials() {
       <div className="content-shell">
         <SectionTitle title="Lo que dicen nuestros atletas" dark />
 
-        {testimonials.length > 0 && (
+        {testimonials.length > 0 ? (
           <div className={`${testimonials.length > 1 ? 'testimonial-marquee -mx-4 overflow-hidden px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8' : ''}`}>
             <div className={`${testimonials.length > 1 ? 'testimonial-marquee-track flex w-max' : 'flex justify-center'} py-4`}>
               {[0, 1].map((copy) => (
@@ -35,6 +36,8 @@ export default async function Testimonials() {
               ))}
             </div>
           </div>
+        ) : (
+          <EmptyState tone="dark">No hay testimonios de atletas por el momento.</EmptyState>
         )}
       </div>
     </section>

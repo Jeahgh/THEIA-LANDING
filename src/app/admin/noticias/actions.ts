@@ -6,6 +6,7 @@ import type { NewsCategory } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
 import { PUBLIC_CACHE_TAGS } from '@/lib/cache-tags';
+import { readNewsImages } from '@/lib/news-images';
 
 async function ensureAdmin() {
   await requireAdmin('/admin/noticias');
@@ -17,7 +18,7 @@ function readNewsData(formData: FormData) {
     excerpt: String(formData.get('excerpt') ?? '').trim(),
     date: new Date(`${String(formData.get('date') ?? '').trim()}T12:00:00`),
     category: String(formData.get('category') ?? 'NOTICIAS') as NewsCategory,
-    imageUrl: String(formData.get('imageUrl') ?? '').trim() || null,
+    ...readNewsImages(formData),
   };
 }
 
