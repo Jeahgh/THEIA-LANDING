@@ -7,7 +7,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import AdminActionStatus from '@/components/admin/AdminActionStatus';
 import UserControls from '@/components/admin/UserControls';
 import UserFilters from '@/components/admin/UserFilters';
-import { deleteUser, updateUser, sendUserRecoveryEmail } from './actions';
+import CreateUserPanel from '@/components/admin/CreateUserPanel';
+import { createUser, deleteUser, updateUser, sendUserRecoveryEmail } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,6 +97,7 @@ export default async function AdminUsersPage({
         <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-4xl">Usuarios y roles</h1>
       </div>
 
+      <CreateUserPanel action={createUser} />
       <AdminActionStatus saved={params?.guardado} deleted={params?.eliminado} />
       {params?.error && errorMessages[params.error] && (
         <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

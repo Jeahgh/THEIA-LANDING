@@ -3,6 +3,7 @@ import AdminToggle from '@/components/admin/AdminToggle';
 import AdminForm, { AdminFormHeading } from '@/components/admin/AdminForm';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { getClubDate } from '@/lib/race-schedule';
+import LocationSearchField from '@/components/admin/LocationSearchField';
 
 interface RaceFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -23,10 +24,7 @@ export default function RaceForm({ action, race, submitLabel }: RaceFormProps) {
           <label className="mb-1 block text-sm font-semibold text-text-primary">Nombre</label>
           <input name="name" defaultValue={race?.name} placeholder="Nombre de la competencia" className={fieldClasses} required />
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-semibold text-text-primary">Ubicación</label>
-          <input name="location" defaultValue={race?.location} placeholder="Ciudad, recinto o dirección" className={fieldClasses} required />
-        </div>
+        <LocationSearchField defaultValue={race?.location} googleEnabled={Boolean(process.env.GOOGLE_PLACES_API_KEY?.trim())} className={fieldClasses} />
         <div>
           <label className="mb-1 block text-sm font-semibold text-text-primary">Fecha</label>
           <input name="date" type="date" defaultValue={date} className={fieldClasses} required />

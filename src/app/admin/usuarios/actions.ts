@@ -5,9 +5,49 @@ import { redirect } from 'next/navigation';
 import { Prisma, Role } from '@/generated/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
-import type { UserActionState } from '@/lib/admin-user-types';
+import type { CreateUserResult, UserActionState } from '@/lib/admin-user-types';
 import { sendUserPasswordReset } from '@/lib/password-reset';
 import { consumeRateLimit } from '@/lib/rate-limit';
+
+export async function createUser(formData: FormData): Promise<CreateUserResult> {
+  const actor = await requireAdmin('/admin/usuarios');
+  const name = String(formData.get('name') ?? '').trim();
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  const phone = String(formData.get('phone') ?? '').trim();
+  const roleValue = String(formData.get('role') ?? '');
+  if (name.length < 2 || name.length > 80) return { error: 'Ingresa un nombre de entre 2 y 80 caracteres.' };
+  if (email.length > 254 || !/^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(email)) return { error: 'Ingresa un correo válido.' };
+  if (phone.length > 40) return { error: 'El teléfono no puede superar 40 caracteres.' };
+  if (!Object.values(Role).includes(roleValue as Role)) return { error: 'Selecciona un rol válido.' };
+  const limit = consumeRateLimit({ scope: 'admin-create-user', identifiers: [actor.id], limit: 20, windowMs: 60 * 60 * 1000 });
+  if (!limit.allowed) return { error: 'Has creado varias cuentas. Inténtalo más tarde.' };
+
+  let user;
+  try {
+    if (await prisma.user.findUnique({ where: { email }, select: { id: true } })) {
+      return { error: 'Ya existe un usuario con ese correo.' };
+    }
+    user = await prisma.user.create({
+      data: { name, email, phone: phone || null, role: roleValue as Role, isActive: true },
+      select: { id: true, name: true, email: true },
+    });
+  } catch (cause) {
+    if (cause instanceof Prisma.PrismaClientKnownRequestError && cause.code === 'P2002') {
+      return { error: 'Ya existe un usuario con ese correo.' };
+    }
+    return { error: 'No se pudo crear el usuario. Inténtalo nuevamente.' };
+  }
+
+  revalidatePath('/admin/usuarios');
+  try {
+    if (await sendUserPasswordReset({ email, name: user.name })) {
+      return { created: true, message: 'Usuario creado. Enviamos un correo para que establezca su contraseña.', tone: 'success' };
+    }
+  } catch {
+    // La cuenta ya está creada. El envío se puede reintentar desde su ficha.
+  }
+  return { created: true, message: 'Usuario creado. El correo no se envió; puedes reenviarlo desde su ficha.', tone: 'info' };
+}
 
 export async function updateUser(userId: string, _previous: UserActionState, formData: FormData): Promise<UserActionState> {
   const actor = await requireAdmin('/admin/usuarios');
