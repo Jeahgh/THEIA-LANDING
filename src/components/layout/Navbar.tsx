@@ -8,6 +8,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { NAV_LINKS } from '@/lib/constants';
 import Button from '@/components/ui/Button';
 import { useDismissableLayer } from '@/hooks/useDismissableLayer';
+import ProfileAvatar from '@/components/profile/ProfileAvatar';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,7 +22,6 @@ export default function Navbar() {
   const hasActiveSession = Boolean(session?.user?.id && session.user.isActive);
   const isAdmin = hasActiveSession && session?.user?.role === 'ADMIN';
   const userName = session?.user?.name?.split(' ')[0] ?? 'Atleta';
-  const userInitial = userName.charAt(0).toUpperCase();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -104,11 +104,7 @@ export default function Navbar() {
                   >
                     <span>Hola, {userName}</span>
                     <span className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue ring-2 ring-white/35">
-                      {session.user.image ? (
-                        <Image src={session.user.image} alt={session.user.name ?? 'Perfil'} fill unoptimized className="object-cover" sizes="36px" />
-                      ) : (
-                        userInitial
-                      )}
+                      <ProfileAvatar image={session.user.image} name={session.user.name} sizes="36px" />
                     </span>
                   </button>
 
@@ -189,11 +185,7 @@ export default function Navbar() {
               <div className="space-y-2 rounded-xl bg-white/10 p-3">
                 <div className="flex min-w-0 items-center gap-3 px-1 py-1 text-white">
                   <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue">
-                    {session.user.image ? (
-                      <Image src={session.user.image} alt={session.user.name ?? 'Perfil'} fill unoptimized className="object-cover" sizes="40px" />
-                    ) : (
-                      userInitial
-                    )}
+                    <ProfileAvatar image={session.user.image} name={session.user.name} sizes="40px" />
                   </span>
                   <div className="min-w-0">
                     <p className="font-semibold">Hola, {userName}</p>
