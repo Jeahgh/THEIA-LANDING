@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import ToastMessage from '@/components/ui/ToastMessage';
+import ProfileAvatar from '@/components/profile/ProfileAvatar';
 
 const SquareImageCropper = dynamic(() => import('@/components/ui/SquareImageCropper'));
 
@@ -26,7 +26,6 @@ export default function AvatarUpload({
   const [messageKey, setMessageKey] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [fileToCrop, setFileToCrop] = useState<File | null>(null);
-  const initial = (name ?? 'A').charAt(0).toUpperCase();
 
   const uploadFile = async (file: File) => {
     setIsUploading(true);
@@ -84,11 +83,7 @@ export default function AvatarUpload({
           className="group relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-brand-blue-pale text-3xl font-bold text-brand-blue ring-4 ring-brand-blue-pale ring-offset-4 ring-offset-white transition-transform hover:scale-[1.02] disabled:cursor-wait"
           aria-label="Cambiar foto de perfil"
         >
-          {preview ? (
-            <Image src={preview} alt={name ?? 'Perfil'} fill unoptimized className="object-cover" sizes="112px" />
-          ) : (
-            initial
-          )}
+          <ProfileAvatar image={preview} name={name} sizes="112px" />
           <span className="absolute inset-0 flex items-center justify-center bg-slate-950/45 px-3 text-center text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
             {isUploading ? 'Subiendo...' : 'Cambiar foto'}
           </span>

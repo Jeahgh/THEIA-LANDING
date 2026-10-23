@@ -67,7 +67,7 @@ export default async function AdminNewsPage({
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <NewsPinButton pinned={post.pinned} title={post.title} action={setNewsPostPinned.bind(null, post.id, !post.pinned)} />
-                    <h3 className="font-bold text-text-primary">{post.title}</h3>
+                    <h3 className="text-text-primary font-bold">{post.title}</h3>
                     <span className="rounded-full bg-brand-blue-pale px-2 py-0.5 text-xs font-semibold text-brand-blue">{{ RESULTADOS: 'Resultados', NOTICIAS: 'Noticias', ENTRENAMIENTO: 'Entrenamiento', COMUNIDAD: 'Comunidad' }[post.category]}</span>
                   </div>
                   <p className="mt-1 text-sm text-text-secondary">{post.date.toLocaleDateString('es-CL')}</p>
