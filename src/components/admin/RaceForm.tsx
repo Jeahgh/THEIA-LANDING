@@ -24,7 +24,7 @@ export default function RaceForm({ action, race, submitLabel }: RaceFormProps) {
           <label className="mb-1 block text-sm font-semibold text-text-primary">Nombre</label>
           <input name="name" defaultValue={race?.name} placeholder="Nombre de la competencia" className={fieldClasses} required />
         </div>
-        <LocationSearchField defaultValue={race?.location} googleEnabled={Boolean(process.env.GOOGLE_PLACES_API_KEY?.trim())} className={fieldClasses} />
+        <LocationSearchField defaultValue={race?.location} searchEnabled={Boolean(process.env.GEOAPIFY_API_KEY?.trim())} className={fieldClasses} />
         <div>
           <label className="mb-1 block text-sm font-semibold text-text-primary">Fecha</label>
           <input name="date" type="date" defaultValue={date} className={fieldClasses} required />

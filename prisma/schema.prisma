@@ -77,6 +77,11 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model LocationSearchUsage {
+  day      DateTime @id @db.Date
+  requests Int      @default(0)
+}
+
 model ContactMessage {
   id        String   @id @default(cuid())
   name      String

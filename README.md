@@ -87,6 +87,10 @@ se versiona en este repositorio.
 Consulta [docs/despliegue-servidor.md](docs/despliegue-servidor.md) antes de
 publicar.
 
+Las sugerencias de ubicación del panel son opcionales y usan Geoapify Free.
+La clave privada, la cuota diaria y la activación local/Docker están en
+[docs/geoapify.md](docs/geoapify.md). Sin clave se permite escritura manual.
+
 El seed nunca forma parte de un despliegue normal. El build usa fuentes locales
 y compila sin acceso a la red; la instalación de dependencias sí necesita red.
 La comparación de compiladores y sus límites está en
