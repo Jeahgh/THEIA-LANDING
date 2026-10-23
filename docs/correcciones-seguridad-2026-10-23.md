@@ -17,6 +17,21 @@ son históricos; no describen los avisos que devuelve actualmente el registro np
   El login sigue usando únicamente Google y Credentials. El proveedor Email de
   Auth.js no está configurado y la app importa exclusivamente el alias corregido
   para sus envíos.
+- Next.js actualizó automáticamente el encabezado de su bloque en `AGENTS.md`;
+  se conserva para evitar que cada inicio de desarrollo deje cambios pendientes.
+
+## Fotos y cambios de rama en desarrollo
+
+La rama de UX anterior aún versiona doce fotos que infraestructura retiró del
+índice. Cambiar desde una rama que las rastrea hacia una que ya no las rastrea
+puede hacer que Git retire esas copias del disco, aunque uploads esté ignorado.
+Durante esta revisión se repusieron las doce copias desde la rama de origen y se
+compararon sus hashes Git: coinciden y continúan fuera del seguimiento en la
+rama de infraestructura. No se modificaron referencias en la base de datos.
+
+Antes de alternar ramas con reglas de seguimiento distintas, conservar un
+respaldo local de uploads. En producción se mantiene el volumen persistente y
+su respaldo; las imágenes subidas no deben depender del contenido del checkout.
 
 ## Avisos restantes
 
