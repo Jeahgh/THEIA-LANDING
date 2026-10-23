@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'crypto';
-// Auth.js declara Nodemailer 8 como peer opcional. El alias permite usar la
-// versión 9 para correo transaccional sin forzar un peer incompatible.
-import nodemailer from 'nodemailer-v9';
+// El proveedor Email de Auth.js no se usa. Un alias mantiene el transporte
+// corregido de la app separado de su peer opcional de Nodemailer 7/8.
+import nodemailer from 'nodemailer-smtp';
 
 export function createVerificationToken() {
   return randomBytes(32).toString('hex');

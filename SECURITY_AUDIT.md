@@ -1,7 +1,8 @@
 # Auditoría integral de seguridad de TheiaSport (histórica)
 
-La revisión vigente del código y sus dependencias, del 21 de octubre de 2026,
-está en [docs/auditoria-optimizacion-seguridad.md](docs/auditoria-optimizacion-seguridad.md).
+La revisión del código del 21 de octubre está en
+[docs/auditoria-optimizacion-seguridad.md](docs/auditoria-optimizacion-seguridad.md),
+con [actualización de dependencias del 23 de octubre](docs/correcciones-seguridad-2026-10-23.md).
 Los avisos y estados históricos de este archivo no sustituyen esa revisión.
 
 > Este documento conserva evidencia del despliegue anterior en cPanel. Sus

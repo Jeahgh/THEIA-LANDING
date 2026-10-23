@@ -1,5 +1,8 @@
 # Auditoría de optimización y seguridad — THEIA
 
+Actualización posterior: [correcciones del 23 de octubre](correcciones-seguridad-2026-10-23.md).
+Los recuentos y versiones siguientes corresponden a la revisión original.
+
 Fecha: 21 de octubre de 2026. Rama: `fix/optimizacion-infraestructura`.
 Base: `2f9cef3`, conservada en `fix/perfil-foto-ux`. No se integró en
 `develop` ni `main`, ni se publicó en GitHub o en producción.
