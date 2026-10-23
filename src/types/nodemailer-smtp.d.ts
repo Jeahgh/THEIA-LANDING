@@ -1,4 +1,4 @@
-declare module 'nodemailer-v9' {
+declare module 'nodemailer-smtp' {
   import * as nodemailer from 'nodemailer';
   export = nodemailer;
 }
