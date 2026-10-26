@@ -68,10 +68,30 @@
 
 @layer base {
   html {
+    --navbar-height: 4rem;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     scrollbar-width: thin;
     scrollbar-color: #94a3b8 transparent;
+  }
+  @media (min-width: 64rem) {
+    html { --navbar-height: 5rem; }
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    html {
+      scrollbar-width: auto;
+      scrollbar-color: auto;
+    }
+
+    /* Keep the page scrollbar below the fixed navigation. */
+    html::-webkit-scrollbar:vertical {
+      background: linear-gradient(var(--color-brand-navy), var(--color-brand-navy))
+        top / 100% var(--navbar-height) no-repeat;
+    }
+
+    html::-webkit-scrollbar-track:vertical { margin-top: var(--navbar-height); }
+    html::-webkit-scrollbar-button:vertical { display: none; }
   }
   body {
     @apply bg-bg-warm text-text-primary;
