@@ -1,108 +1,116 @@
-# THEIA Triathlon Performance
+### THEIA Triathlon Performance
 
-Sitio administrable de Theia construido con Next.js 16, React 19, Auth.js,
-Prisma 7 y PostgreSQL.
+Sitio web del club THEIA para consultar planes, equipo, noticias y competencias,
+con perfiles de usuario y un panel de administración.
 
-La aplicación necesita un proceso Node.js y PostgreSQL: autenticación, panel
-administrativo, contenido dinámico, APIs y uploads no funcionan como un sitio
-HTML estático.
+Construido con Next.js 16, React 19, TypeScript, Tailwind CSS, Auth.js,
+Prisma 7 y PostgreSQL. Sitio público: [theiasport.cl](https://theiasport.cl).
 
-## Arquitectura
+### Requisitos
 
-| Entorno | Aplicación | Base de datos |
-| --- | --- | --- |
-| Desarrollo | Next.js en `localhost:3000` | PostgreSQL Docker en `localhost:5433` |
-| Producción | Contenedor standalone detrás de Nginx y Cloudflare | PostgreSQL privado del servidor |
+- Git.
+- Node.js 22.12 o superior dentro de la versión 22, con npm.
+- Docker Desktop en Windows o macOS; Docker Engine con Compose en Linux.
+- Docker en ejecución y los puertos locales 3000 y 5433 disponibles.
 
-El repositorio contiene una imagen multi-stage de producción. Los artefactos
-generados no se versionan: el servidor o el pipeline construye la imagen desde
-el commit que se desea publicar.
+### Abrir el proyecto desde cero
 
-## Requisitos locales
+1. Descarga la versión de desarrollo:
 
-- Node.js 22.12 o superior dentro de la rama 22.
-- Docker Desktop para PostgreSQL local y builds de contenedor.
-- Credenciales OAuth de desarrollo si se probará Google.
+   ```bash
+   git clone --branch develop https://github.com/Jeahgh/THEIA-LANDING.git
+   cd THEIA-LANDING
+   ```
 
-## Primera configuración
+   Abre esa carpeta con tu editor y utiliza su terminal para los siguientes pasos.
 
-1. Crea el entorno local:
+2. Crea tu archivo de configuración local desde la plantilla.
+
+   En PowerShell:
 
    ```powershell
    Copy-Item .env.example .env.development.local
    ```
 
-2. Completa únicamente valores de desarrollo. La URI de retorno local de
-   Google es `http://localhost:3000/api/auth/callback/google`.
+   En Linux o macOS:
 
-3. Instala dependencias y genera Prisma:
+   ```bash
+   cp .env.example .env.development.local
+   ```
+
+   Conserva las direcciones locales de la plantilla. Genera un secreto con este
+   comando y pega el resultado como valor de `AUTH_SECRET` en el nuevo archivo:
+
+   ```bash
+   node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"
+   ```
+
+   La plantilla solo contiene ejemplos para desarrollo. No compartas tu archivo
+   de variables ni utilices credenciales de producción.
+
+3. Instala las dependencias, genera el cliente de la base de datos y arranca:
 
    ```bash
    npm ci
    npm run db:generate
+   npm run dev
    ```
 
-No copies credenciales productivas a `.env.development.local`. Los comandos
-locales rechazan conexiones PostgreSQL fuera de loopback.
+   El último comando inicia PostgreSQL local con Docker, aplica las migraciones
+   pendientes y abre el servidor de desarrollo. Visita
+   [localhost:3000](http://localhost:3000).
 
-## Desarrollo
+La base local empieza vacía. Para cargar los planes y noticias iniciales, abre
+otra terminal en la misma carpeta y ejecuta, solo si quieres esos datos:
 
 ```bash
-npm run dev
+npm run db:seed -- --confirm-seed
 ```
 
-Este comando inicia PostgreSQL, aplica migraciones locales pendientes y levanta
-Next.js. `npm run dev:web` inicia solo la aplicación cuando la base ya está
-disponible.
+El seed puede sobrescribir contenido del mismo plan o noticia; no se ejecuta
+automáticamente. Las fotos cargadas desde administración no se incluyen en Git.
+El panel requiere una cuenta con rol `ADMIN`; el arranque no crea administradores.
 
-Comandos principales:
+### Servicios opcionales
 
-| Comando | Función |
-| --- | --- |
-| `npm run db:up` | Inicia PostgreSQL local |
-| `npm run db:stop` | Detiene PostgreSQL local sin borrar datos |
-| `npm run db:status` | Consulta migraciones locales |
-| `npm run db:migrate` | Crea o aplica migraciones de desarrollo |
-| `npm run db:seed -- --confirm-seed` | Carga manualmente datos iniciales locales; puede sobrescribir contenido |
-| `npm run db:studio` | Abre Prisma Studio |
-| `npm run lint` | Ejecuta ESLint |
-| `npm test` | Ejecuta todas las pruebas automáticas |
-| `npm run test:security` | Ejecuta pruebas de seguridad |
-| `npm run test:seo` | Ejecuta comprobaciones SEO |
-| `npm run build` | Verifica el build local |
+Puedes recorrer las páginas públicas sin configurar estos servicios:
 
-## Contenedores
+- **Google:** completa `AUTH_GOOGLE_ID` y `AUTH_GOOGLE_SECRET` para probar ese
+  inicio de sesión. El retorno local es
+  `http://localhost:3000/api/auth/callback/google`.
+- **Correo:** la plantilla incluye las opciones SMTP o Resend. Sin proveedor,
+  los enlaces de registro y recuperación se muestran en la terminal local.
+- **Ubicaciones:** `GEOAPIFY_API_KEY` activa las sugerencias del panel. Sin clave
+  puedes escribir la ubicación manualmente. Consulta la
+  [guía de Geoapify](docs/geoapify.md).
 
-El `Dockerfile` incluye:
+Reinicia el servidor cuando cambies las variables de entorno.
 
-- `runner`: imagen standalone para la aplicación;
-- `migrator`: solo migraciones; no contiene el archivo del seed;
-- `seeder`: imagen opcional para seed manual con `--confirm-seed`;
-- `builder`: etapa interna de compilación.
+### Trabajo habitual
 
-`docker-compose.yml` es para desarrollo local. La configuración productiva de
-Nginx, dominios, certificados, volúmenes y secretos pertenece al servidor y no
-se versiona en este repositorio.
+- `npm run dev`: inicia la base local, aplica migraciones y arranca la web.
+- `npm run dev:web`: arranca solo la web si PostgreSQL ya está disponible.
+- `npm run db:status`: comprueba las migraciones locales.
+- `npm run db:stop`: detiene PostgreSQL conservando sus datos.
+- `npm run lint` y `npm test`: revisan el código y ejecutan las pruebas.
+- `npm run build`: compila la aplicación para comprobar el build.
 
-Consulta [docs/despliegue-servidor.md](docs/despliegue-servidor.md) antes de
-publicar.
+Para detener la web, pulsa `Ctrl+C` en su terminal. Para incorporar cambios
+nuevos, detén la web, ejecuta `git pull`, `npm ci`, `npm run db:generate` y
+`npm run dev`.
 
-Las sugerencias de ubicación del panel son opcionales y usan Geoapify Free.
-La clave privada, la cuota diaria y la activación local/Docker están en
-[docs/geoapify.md](docs/geoapify.md). Sin clave se permite escritura manual.
+### Desarrollo y producción
 
-El seed nunca forma parte de un despliegue normal. El build usa fuentes locales
-y compila sin acceso a la red; la instalación de dependencias sí necesita red.
-La comparación de compiladores y sus límites está en
-[docs/auditoria-build-docker.md](docs/auditoria-build-docker.md).
+`develop` reúne los cambios que se están probando. `main` contiene la versión
+aprobada para publicar; actualizar una rama no despliega el sitio por sí solo.
 
-La revisión de rendimiento, limpieza y riesgos pendientes está en
-[docs/auditoria-optimizacion-seguridad.md](docs/auditoria-optimizacion-seguridad.md).
-Los archivos de `public/uploads` son datos persistentes: no se versionan ni se
-copian a la imagen; deben conservarse y respaldarse en su volumen.
+En desarrollo, Next.js funciona en `localhost:3000` y PostgreSQL en
+`localhost:5433`. En producción, la aplicación utiliza una imagen Docker
+standalone en Ubuntu, detrás de Nginx y Cloudflare, con PostgreSQL privado.
 
-## Uploads
+El archivo `docker-compose.yml` del repositorio es exclusivamente local.
+Las variables y la configuración productivas se gestionan en el servidor.
+Los archivos de `public/uploads` requieren un volumen persistente y respaldos.
+El contenedor `migrator` aplica únicamente migraciones; el seed es manual.
 
-Los archivos administrados se guardan en `public/uploads` y se sirven mediante
-`/api/uploads`. En producción esa carpeta debe montarse en un volumen
-persistente y respaldarse antes de reemplazar contenedores.
+El procedimiento completo está en la [guía de despliegue](docs/despliegue-servidor.md).

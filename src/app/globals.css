@@ -67,7 +67,12 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent;
+  }
   body {
     @apply bg-bg-warm text-text-primary;
     font-family: var(--font-nunito), system-ui, sans-serif;
@@ -76,9 +81,10 @@
     font-family: var(--font-montserrat), system-ui, sans-serif;
     @apply font-bold tracking-tight;
   }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-bg-warm; }
-  ::-webkit-scrollbar-thumb { @apply bg-brand-blue-soft rounded-full; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-400 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-500; }
   ::selection { @apply bg-brand-blue-pale text-text-primary; }
 
   :where(dialog, [role="dialog"], .theia-scrollbar),
