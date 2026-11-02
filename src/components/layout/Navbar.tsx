@@ -13,6 +13,7 @@ import ProfileAvatar from '@/components/profile/ProfileAvatar';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileProfileOpen, setIsMobileProfileOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+    setIsMobileProfileOpen(false);
+  }, []);
   const closeProfileMenu = useCallback(() => setIsProfileMenuOpen(false), []);
 
   useDismissableLayer({
@@ -46,7 +50,7 @@ export default function Navbar() {
 
   const closeSession = async () => {
     setIsProfileMenuOpen(false);
-    setIsMobileMenuOpen(false);
+    closeMobileMenu();
     await fetch('/api/session/revoke', { method: 'POST' });
     await signOut({ redirect: false });
     router.replace('/');
@@ -142,10 +146,14 @@ export default function Navbar() {
 
             <button
               id="mobile-menu-toggle"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => {
+                if (isMobileMenuOpen) closeMobileMenu();
+                else setIsMobileMenuOpen(true);
+              }}
               className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              aria-label="Abrir menu"
+              aria-label={isMobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
               aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-navigation"
             >
               <div className="flex flex-col gap-1.5">
                 <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
@@ -157,13 +165,42 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={`overflow-hidden transition-all duration-300 lg:hidden ${isMobileMenuOpen ? 'max-h-[calc(100vh-4rem)] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="max-h-[calc(100vh-4rem)] space-y-1 overflow-y-auto border-t border-white/10 bg-brand-navy px-4 py-4 shadow-lg">
+      <div id="mobile-navigation" inert={!isMobileMenuOpen} className={`overflow-hidden transition-all duration-300 lg:hidden ${isMobileMenuOpen ? 'max-h-[calc(100dvh-var(--navbar-height))] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="max-h-[calc(100dvh-var(--navbar-height))] space-y-1 overflow-y-auto border-t border-white/10 bg-brand-navy px-4 py-4 shadow-lg">
+          {hasActiveSession && session?.user && (
+            <div className="mb-3">
+              <button
+                type="button"
+                onClick={() => setIsMobileProfileOpen((current) => !current)}
+                aria-expanded={isMobileProfileOpen}
+                aria-controls="mobile-profile-options"
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-[15px] font-semibold text-white transition-colors hover:text-white/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+              >
+                <span aria-hidden="true" className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue">
+                  <ProfileAvatar image={session.user.image} name={session.user.name} sizes="40px" />
+                </span>
+                <span className="min-w-0 flex-1 break-words">Hola, {userName}</span>
+                <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className={`h-5 w-5 shrink-0 transition-transform duration-200 motion-reduce:transition-none ${isMobileProfileOpen ? 'rotate-180' : ''}`}>
+                  <path d="m5 7.5 5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {isMobileProfileOpen && (
+                <div id="mobile-profile-options" className="space-y-1 pl-[3.25rem]">
+                  <Link href="/perfil" onClick={closeMobileMenu} className="block rounded-lg px-4 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-white/5">
+                    Editar perfil
+                  </Link>
+                  <button type="button" onClick={closeSession} className="block w-full rounded-lg px-4 py-3 text-left text-[15px] font-semibold text-red-400 transition-colors hover:bg-white/5 hover:text-red-300">
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={closeMobileMenu}
               className={`block rounded-lg px-4 py-3 text-[15px] font-semibold transition-colors ${
                 pathname === link.href ? 'text-white bg-white/20' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
@@ -174,39 +211,17 @@ export default function Navbar() {
           {isAdmin && (
             <Link
               href="/admin"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={closeMobileMenu}
               className="block rounded-lg px-4 py-3 text-[15px] font-semibold text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               Admin
             </Link>
           )}
-          <div className="pt-2" onClick={() => setIsMobileMenuOpen(false)}>
-            {hasActiveSession && session?.user ? (
-              <div className="space-y-2 rounded-xl bg-white/10 p-3">
-                <div className="flex min-w-0 items-center gap-3 px-1 py-1 text-white">
-                  <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-brand-blue">
-                    <ProfileAvatar image={session.user.image} name={session.user.name} sizes="40px" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="font-semibold">Hola, {userName}</p>
-                    <p className="truncate text-xs text-white/65">{session.user.email}</p>
-                  </div>
-                </div>
-                <Link href="/perfil" className="block rounded-lg px-4 py-3 text-[15px] font-semibold text-white/80 hover:bg-white/10 hover:text-white">
-                  Editar perfil
-                </Link>
-                <button
-                  type="button"
-                  onClick={closeSession}
-                  className="block w-full rounded-lg px-4 py-3 text-left text-[15px] font-semibold text-white/80 hover:bg-white/10 hover:text-white"
-                >
-                  Cerrar sesion
-                </button>
-              </div>
-            ) : (
+          {!hasActiveSession && (
+            <div className="pt-2" onClick={closeMobileMenu}>
               <Button variant="white" size="md" href="/login" className="w-full">Unete al club</Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>

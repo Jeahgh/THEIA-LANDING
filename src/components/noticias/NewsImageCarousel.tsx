@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 export default function NewsImageCarousel({ images, title, variant = 'article', href }: {
   images: string[];
   title: string;
-  variant?: 'article' | 'featured' | 'compact';
+  variant?: 'article' | 'featured' | 'compact' | 'card';
   href?: string;
 }) {
   const [index, setIndex] = useState(0);
@@ -51,7 +51,7 @@ export default function NewsImageCarousel({ images, title, variant = 'article', 
   const slides = images.map((image, item) => <div key={`${image}-${item}`} role="group" aria-roledescription="diapositiva" aria-label={`Foto ${item + 1} de ${count}`} aria-hidden={item !== active} aria-live={focused ? 'polite' : 'off'}
     className={`pointer-events-none absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none ${item === active ? 'opacity-100' : 'opacity-0'}`}>
     {(item === active || (visible && (item === (active + 1) % count || item === (active + count - 1) % count))) && <Image src={image} alt={count > 1 ? `${title}, foto ${item + 1} de ${count}` : title} fill
-      sizes={variant === 'article' ? '(max-width: 896px) 100vw, 896px' : compact ? '(max-width: 640px) 100vw, 160px' : '(max-width: 1024px) 100vw, 50vw'}
+      sizes={variant === 'article' ? '(max-width: 896px) 100vw, 896px' : compact ? '(max-width: 640px) 100vw, 160px' : variant === 'card' ? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw' : '(max-width: 1024px) 100vw, 50vw'}
       className={article ? 'object-contain' : 'object-cover'} preload={article && item === 0} />}
   </div>);
   return (

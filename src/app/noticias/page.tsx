@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import EmptyState from '@/components/ui/EmptyState';
 import SectionTitle from '@/components/ui/SectionTitle';
-import NewsCards from '@/components/home/NewsCards';
-import { getAllPublishedNews } from '@/lib/news';
+import NewsGrid from '@/components/noticias/NewsGrid';
+import NewsPagination from '@/components/noticias/NewsPagination';
+import { getPublishedNewsPage } from '@/lib/news';
 import { createPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -15,8 +16,11 @@ export const metadata: Metadata = createPageMetadata({
   path: '/noticias',
 });
 
-export default async function NoticiasPage() {
-  const posts = await getAllPublishedNews();
+export default async function NoticiasPage({ searchParams }: {
+  searchParams: Promise<{ pagina?: string | string[] }>;
+}) {
+  const { pagina } = await searchParams;
+  const { articles, page, totalPages } = await getPublishedNewsPage(pagina);
 
   return (
     <>
@@ -42,14 +46,17 @@ export default async function NoticiasPage() {
         </div>
       </section>
 
-      <section className="section-padding theia-light-section">
+      <section id="listado-noticias" className="section-padding theia-light-section scroll-mt-24">
         <div className="content-shell">
           <SectionTitle
             title="Últimas noticias"
             subtitle="Actualidad deportiva y novedades de la comunidad Theia"
           />
-          {posts.length > 0 ? (
-            <NewsCards articles={posts} />
+          {articles.length > 0 ? (
+            <>
+              <NewsGrid articles={articles} />
+              <NewsPagination page={page} totalPages={totalPages} />
+            </>
           ) : (
             <EmptyState>No hay noticias publicadas por ahora.</EmptyState>
           )}

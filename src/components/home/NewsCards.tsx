@@ -13,6 +13,7 @@ export function formatNewsDate(dateStr: string): string {
     year: 'numeric',
   }).format(date);
 }
+
 export function getNewsCategory(category: NewsArticle['category']) {
   const styles: Record<NewsArticle['category'], { label: string; className: string }> = {
     resultados: { label: 'Resultados', className: 'bg-[#f6ebd9] text-[#7a5722]' },
@@ -24,7 +25,7 @@ export function getNewsCategory(category: NewsArticle['category']) {
   return styles[category];
 }
 
-function NewsMeta({ article, includeDate = true }: { article: NewsArticle; includeDate?: boolean }) {
+export function NewsMeta({ article, includeDate = true }: { article: NewsArticle; includeDate?: boolean }) {
   const category = getNewsCategory(article.category);
 
   return (

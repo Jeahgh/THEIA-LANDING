@@ -33,3 +33,21 @@ test('zoom limits and portrait/square bounds prevent empty crop areas', () => {
   assert.ok(Math.abs(enlarged.offset.y - 320) < 1e-9);
   assert.deepEqual(moveCrop(initial, [{ x: 0, y: 0 }, { x: 0, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 0 }], geometry), initial);
 });
+
+test('horizontal news crops let portraits move vertically without leaving empty edges', () => {
+  const news = { width: 800, height: 1200, size: 320, aspectRatio: 16 / 10 };
+  assert.deepEqual(constrainCrop({ zoom: 1, offset: { x: 500, y: 500 } }, news), {
+    zoom: 1, offset: { x: 0, y: 140 },
+  });
+  const moved = moveCrop(initial, [{ x: 0, y: 0 }], [{ x: 0, y: -90 }], news);
+  assert.deepEqual(moved, { zoom: 1, offset: { x: 0, y: -90 } });
+});
+
+test('wide photos fill the horizontal crop and pinch stays constrained to its bounds', () => {
+  const news = { width: 1600, height: 800, size: 320, aspectRatio: 16 / 10 };
+  assert.deepEqual(constrainCrop({ zoom: 1, offset: { x: 500, y: 500 } }, news), {
+    zoom: 1, offset: { x: 40, y: 0 },
+  });
+  const pinched = moveCrop(initial, [{ x: -50, y: 0 }, { x: 50, y: 0 }], [{ x: -100, y: 0 }, { x: 100, y: 0 }], news);
+  assert.deepEqual(pinched, { zoom: 2, offset: { x: 0, y: 0 } });
+});

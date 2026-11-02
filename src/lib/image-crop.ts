@@ -1,14 +1,15 @@
 export type CropPoint = { x: number; y: number };
 export type CropTransform = { zoom: number; offset: CropPoint };
-export type CropGeometry = { width: number; height: number; size: number };
+export type CropGeometry = { width: number; height: number; size: number; aspectRatio?: number };
 
 export function constrainCrop(transform: CropTransform, geometry: CropGeometry): CropTransform {
   const zoom = Math.max(1, Math.min(3, transform.zoom));
+  const cropHeight = geometry.size / (geometry.aspectRatio ?? 1);
   const scale = geometry.width && geometry.height
-    ? geometry.size / Math.min(geometry.width, geometry.height) * zoom
+    ? Math.max(geometry.size / geometry.width, cropHeight / geometry.height) * zoom
     : 1;
   const maxX = Math.max(0, (geometry.width * scale - geometry.size) / 2);
-  const maxY = Math.max(0, (geometry.height * scale - geometry.size) / 2);
+  const maxY = Math.max(0, (geometry.height * scale - cropHeight) / 2);
   return {
     zoom,
     offset: {
