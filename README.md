@@ -113,4 +113,9 @@ Las variables y la configuración productivas se gestionan en el servidor.
 Los archivos de `public/uploads` requieren un volumen persistente y respaldos.
 El contenedor `migrator` aplica únicamente migraciones; el seed es manual.
 
-El procedimiento completo está en la [guía de despliegue](docs/despliegue-servidor.md).
+### Documentación
+
+- [Guía de despliegue en servidor](docs/despliegue-servidor.md)
+- [Resumen técnico del proyecto](docs/resumen-tecnico-theia.md)
+- [Auditoría de seguridad y optimización](docs/auditoria-optimizacion-seguridad.md) y [actualización de seguridad de octubre](docs/correcciones-seguridad-2026-10-23.md)
+- [Laboratorio aislado de seguridad](SECURITY_LAB.md)

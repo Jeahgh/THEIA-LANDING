@@ -34,10 +34,6 @@ model User {
 
   accounts Account[]
   sessions Session[]
-
-  // Fase pagos/suscripciones:
-  // subscriptions Subscription[]
-  // payments      Payment[]
 }
 
 // Modelos requeridos por Auth.js para login con proveedores OAuth como Google.
@@ -273,48 +269,3 @@ enum RaceStatus {
   REGISTRATION_CLOSED
   FINISHED
 }
-
-// =============================================================================
-// FASE 2: Suscripciones y pagos
-// =============================================================================
-// model Subscription {
-//   id        String             @id @default(cuid())
-//   userId    String
-//   user      User               @relation(fields: [userId], references: [id])
-//   planId    String
-//   plan      Plan               @relation(fields: [planId], references: [id])
-//   status    SubscriptionStatus @default(ACTIVE)
-//   startDate DateTime           @default(now())
-//   endDate   DateTime?
-//   createdAt DateTime           @default(now())
-//   updatedAt DateTime           @updatedAt
-//   payments  Payment[]
-// }
-//
-// model Payment {
-//   id             String        @id @default(cuid())
-//   userId         String
-//   user           User          @relation(fields: [userId], references: [id])
-//   subscriptionId String?
-//   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
-//   amount         Int
-//   currency       String        @default("CLP")
-//   status         PaymentStatus @default(PENDING)
-//   provider       String?
-//   providerRef    String?
-//   createdAt      DateTime      @default(now())
-// }
-//
-// enum SubscriptionStatus {
-//   ACTIVE
-//   PAUSED
-//   CANCELLED
-//   EXPIRED
-// }
-//
-// enum PaymentStatus {
-//   PENDING
-//   COMPLETED
-//   FAILED
-//   REFUNDED
-// }
